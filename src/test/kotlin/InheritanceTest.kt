@@ -15,7 +15,7 @@ class InheritanceTest {
 
     @BeforeEach
     fun scanResources() {
-        scanner.inputDir = File("C:\\Users\\andrea\\IdeaProjects\\JavaClassProcessing\\src\\test\\resources")
+        scanner.inputDir = File("src/test/resources")
         scanner.scan()
     }
 
