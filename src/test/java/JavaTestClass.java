@@ -11,6 +11,10 @@ public class JavaTestClass implements JavaTestInterface
         {
             testMethod2();
         }
+        else
+        {
+            testMethod2();
+        }
         testField1 = 1000;
         int i = testField1 * testField2;
     }
@@ -19,5 +23,16 @@ public class JavaTestClass implements JavaTestInterface
     {
         JavaTestClass javaTestClass = new JavaTestClass();
         int i = javaTestClass.testField2;
+    }
+
+    public void testMethod3()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if (testField1 == 10000)
+            {
+                //
+            }
+        }
     }
 }

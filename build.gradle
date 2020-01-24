@@ -37,3 +37,12 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+tasks.build {
+    doLast {
+        copy {
+            from "build/classes/java/test"
+            into "src/test/resources"
+        }
+    }
+}
