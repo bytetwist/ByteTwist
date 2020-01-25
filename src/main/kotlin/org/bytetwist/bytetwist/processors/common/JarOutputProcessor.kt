@@ -4,22 +4,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.nodes.CompiledClass
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import java.io.FileOutputStream
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import kotlin.reflect.KClass
 
 @ExperimentalCoroutinesApi
-class JarOutputProcessor : AbstractProcessor<CompiledClass>() {
+class JarOutputProcessor : AbstractNodeProcessor<CompiledClass>() {
 
 
 
     override fun process(node: CompiledClass) {
         runBlocking {
-            launch {
-                addClassToJar(node)
-            }
+            addClassToJar(node)
         }
     }
 

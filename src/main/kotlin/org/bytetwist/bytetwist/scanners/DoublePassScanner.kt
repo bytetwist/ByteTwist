@@ -95,7 +95,7 @@ class DoublePassScanner : Scanner() {
      * @return a ByteArray of the class file
      */
     private fun bytes(f: JarFile, jarEntry: JarEntry?) =
-       f.getInputStream(jarEntry).readBytes()
+        f.getInputStream(jarEntry).readBytes()
 
 
 }
@@ -107,11 +107,11 @@ fun main() {
         BasicClassProcessor()// as AbstractProcessor<*>
     val scanner = DoublePassScanner()
     scanner.inputDir = File("C:\\Users\\andrea\\IdeaProjects\\bytetwist\\186.jar")
-//    scanner.addProcessor(AbstractMethodProcessor())
-   scanner.addProcessor(FieldRenamer())
-   scanner.addProcessor(MethodRenamer())
-//    scanner.addProcessor(UnusedMethodProcessor())
-//    scanner.addProcessor(UnusedFieldProcessor())
+    scanner.addProcessor(AbstractMethodProcessor())
+    scanner.addProcessor(UnusedMethodProcessor())
+    scanner.addProcessor(UnusedFieldProcessor())
+    scanner.addProcessor(FieldRenamer())
+    scanner.addProcessor(MethodRenamer())
     scanner.addProcessor(ClassRenamer())
 //
     scanner.addProcessor(JarOutputProcessor())

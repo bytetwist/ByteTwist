@@ -13,13 +13,13 @@ open class ProcessingQueue {
     val nodes = CopyOnWriteArraySet<CompiledClass>()
     val methodNodes = CopyOnWriteArraySet<CompiledMethod>()
     val fieldNodes = CopyOnWriteArraySet<CompiledField>()
-    var processors = arrayListOf<AbstractProcessor<in CompiledNode>>()
+    var processors = arrayListOf<AbstractNodeProcessor<in CompiledNode>>()
 
     /**
      * Adds a processor to the end of the processing queue.
      */
-   fun <T : CompiledNode> addProcessor(processor: AbstractProcessor<in T>) {
-        processors.add(processor as AbstractProcessor<in CompiledNode>)
+   fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
+        processors.add(processor as AbstractNodeProcessor<in CompiledNode>)
     }
 
     private fun classes() = flow {

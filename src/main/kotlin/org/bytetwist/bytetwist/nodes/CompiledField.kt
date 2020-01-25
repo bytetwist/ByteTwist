@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.FieldNode
 import org.bytetwist.bytetwist.References
 import java.lang.reflect.Modifier
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
@@ -23,7 +24,7 @@ class CompiledField(
     /**
      * A Set of all FieldReferenceNode's that reference this particular field
      */
-    val references = HashSet<FieldReferenceNode>()
+    val references = CopyOnWriteArraySet<FieldReferenceNode>()
 
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
         val annotationNode = FieldAnnotationNode(this, descriptor)

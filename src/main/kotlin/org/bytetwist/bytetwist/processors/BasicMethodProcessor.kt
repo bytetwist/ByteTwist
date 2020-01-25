@@ -6,7 +6,7 @@ import org.bytetwist.bytetwist.nodes.ThrowExpressionNode
 import kotlin.reflect.KClass
 
 @ExperimentalCoroutinesApi
-class BasicMethodProcessor : AbstractProcessor<CompiledMethod>() {
+class BasicMethodProcessor : AbstractNodeProcessor<CompiledMethod>() {
 
     private val exceptionThrows = ArrayList<ThrowExpressionNode>()
 

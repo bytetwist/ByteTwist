@@ -5,7 +5,7 @@ import org.bytetwist.bytetwist.nodes.FieldReferenceNode
 import kotlin.reflect.KClass
 
 @ExperimentalCoroutinesApi
-class BasicFieldProcessor : AbstractProcessor<FieldReferenceNode>() {
+class BasicFieldProcessor : AbstractNodeProcessor<FieldReferenceNode>() {
      override val type: KClass<FieldReferenceNode>
         get() = FieldReferenceNode::class
 

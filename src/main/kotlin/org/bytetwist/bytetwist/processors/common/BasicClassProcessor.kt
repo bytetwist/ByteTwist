@@ -4,12 +4,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.bytetwist.bytetwist.nodes.CompiledClass
 import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.log
 
 
 @ExperimentalCoroutinesApi
-class BasicClassProcessor : AbstractProcessor<CompiledClass>() {
+class BasicClassProcessor : AbstractNodeProcessor<CompiledClass>() {
      override val type = CompiledClass::class
 
     override fun preProcess(node: CompiledClass): Boolean {

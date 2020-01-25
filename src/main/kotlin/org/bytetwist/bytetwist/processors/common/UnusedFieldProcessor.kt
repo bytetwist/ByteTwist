@@ -1,9 +1,9 @@
 package org.bytetwist.bytetwist.processors.common
 
 import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 
-class UnusedFieldProcessor : AbstractProcessor<CompiledField>() {
+class UnusedFieldProcessor : AbstractNodeProcessor<CompiledField>() {
     override val type = CompiledField::class
 
 

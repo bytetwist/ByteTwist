@@ -2,10 +2,10 @@ package org.bytetwist.bytetwist.processors.common
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.bytetwist.bytetwist.nodes.FieldReferenceNode
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 
 @ExperimentalCoroutinesApi
-class FieldReferenceProcessor : AbstractProcessor<FieldReferenceNode>() {
+class FieldReferenceProcessor : AbstractNodeProcessor<FieldReferenceNode>() {
     override val type= FieldReferenceNode::class
 
     override fun process(node: FieldReferenceNode) {

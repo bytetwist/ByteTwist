@@ -4,6 +4,7 @@ import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.JumpInsnNode
 
+typealias Block = CompiledBlockNode
 class CompiledBlockNode(
     val method: CompiledMethod
 ) : HashSet<AbstractInsnNode>(), CompiledNode {

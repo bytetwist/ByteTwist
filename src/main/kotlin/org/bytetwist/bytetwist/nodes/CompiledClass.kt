@@ -4,16 +4,20 @@ import com.google.common.annotations.Beta
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.ClassNode
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
+import org.objectweb.asm.commons.ClassRemapper
+import org.objectweb.asm.commons.SimpleRemapper
 import java.lang.reflect.Modifier
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * An Abstraction of the ClassNode
  */
 class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
-    val subClasses = HashSet<CompiledClass>()
+    val subClasses = CopyOnWriteArraySet<CompiledClass>()
 
-    val typeReferences = HashSet<ClassReferenceNode>()
+    val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
     /**
      * Visits the class and adds it to the list of CompiledClasses in the References object
@@ -60,8 +64,7 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         val classAnnotation = ClassAnnotationNode(this, descriptor)
         if (visible) {
             visibleAnnotations.add(classAnnotation)
-        }
-        else {
+        } else {
             invisibleAnnotations.add(classAnnotation)
         }
         return classAnnotation
@@ -110,12 +113,15 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
             it.superName = newName
         }
         this.name = newName
+        References.classNames.remove(oldName)
+        References.classNames[this.name] = this
         this.fields.forEach { fieldNode ->
             if (fieldNode is CompiledField) {
                 References.fieldNames.remove("$oldName.${fieldNode.name}")
                 References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
                 fieldNode.references.forEach {
                     it.owner = newName
+                    it.addToField()
                 }
             }
         }
@@ -125,35 +131,50 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
                 References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
                 methodNode.invocations.forEach {
                     it.owner = newName
+                    it.addToMethod()
+                    if (it.desc.contains(oldName)) {
+                        it.desc = it.desc.replace("L$oldName;", "L$name;")
+                    }
                 }
             }
         }
         typeReferences.forEach {
-            it.desc = it.desc.replace(oldName, name)
+            it.desc = it.desc.replace("L$oldName;", "L$name;")
         }
+
+
         References.methodNames.values.forEach {
             if (it.desc.contains(oldName)) {
-               // it.desc = it.desc.replace(oldName, newName)
+                it.desc = it.desc.replace("L$oldName;", "L$name;")
             }
-                if (it.signature != null) {
-                    it.signature = it.signature.replace(oldName, newName)
-                }
+            if (it.signature != null) {
+                it.signature = it.signature.replace("L$oldName", "L$newName")
             }
-        References.classNames.remove(oldName)
-        References.classNames[this.name] = this
+        }
+        References.fieldNames.values.forEach {
+            if (it.desc.contains(oldName)) {
+                it.desc = it.desc.replace("L$oldName;", "L$name;")
+            }
+            if (it.signature != null) {
+                it.signature = it.signature.replace("L$oldName", "L$newName")
+            }
+        }
+
+//            }
+
     }
 
     /**
      * Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise
      * If you are trying to return just the name of the super class, use the ASM implementation of superName
      */
-    fun superClass() : CompiledClass? = References.classNames.getOrDefault(superName, null)
+    fun superClass(): CompiledClass? = References.classNames.getOrDefault(superName, null)
 
 
     /**
      * Scans this class with a ClassWriter and returns the array of bytes
      */
-    fun toBytes() : ByteArray {
+    fun toBytes(): ByteArray {
         val cw = ClassWriter(ClassWriter.COMPUTE_MAXS)
         this.accept(cw)
         return cw.toByteArray()
@@ -170,8 +191,8 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     fun isAbstract() = Modifier.isAbstract(access)
 
     fun buildHierarchy() {
-        val classes = References.classNames.values.filter {
-                compiledClass -> compiledClass.superName == this.name
+        val classes = References.classNames.values.filter { compiledClass ->
+            compiledClass.superName == this.name
         }
         this.subClasses.addAll(classes)
     }

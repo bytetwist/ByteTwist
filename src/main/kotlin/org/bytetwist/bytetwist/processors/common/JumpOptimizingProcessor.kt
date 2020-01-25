@@ -5,13 +5,13 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.JumpInsnNode
 import org.bytetwist.bytetwist.nodes.CompiledMethod
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import kotlin.reflect.KClass
 
 
 
 @ExperimentalCoroutinesApi
-class JumpOptimizingProcessor : AbstractProcessor<CompiledMethod>() {
+class JumpOptimizingProcessor : AbstractNodeProcessor<CompiledMethod>() {
     override val type: KClass<CompiledMethod> = CompiledMethod::class
 
 

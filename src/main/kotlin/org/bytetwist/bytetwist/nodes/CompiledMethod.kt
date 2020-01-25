@@ -14,6 +14,7 @@ import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.processors.log
 import java.lang.reflect.Modifier
 import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashSet
 
 
@@ -39,9 +40,9 @@ open class CompiledMethod(
     /**
      * A list of MethodReferences in which this method is invoked
      */
-    val invocations = HashSet<MethodReferenceNode>()
+    val invocations = CopyOnWriteArraySet<MethodReferenceNode>()
 
-    val exceptionThrowExpressions = HashSet<ThrowExpressionNode>()
+    val exceptionThrowExpressions = CopyOnWriteArraySet<ThrowExpressionNode>()
 
     val blocks = LinkedHashSet<CompiledBlockNode>()
 
@@ -176,6 +177,7 @@ open class CompiledMethod(
                 val oldBlock = block
                 block = CompiledBlockNode(this)
                 cfg.putEdgeValue(oldBlock, block, insn)
+
                 oldBlock.edges.add(insn to block)
                 blocks.add(oldBlock)
                 if (insn.opcode != Opcodes.GOTO) {
@@ -194,9 +196,12 @@ open class CompiledMethod(
             if (insn == instructions.last) {
                 mainBlock.add(insn)
                 blocks.add(mainBlock)
+
             }
         }
-        //log.info { cfg }
+        blocks.forEach {
+            log.info { "${cfg.inDegree(it)} \\t ${cfg.outDegree(it)}" }
+        }
     }
 
     override fun visitTypeInsn(opcode: Int, type: String?) {
@@ -216,11 +221,13 @@ open class CompiledMethod(
     fun rename(newName: String) {
         val oldName = name
         this.name = newName
+        References.methodNames.remove("${parent.name}.${oldName}.${desc}")
+        References.methodNames["${parent.name}.${newName}.${desc}"] = this
         this.invocations.forEach {
             it.name = newName
+            it.addToMethod()
         }
-        References.methodNames.remove(oldName)
-        References.methodNames[newName] = this
+
     }
 
     /**

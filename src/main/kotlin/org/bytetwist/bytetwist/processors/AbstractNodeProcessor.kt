@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 
 internal val log = KotlinLogging.logger { }
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractProcessor<T : CompiledNode> {
+abstract class AbstractNodeProcessor<T : CompiledNode> {
 
 
     private val timer = Stopwatch.createUnstarted()
@@ -67,4 +67,14 @@ abstract class AbstractProcessor<T : CompiledNode> {
 
     abstract fun process(node: T)
 
+}
+
+public fun <T : CompiledNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
+    return object : AbstractNodeProcessor<T>() {
+        override val type = type
+
+        override fun process(node: T) {
+            process(node)
+        }
+    }
 }

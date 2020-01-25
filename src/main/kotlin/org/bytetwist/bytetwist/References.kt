@@ -12,4 +12,12 @@ object References {
 
     val methodNames = ConcurrentHashMap<String, CompiledMethod>()
 
+    fun findMethod(name: String) : CompiledMethod? {
+        return methodNames.values.find { c -> c.name == name }
+    }
+
+    fun findField(name: String) : CompiledField? {
+        return fieldNames.values.find { f -> f.name == name }
+    }
+
 }

@@ -1,9 +1,9 @@
 package org.bytetwist.bytetwist.processors.common
 
 import org.bytetwist.bytetwist.nodes.CompiledMethod
-import org.bytetwist.bytetwist.processors.AbstractProcessor
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 
-class UnusedMethodProcessor : AbstractProcessor<CompiledMethod>() {
+class UnusedMethodProcessor : AbstractNodeProcessor<CompiledMethod>() {
     override val type = CompiledMethod::class
 
     override fun process(node: CompiledMethod) {
