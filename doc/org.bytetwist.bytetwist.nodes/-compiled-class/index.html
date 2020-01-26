@@ -1,0 +1,144 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>CompiledClass - ByteTwist</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.nodes</a>&nbsp;/&nbsp;<a href="./index.html">CompiledClass</a><br/>
+<br/>
+<h1>CompiledClass</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CompiledClass</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ClassNode</span><span class="symbol">, </span><a href="../-compiled-node.html"><span class="identifier">CompiledNode</span></a></code>
+<p>An Abstraction of the ClassNode</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>An Abstraction of the ClassNode</p>
+<code><span class="identifier">CompiledClass</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="constructors.html">constructors</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">constructors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-constructor-node/index.html"><span class="identifier">ConstructorNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="sub-classes.html">subClasses</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">subClasses</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArraySet.html"><span class="identifier">CopyOnWriteArraySet</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="type-references.html">typeReferences</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">typeReferences</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArraySet.html"><span class="identifier">CopyOnWriteArraySet</span></a><span class="symbol">&lt;</span><a href="../-class-reference-node/index.html"><span class="identifier">ClassReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="build-hierarchy.html">buildHierarchy</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">buildHierarchy</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-abstract.html">isAbstract</a></h4>
+</td>
+<td>
+<p>Returns if this class is abstract or not</p>
+<code><span class="keyword">fun </span><span class="identifier">isAbstract</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-enum.html">isEnum</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isEnum</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-interface.html">isInterface</a></h4>
+</td>
+<td>
+<p>Returns if this class is an interface or not. Doesn't seem to be working</p>
+<code><span class="keyword">fun </span><span class="identifier">isInterface</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="rename.html">rename</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">rename</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$rename(kotlin.String)/newName">newName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="super-class.html">superClass</a></h4>
+</td>
+<td>
+<p>Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise
+If you are trying to return just the name of the super class, use the ASM implementation of superName</p>
+<code><span class="keyword">fun </span><span class="identifier">superClass</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="to-bytes.html">toBytes</a></h4>
+</td>
+<td>
+<p>Scans this class with a ClassWriter and returns the array of bytes</p>
+<code><span class="keyword">fun </span><span class="identifier">toBytes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit.html">visit</a></h4>
+</td>
+<td>
+<p>Visits the class and adds it to the list of CompiledClasses in the References object</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visit</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/version">version</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/superName">superName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visit(kotlin.Int, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/interfaces">interfaces</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-annotation.html">visitAnnotation</a></h4>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitAnnotation</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitAnnotation(kotlin.String, kotlin.Boolean)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitAnnotation(kotlin.String, kotlin.Boolean)/visible">visible</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AnnotationVisitor</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-field.html">visitField</a></h4>
+</td>
+<td>
+<p>Visits a class field, adds it to the References, and adds it to this classes list of fields</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitField</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitField(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Any)/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitField(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Any)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitField(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Any)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitField(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Any)/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitField(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">FieldVisitor</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-method.html">visitMethod</a></h4>
+</td>
+<td>
+<p>Visits a class method, determines if it is a method or a constructor, adds it to the References, and adds
+it to this classes list of methods/constructors</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitMethod</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.CompiledClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/exceptions">exceptions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MethodVisitor</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
