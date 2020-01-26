@@ -8,11 +8,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@master
+      - uses: actions/checkout@v1
+      - name: Test gradle build      
+        run: |
+          gradle processTestResources
+          gradle build
+  coverage:
+    runs-on: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@master
     - uses: codecov/codecov-action@v1
-      with: 
-        token: ${{ secrets.CODECOV_TOKEN }} 
-    - name: Test gradle build      
-      run: |
-        gradle processTestResources
-        gradle build
+    - with:
+        token: ${{ secrets.CODECOV_TOKEN }} #required
+        file: ./.jacoco/test/jacocoTestReport.xml #optional
+    - name: Upload Coverage
