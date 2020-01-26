@@ -64,13 +64,13 @@ class CompiledField(
 
     /**
      * Moves this Field to the specified CompiledClass and updates all the references to the field
-     * @param clazz - The CompiledClass object to move the field to
+     * @param destination - The CompiledClass object to move the field to
      */
-    fun move(clazz: CompiledClass) {
+    fun move(destination: CompiledClass) {
         References.fieldNames.remove("${parent.name}.$name")
-        clazz.visitField(access, name, desc, signature, value)
+        destination.visitField(access, name, desc, signature, value)
         this.references.forEach {
-            it.owner = clazz.name
+            it.owner = destination.name
             it.addToField()
         }
         parent.fields.remove(this)

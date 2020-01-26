@@ -35,7 +35,7 @@ class MemberMoveTest {
         assertNotNull(clazz)
         val oldClass = References.classNames["MoveMemberTest"]
         assertNotNull(oldClass)
-        assertEquals(0, oldClass.methods.size)
+        assertEquals(0, oldClass.methods.filterIsInstance(CompiledMethod::class.java).size)
         assertEquals(1, clazz.methods.filter { mn -> mn !is ConstructorNode }.size)
     }
 

@@ -1,9 +1,6 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.GraphBuilder
-import com.google.common.graph.NetworkBuilder
-import com.google.common.graph.ValueGraph
 import com.google.common.graph.ValueGraphBuilder
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -11,11 +8,9 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.tree.*
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.processors.log
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.collections.HashSet
 
 
 /**
@@ -238,13 +233,18 @@ open class CompiledMethod(
         parent.methods.remove(this)
     }
 
-    fun move(clazz: CompiledClass) {
+    /**
+     * Moves this method to the specified CompiledClass and updates all references to this method
+     * @param destination - The CompiledClass object
+     */
+    fun move(destination: CompiledClass) {
         References.methodNames.remove("${parent.name}.$name.$desc")
-        clazz.visitMethod(access, name, desc, signature, exceptions.toTypedArray()).visitCode()
+        destination.visitMethod(access, name, desc, signature, exceptions.toTypedArray()).visitEnd()
         this.invocations.forEach {
-            it.owner = clazz.name
+            it.owner = destination.name
             it.addToMethod()
         }
+        References.findMethod(this.name)?.instructions?.add(this.instructions)
         parent.methods.remove(this)
     }
 

@@ -36,7 +36,7 @@ open class ProcessingQueue {
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methods(): Flow<CompiledMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods as Iterable<CompiledMethod> }.asFlow())
+        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) as Iterable<CompiledMethod> }.asFlow())
     }
 
     @ExperimentalCoroutinesApi

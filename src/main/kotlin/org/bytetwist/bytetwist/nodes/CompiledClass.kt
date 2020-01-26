@@ -19,6 +19,8 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
     val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
+    val constructors = methods.filterIsInstance(ConstructorNode::class.java)
+
     /**
      * Visits the class and adds it to the list of CompiledClasses in the References object
      */

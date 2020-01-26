@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
 internal val log = KotlinLogging.logger { }
+
 @Suppress("UNCHECKED_CAST")
 abstract class AbstractNodeProcessor<T : CompiledNode> {
 
@@ -27,7 +28,9 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
      * It can be overridden to perform any post-processing logic
      */
     open fun onComplete() {
-        log.info { "${this::class.simpleName?.split(".")?.last()} processed $nodesProcessed nodes in $timer" }
+        log.info {
+            "${this::class.simpleName ?: "OneOffProcessor".split(".").last()} processed $nodesProcessed nodes in $timer"
+        }
     }
 
     /**
@@ -61,7 +64,7 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
     abstract val type: KClass<T>
 
 
-    open fun preProcess(node:  T): Boolean {
+    open fun preProcess(node: T): Boolean {
         return true
     }
 
@@ -69,7 +72,10 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
 
 }
 
-public fun <T : CompiledNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
+/**
+ *
+ */
+fun <T : CompiledNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
     return object : AbstractNodeProcessor<T>() {
         override val type = type
 
