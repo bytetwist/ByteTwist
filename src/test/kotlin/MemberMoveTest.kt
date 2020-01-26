@@ -58,9 +58,9 @@ class MemberMoveTest {
                     it.move(References.classNames["DestinationClass"]!!)
                 }
             })
-            scanner.addProcessor(oneOff(CompiledClass::class) {
-                Files.write(Paths.get(scanner.inputDir.toString(), "/out/", it.name + ".class"), it.toBytes())
-            })
+//            scanner.addProcessor(oneOff(CompiledClass::class) {
+//                Files.write(Paths.get(scanner.inputDir.toString(), "/out/", it.name + ".class"), it.toBytes())
+//            })
             scanner.run()
         }
     }

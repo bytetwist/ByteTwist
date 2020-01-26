@@ -33,11 +33,10 @@ class ScannerTest {
     fun referencesTest() {
         val field1 = scanner.processors.nodes.first().fields.first() as CompiledField
         val field2 = scanner.processors.nodes.first().fields.last() as CompiledField
-        val method1 = scanner.processors.nodes.first().methods.first() as CompiledMethod
+        val method1 = scanner.processors.nodes.first().methods.first() as ConstructorNode
         val method2 = scanner.processors.nodes.first().methods.find { methodNode -> methodNode.name == "testMethod2" } as CompiledMethod
-        assertEquals(5, field1.references.size)
-        assertEquals(3, field2.references.size)
-        assertEquals(0, method1.invocations.size)
+        assertEquals(4, field1.references.size)
+        assertEquals(2, field2.references.size)
         assertEquals(2, method2.invocations.size)
     }
 

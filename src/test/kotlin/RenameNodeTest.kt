@@ -40,6 +40,7 @@ class RenameNodeTest {
     fun renameMethod() {
         val m = References.findMethod("fine")
         assertNotNull(m)
+        log.info { m.invocations.size }
         assertEquals(1, m.invocations.size)
     }
 

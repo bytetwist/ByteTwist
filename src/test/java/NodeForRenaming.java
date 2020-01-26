@@ -15,6 +15,7 @@ public class NodeForRenaming {
 
     public void paramsTest(NodeForRenaming nodeForRenaming)
     {
+        renameMe(s);
         // Make sure param types get renamed when renaming class
         return;
     }
