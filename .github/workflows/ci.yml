@@ -23,3 +23,5 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }} #required
         file: ./.jacoco/test/jacocoTestReport.xml #optional
     - name: Upload Coverage
+    - run: | 
+        gradle jacocoTestReport
