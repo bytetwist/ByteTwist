@@ -1,1 +1,1 @@
-# ByteTwist [![Actions Status](https://github.com/bytetwist/ByteTwist/workflows/CI/badge.svg)](https://github.com/bytetwist/ByteTwist/actions)
+# ByteTwist [![Actions Status](https://github.com/bytetwist/ByteTwist/workflows/CI/badge.svg)](https://github.com/bytetwist/ByteTwist/actions) [![codecov](https://codecov.io/gh/bytetwist/ByteTwist/branch/master/graph/badge.svg)](https://codecov.io/gh/bytetwist/ByteTwist)
