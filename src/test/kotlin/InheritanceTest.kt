@@ -1,9 +1,8 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.bytetwist.bytetist.References
-import org.bytetwist.bytetist.scanners.DoublePassScanner
+import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import java.io.File
