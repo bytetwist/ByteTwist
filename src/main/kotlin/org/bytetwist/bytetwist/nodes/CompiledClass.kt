@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * An Abstraction of the ClassNode
  */
-class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
+open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
     val subClasses = CopyOnWriteArraySet<CompiledClass>()
 
@@ -167,6 +167,8 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     /**
      * Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise
      * If you are trying to return just the name of the super class, use the ASM implementation of superName
+     * @return The CompiledClass object of the super class if the super class was one of the scanned classes, otherwise
+     * null
      */
     fun superClass(): CompiledClass? = References.classNames.getOrDefault(superName, null)
 
@@ -184,6 +186,8 @@ class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
      * Returns if this class is an interface or not. Doesn't seem to be working
      */
     fun isInterface() = Modifier.isInterface(access)
+
+    fun isEnum() = access.and(Opcodes.ACC_ENUM) == Opcodes.ACC_ENUM
 
     /**
      * Returns if this class is abstract or not

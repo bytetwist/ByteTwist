@@ -184,8 +184,7 @@ open class CompiledMethod(
                     if (!blocks.contains(instructions.buildBlock(this, instructions.indexOf(target)))) {
                         //blocks.add(instructions.buildBlock(this, instructions.indexOf(target)))
                     }
-                }
-                else {
+                } else {
                     if (!blocks.contains(instructions.buildBlock(this, instructions.indexOf(target)))) {
                         i = instructions.indexOf(target)
                         continue
@@ -200,7 +199,6 @@ open class CompiledMethod(
             }
         }
         blocks.forEach {
-            log.info { "${cfg.inDegree(it)} \\t ${cfg.outDegree(it)}" }
         }
     }
 
@@ -227,7 +225,6 @@ open class CompiledMethod(
             it.name = newName
             it.addToMethod()
         }
-
     }
 
     /**
@@ -238,6 +235,16 @@ open class CompiledMethod(
             it.getMethod()?.instructions?.remove(it)
         }
         References.methodNames.remove("${parent.name}.${this.name}.${this.desc}")
+        parent.methods.remove(this)
+    }
+
+    fun move(clazz: CompiledClass) {
+        References.methodNames.remove("${parent.name}.$name.$desc")
+        clazz.visitMethod(access, name, desc, signature, exceptions.toTypedArray()).visitCode()
+        this.invocations.forEach {
+            it.owner = clazz.name
+            it.addToMethod()
+        }
         parent.methods.remove(this)
     }
 

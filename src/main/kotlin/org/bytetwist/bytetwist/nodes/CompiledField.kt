@@ -63,6 +63,20 @@ class CompiledField(
     }
 
     /**
+     * Moves this Field to the specified CompiledClass and updates all the references to the field
+     * @param clazz - The CompiledClass object to move the field to
+     */
+    fun move(clazz: CompiledClass) {
+        References.fieldNames.remove("${parent.name}.$name")
+        clazz.visitField(access, name, desc, signature, value)
+        this.references.forEach {
+            it.owner = clazz.name
+            it.addToField()
+        }
+        parent.fields.remove(this)
+    }
+
+    /**
      * Returns true if the field is abstract, false otherwise
      */
     fun isAbstract() = Modifier.isAbstract(access)

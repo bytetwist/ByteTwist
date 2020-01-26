@@ -18,42 +18,64 @@ open class ProcessingQueue {
     /**
      * Adds a processor to the end of the processing queue.
      */
-   fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
+    fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
         processors.add(processor as AbstractNodeProcessor<in CompiledNode>)
     }
 
+    @ExperimentalCoroutinesApi
     private fun classes() = flow {
         this.emitAll(nodes.asFlow())
     }
 
+    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun fields() = flow {
-        this.emitAll(nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<CompiledField>}.asFlow())
+        this.emitAll(nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<CompiledField> }.asFlow())
+    }
+
+    @ExperimentalCoroutinesApi
+    @InternalCoroutinesApi
+    fun methods(): Flow<CompiledMethod> = flow {
+        this.emitAll(nodes.flatMap { c -> c.methods as Iterable<CompiledMethod> }.asFlow())
+    }
+
+    @ExperimentalCoroutinesApi
+    fun annotations(): Flow<CompiledAnnotation> = flow {
+        this.emitAll(listOf(nodes.flatMap { c -> c.visibleAnnotations as Iterable<CompiledAnnotation> }).flatten().asFlow())
+        this.emitAll(nodes.flatMap { compiledClass ->
+            compiledClass.fields.flatMap { fieldNode ->
+               fieldNode.visibleAnnotations as List<CompiledAnnotation>
+            }
+        }.asFlow())
+
+    }
+
+    @ExperimentalCoroutinesApi
+    fun fieldRefs(): Flow<FieldReferenceNode> = flow {
+        this.emitAll(nodes.flatMap { c ->
+            c.methods.flatMap { node ->
+                (node as CompiledMethod).instructions.filterIsInstance(
+                    FieldReferenceNode::class.java
+                )
+            }
+                    as Iterable<FieldReferenceNode>
+        }.asFlow())
     }
 
     @InternalCoroutinesApi
-    fun methods() : Flow<CompiledMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods as Iterable<CompiledMethod>}.asFlow())
-    }
-
-    @InternalCoroutinesApi
-    fun fieldRefs() : Flow<FieldReferenceNode> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.flatMap { node ->
-            (node as CompiledMethod).instructions.filterIsInstance(
-                FieldReferenceNode::class.java) }
-                as Iterable<FieldReferenceNode>}.asFlow())
-    }
-
-    @InternalCoroutinesApi
-    fun methodRefs() : Flow<MethodReferenceNode> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.flatMap { node ->
-            (node as CompiledMethod).instructions.filterIsInstance(
-                MethodReferenceNode::class.java) }
-                as Iterable<MethodReferenceNode>}.asFlow())
+    fun methodRefs(): Flow<MethodReferenceNode> = flow {
+        this.emitAll(nodes.flatMap { c ->
+            c.methods.flatMap { node ->
+                (node as CompiledMethod).instructions.filterIsInstance(
+                    MethodReferenceNode::class.java
+                )
+            }
+                    as Iterable<MethodReferenceNode>
+        }.asFlow())
     }
 
 
-
+    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun process() {
         with(processors.iterator()) {
@@ -68,6 +90,7 @@ open class ProcessingQueue {
                     FieldWrite::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldWrite>())
                     FieldRead::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldRead>())
                     MethodReferenceNode::class -> processor.subscribe(methodRefs())
+                    CompiledAnnotation::class -> processor.subscribe(annotations())
                 }
                 processor.complete()
             }
