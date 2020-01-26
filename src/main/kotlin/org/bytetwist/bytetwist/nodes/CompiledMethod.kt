@@ -63,6 +63,11 @@ open class CompiledMethod(
 
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
 
+    init {
+        visibleAnnotations = mutableListOf<AnnotationNode>()
+        invisibleAnnotations = mutableListOf<AnnotationNode>()
+    }
+
 
     override fun visitMethodInsn(
         opcodeAndSource: Int,
@@ -99,7 +104,7 @@ open class CompiledMethod(
                 return
             }
         }
-        val invokeSpecial = throwInstruction.previous as MethodInsnNode
+        val invokeSpecial = throwInstruction.previous
         if (invokeSpecial.opcode == Opcodes.INVOKESPECIAL) {
             throwInstructions.add(throwInstruction)
             throwInstructions.add(invokeSpecial)
