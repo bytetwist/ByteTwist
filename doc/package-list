@@ -1,0 +1,9 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:org.bytetwist.bytetwist.nodes$buildBlock(org.objectweb.asm.tree.InsnList, org.bytetwist.bytetwist.nodes.CompiledMethod, kotlin.Int)org.bytetwist.bytetwist.nodes/org.objectweb.asm.tree.-insn-list/build-block.html
+org.bytetwist.bytetwist
+org.bytetwist.bytetwist.exceptions
+org.bytetwist.bytetwist.nodes
+org.bytetwist.bytetwist.processors
+org.bytetwist.bytetwist.processors.common
+org.bytetwist.bytetwist.scanners
