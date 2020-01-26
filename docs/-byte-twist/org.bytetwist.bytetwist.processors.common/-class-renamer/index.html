@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ClassRenamer - ByteTwist</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.processors.common</a>&nbsp;/&nbsp;<a href="./index.html">ClassRenamer</a><br/>
+<br/>
+<h1>ClassRenamer</h1>
+<code><span class="identifier">@ExperimentalCoroutinesApi</span> <span class="keyword">class </span><span class="identifier">ClassRenamer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-class/index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">&gt;</span></code>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<code><span class="identifier">ClassRenamer</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="type.html">type</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-class/index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="on-complete.html">onComplete</a></h4>
+</td>
+<td>
+<p>This method gets called after the processor has finished processing all of its nodes.
+It can be overridden to perform any post-processing logic</p>
+<code><span class="keyword">fun </span><span class="identifier">onComplete</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="pre-process.html">preProcess</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">preProcess</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.ClassRenamer$preProcess(org.bytetwist.bytetwist.nodes.CompiledClass)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-class/index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="process.html">process</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">process</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.ClassRenamer$process(org.bytetwist.bytetwist.nodes.CompiledClass)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-class/index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

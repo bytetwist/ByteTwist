@@ -46,7 +46,7 @@ compileTestKotlin {
 
 dokka {
     outputFormat = 'html'
-    outputDirectory = "doc"
+    outputDirectory = "docs"
 }
 
 jacoco {
