@@ -41,14 +41,14 @@ class RenameNodeTest {
         val m = References.findMethod("fine")
         assertNotNull(m)
         log.info { m.invocations.size }
-        assertEquals(1, m.invocations.size)
+        assertEquals(2, m.invocations.size)
     }
 
     @Test
     fun renameField() {
         val m = References.findField("stringValue")
         assertNotNull(m)
-        assertEquals(2, m.references.size)
+        assertEquals(3, m.references.size)
     }
 
     @Test fun renameClass() {
@@ -56,7 +56,7 @@ class RenameNodeTest {
         assertNotNull(c)
         c.rename("NewClassName")
         assert(References.classNames["NewClassName"] == c)
-        assertEquals(c, References.findMethod("fine")?.parent)
+        assertEquals(c, References.findMethod("fine")!!.parent)
         assert(References.findMethod("paramsTest")?.desc?.contains("NewClassName")!!)
     }
 

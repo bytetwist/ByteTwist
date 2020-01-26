@@ -1,18 +1,13 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.CompiledClass
 import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
-import org.bytetwist.bytetwist.nodes.ConstructorNode
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -35,8 +30,8 @@ class MemberMoveTest {
         assertNotNull(clazz)
         val oldClass = References.classNames["MoveMemberTest"]
         assertNotNull(oldClass)
-        assertEquals(0, oldClass.methods.filterIsInstance(CompiledMethod::class.java).size)
-        assertEquals(1, clazz.methods.filter { mn -> mn !is ConstructorNode }.size)
+        assertEquals(2, oldClass.methods.filterIsInstance(CompiledMethod::class.java).size)
+        assertEquals(2, clazz.methods.size)
     }
 
     companion object {

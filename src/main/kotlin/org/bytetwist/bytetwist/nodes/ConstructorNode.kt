@@ -1,10 +1,8 @@
 package org.bytetwist.bytetwist.nodes
 
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.MethodNode
 
 /**
- * An abstraction of CompiledMethods that are constructors
+ * An abstraction of [CompiledMethod] that is a constructors
  */
 class ConstructorNode(
     parent: CompiledClass,
@@ -13,12 +11,11 @@ class ConstructorNode(
     descriptor: String,
     signature: String?,
     exceptions: Array<out String>?
-) : MethodNode(
-    Opcodes.ASM7,
+) : CompiledMethod(
+    parent,
     access,
     name,
     descriptor,
     signature,
     exceptions
-), CompiledNode {
-}
+), CompiledNode

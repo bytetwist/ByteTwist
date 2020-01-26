@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import mu.KotlinLogging
+import org.bytetwist.bytetwist.References
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.bytetwist.bytetwist.nodes.CompiledField
@@ -33,10 +34,12 @@ class ScannerTest {
     fun referencesTest() {
         val field1 = scanner.processors.nodes.first().fields.first() as CompiledField
         val field2 = scanner.processors.nodes.first().fields.last() as CompiledField
-        val method1 = scanner.processors.nodes.first().methods.first() as ConstructorNode
-        val method2 = scanner.processors.nodes.first().methods.find { methodNode -> methodNode.name == "testMethod2" } as CompiledMethod
-        assertEquals(4, field1.references.size)
-        assertEquals(2, field2.references.size)
+        val method1 = scanner.processors.nodes.first().constructors.first() as ConstructorNode
+        val method2 = References.findMethod("testMethod2")!!
+        assertEquals(5, field1.references.size)
+        assertEquals(3, field2.references.size)
+        assertEquals("<init>", method1.name)
+
         assertEquals(2, method2.invocations.size)
     }
 

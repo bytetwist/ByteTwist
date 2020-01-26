@@ -4,6 +4,7 @@ import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.FieldNode
 import org.bytetwist.bytetwist.References
+import org.objectweb.asm.tree.AnnotationNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -25,6 +26,11 @@ class CompiledField(
      * A Set of all FieldReferenceNode's that reference this particular field
      */
     val references = CopyOnWriteArraySet<FieldReferenceNode>()
+
+    init {
+        visibleAnnotations = mutableListOf<AnnotationNode>()
+        invisibleAnnotations = mutableListOf<AnnotationNode>()
+    }
 
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
         val annotationNode = FieldAnnotationNode(this, descriptor)

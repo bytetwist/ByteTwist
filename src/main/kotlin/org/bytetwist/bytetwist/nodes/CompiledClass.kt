@@ -2,16 +2,27 @@ package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
 import org.objectweb.asm.*
-import org.objectweb.asm.tree.ClassNode
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.processors.log
-import org.objectweb.asm.commons.ClassRemapper
-import org.objectweb.asm.commons.SimpleRemapper
+import org.objectweb.asm.tree.AnnotationNode
+import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
- * An Abstraction of the ClassNode
+ * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [CompiledMethod] and all
+ * the objects in the fields field can be cast to [CompiledField].
+ *
+ * A CompiledClass is part of an inheritance hierarchy. It's subclasses can be accessed through
+ * the [subClasses] property and it's parent class (if it has one) can be accessed through [superClass].
+ * If the class has a parent class that was not scanned by ByteTwist then the only reference to the parent class
+ * is through the field [superName].
+ *
+ * A CompiledClass also has access to all instructions that reference the class in the form of a [ClassReferenceNode],
+ * which are stored in the [typeReferences] property.
+ *
+ * The CompiledClass has many methods that allow modification of the class without having to worry about references.
+ *
+ * TODO: Interfaces, Enums, DSL/methods for easily generating new CompiledClasses
  */
 open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
@@ -19,18 +30,24 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
     val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
-    val constructors = methods.filterIsInstance(ConstructorNode::class.java)
+    val constructors: List<ConstructorNode>
+        get() = super.methods.filterIsInstance(ConstructorNode::class.java)
+
+    init {
+        visibleAnnotations = mutableListOf<AnnotationNode>()
+        invisibleAnnotations = mutableListOf<AnnotationNode>()
+    }
 
     /**
-     * Visits the class and adds it to the list of CompiledClasses in the References object
+     * Visits the class and adds it to the list of CompiledClasses in the [References] object
      */
     override fun visit(
         version: Int,
         access: Int,
         name: String,
         signature: String?,
-        superName: String?,
-        interfaces: Array<out String>?
+        superName: String,
+        interfaces: Array<String>
     ) {
         References.classNames[name] = this
         super.visit(version, access, name, signature, superName, interfaces)
@@ -60,7 +77,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     }
 
     /**
-     *
+     * TODO
      */
     override fun visitAnnotation(descriptor: String, visible: Boolean): AnnotationVisitor {
         val classAnnotation = ClassAnnotationNode(this, descriptor)
@@ -73,7 +90,8 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     }
 
     /**
-     * Visits a class method, determines if it is a method or a constructor, adds it to the References, and adds
+     * Visits a class method or constructor and builds a [CompiledMethod] or [ConstructorNode] object.
+     * Note: constructors are not represented as subtypes of CompiledMethods
      * it to this classes list of methods/constructors
      */
     override fun visitMethod(
@@ -81,20 +99,21 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         name: String,
         descriptor: String,
         signature: String?,
-        exceptions: Array<out String>?
+        exceptions: Array<String>?
     ): MethodVisitor {
         if (name.contains("<init>") || name.contains("<clinit>")) {
-            val constructor = ConstructorNode(
-                this,
-                access,
-                name,
-                descriptor,
-                signature,
-                exceptions
-            )
-            methods.add(constructor)
-            return constructor
+            return constructorNode(access, name, descriptor, signature, exceptions)
         }
+        return compiledMethod(access, name, descriptor, signature, exceptions)
+    }
+
+    private fun compiledMethod(
+        access: Int,
+        name: String,
+        descriptor: String,
+        signature: String?,
+        exceptions: Array<out String>?
+    ): CompiledMethod {
         val method = CompiledMethod(
             this,
             access,
@@ -104,8 +123,27 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
             exceptions
         )
         References.methodNames[this.name + "." + name + "." + descriptor] = method
-        methods.add(method)
+        this.methods.add(method)
         return method
+    }
+
+    private fun constructorNode(
+        access: Int,
+        name: String,
+        descriptor: String,
+        signature: String?,
+        exceptions: Array<out String>?
+    ): ConstructorNode {
+        val constructor = ConstructorNode(
+            this,
+            access,
+            name,
+            descriptor,
+            signature,
+            exceptions
+        )
+        this.methods.add(constructor)
+        return constructor
     }
 
     @Beta
@@ -127,16 +165,14 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
                 }
             }
         }
-        this.methods.forEach { methodNode ->
-            if (methodNode is CompiledMethod) {
-                References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
-                References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
-                methodNode.invocations.forEach {
-                    it.owner = newName
-                    it.addToMethod()
-                    if (it.desc.contains(oldName)) {
-                        it.desc = it.desc.replace("L$oldName;", "L$name;")
-                    }
+        this.methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
+            References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
+            References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
+            methodNode.invocations.forEach {
+                it.owner = newName
+                it.addToMethod()
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
                 }
             }
         }
