@@ -1,5 +1,6 @@
 package org.bytetwist.bytetwist.scanners
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.nodes.CompiledNode
@@ -7,6 +8,7 @@ import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.ProcessingQueue
 import java.io.File
 
+@InternalCoroutinesApi
 abstract class Scanner {
 
     var inputDir: File? = null
@@ -23,6 +25,7 @@ abstract class Scanner {
     /**
      * Runs all processors from the ProcessingQueue on the scanned nodes
      */
+    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun run() {
         runBlocking {

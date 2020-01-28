@@ -1,12 +1,16 @@
 package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.objectweb.asm.*
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.system.measureTimeMillis
 
 /**
  * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [CompiledMethod] and all
@@ -149,58 +153,70 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     @Beta
     fun rename(newName: String) {
         val oldName = this.name
+
         subClasses.forEach {
             it.superName = newName
         }
+
+
         this.name = newName
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
-        this.fields.forEach { fieldNode ->
-            if (fieldNode is CompiledField) {
-                References.fieldNames.remove("$oldName.${fieldNode.name}")
-                References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
-                fieldNode.references.forEach {
+
+            this@CompiledClass.fields.forEach { fieldNode ->
+                if (fieldNode is CompiledField) {
+                    References.fieldNames.remove("$oldName.${fieldNode.name}")
+                    References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
+                    fieldNode.references.forEach {
+                        it.owner = newName
+                        it.addToField()
+                    }
+                }
+            }
+
+
+
+            this@CompiledClass.methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
+                References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
+                References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
+                methodNode.invocations.forEach {
                     it.owner = newName
-                    it.addToField()
+                    it.addToMethod()
+                    if (it.desc.contains(oldName)) {
+                        it.desc = it.desc.replace("L$oldName;", "L$name;")
+                    }
                 }
             }
-        }
-        this.methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
-            References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
-            References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
-            methodNode.invocations.forEach {
-                it.owner = newName
-                it.addToMethod()
-                if (it.desc.contains(oldName)) {
-                    it.desc = it.desc.replace("L$oldName;", "L$name;")
-                }
-            }
-        }
+
+
+
         typeReferences.forEach {
             it.desc = it.desc.replace("L$oldName;", "L$name;")
         }
 
+            References.methodNames.values.forEach {
 
-        References.methodNames.values.forEach {
-            if (it.desc.contains(oldName)) {
-                it.desc = it.desc.replace("L$oldName;", "L$name;")
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
+                }
             }
-            if (it.signature != null) {
-                it.signature = it.signature.replace("L$oldName", "L$newName")
+
+            References.fieldNames.values.forEach {
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
+                }
             }
-        }
-        References.fieldNames.values.forEach {
-            if (it.desc.contains(oldName)) {
-                it.desc = it.desc.replace("L$oldName;", "L$name;")
-            }
-            if (it.signature != null) {
-                it.signature = it.signature.replace("L$oldName", "L$newName")
-            }
-        }
+
 
 //            }
-
     }
+
 
     /**
      * Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise

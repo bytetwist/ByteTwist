@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist.nodes
 
 
+import com.google.common.graph.NetworkBuilder
 import com.google.common.graph.ValueGraphBuilder
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -8,6 +9,7 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.tree.*
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
@@ -91,6 +93,7 @@ open class CompiledMethod(
 
     override fun visitInsn(opcode: Int) {
         instructions.add(InsnNode(opcode))
+
         if (opcode == Opcodes.ATHROW) {
             addThrowExpressionNode(instructions.last)
         }
@@ -160,7 +163,7 @@ open class CompiledMethod(
     }
 
     fun analyzeBlocks() {
-        val cfg = ValueGraphBuilder.directed().build<CompiledBlockNode, AbstractInsnNode>()
+        val cfg = ValueGraphBuilder.directed().allowsSelfLoops(true).build<CompiledBlockNode, AbstractInsnNode>()
         val mainBlock = CompiledBlockNode(this)
         var block = CompiledBlockNode(this)
         //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
@@ -177,19 +180,12 @@ open class CompiledMethod(
                 val oldBlock = block
                 block = CompiledBlockNode(this)
                 cfg.putEdgeValue(oldBlock, block, insn)
-
                 oldBlock.edges.add(insn to block)
                 blocks.add(oldBlock)
-                if (insn.opcode != Opcodes.GOTO) {
-                    if (!blocks.contains(instructions.buildBlock(this, instructions.indexOf(target)))) {
-                        //blocks.add(instructions.buildBlock(this, instructions.indexOf(target)))
-                    }
-                } else {
-                    if (!blocks.contains(instructions.buildBlock(this, instructions.indexOf(target)))) {
-                        i = instructions.indexOf(target)
-                        continue
-                    }
-                }
+                val targetBlock = instructions.buildBlock(this, instructions.indexOf(target))
+                blocks.add(targetBlock)
+                cfg.putEdgeValue(oldBlock, targetBlock, insn)
+
             }
             i++
             if (insn == instructions.last) {
@@ -198,8 +194,11 @@ open class CompiledMethod(
 
             }
         }
-        blocks.forEach {
-        }
+        var n = 0;
+//        blocks.forEach {
+//            log.info { "${cfg.inDegree(it)} \t ${cfg.outDegree(it)}" }
+//
+//        }
     }
 
     override fun visitTypeInsn(opcode: Int, type: String?) {

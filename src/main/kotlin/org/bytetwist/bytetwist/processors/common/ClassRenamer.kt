@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist.processors.common
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.nodes.CompiledClass
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.log
@@ -26,6 +27,8 @@ class ClassRenamer : AbstractNodeProcessor<CompiledClass>() {
     }
 
     override fun process(node: CompiledClass) {
-        node.rename("Class${nodesProcessed}")
+        runBlocking {
+            node.rename("Class${nodesProcessed}")
+        }
     }
 }

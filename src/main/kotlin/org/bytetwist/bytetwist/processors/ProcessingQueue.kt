@@ -3,23 +3,29 @@ package org.bytetwist.bytetwist.processors
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.nodes.*
+import org.bytetwist.bytetwist.processors.common.JarOutputProcessor
+import java.lang.IllegalStateException
 import java.util.concurrent.CopyOnWriteArraySet
+import javax.annotation.processing.AbstractProcessor
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 /**
  * Runs each processor sequentially over the entire node list before proceeding to the next processor.
  */
+@InternalCoroutinesApi
 open class ProcessingQueue {
 
     val nodes = CopyOnWriteArraySet<CompiledClass>()
     val methodNodes = CopyOnWriteArraySet<CompiledMethod>()
     val fieldNodes = CopyOnWriteArraySet<CompiledField>()
-    var processors = arrayListOf<AbstractNodeProcessor<in CompiledNode>>()
+    var processors = sequenceOf<AbstractNodeProcessor<in CompiledNode>>().constrainOnce()
 
     /**
      * Adds a processor to the end of the processing queue.
      */
     fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
-        processors.add(processor as AbstractNodeProcessor<in CompiledNode>)
+        processors += processor as AbstractNodeProcessor<in CompiledNode>
     }
 
     @ExperimentalCoroutinesApi
@@ -62,6 +68,7 @@ open class ProcessingQueue {
         }.asFlow())
     }
 
+    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methodRefs(): Flow<MethodReferenceNode> = flow {
         this.emitAll(nodes.flatMap { c ->

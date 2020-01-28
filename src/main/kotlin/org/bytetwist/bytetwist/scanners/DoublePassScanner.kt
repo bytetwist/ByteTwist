@@ -4,19 +4,27 @@ import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.exceptions.NoInputDir
 import org.objectweb.asm.ClassReader
 import org.bytetwist.bytetwist.nodes.CompiledClass
+import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.CompiledNode
+import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.common.*
+import org.bytetwist.bytetwist.processors.oneOff
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import kotlin.reflect.KClass
 
+@InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class DoublePassScanner : Scanner() {
 
     private val classFiles = CopyOnWriteArrayList<ByteArray>()
 
     val nodes = processors.nodes
+
+
 
     /**
      * Scans the user submitted input location for any compiled class files
@@ -32,7 +40,7 @@ class DoublePassScanner : Scanner() {
             classFiles.forEach {
                 val classNode = CompiledClass()
                 ClassReader(it).apply {
-                    accept(classNode, ClassReader.EXPAND_FRAMES)
+                    accept(classNode, ClassReader.SKIP_DEBUG)
                 }
                 processors.nodes.add(classNode)
             }
@@ -42,6 +50,7 @@ class DoublePassScanner : Scanner() {
                     for (mn in clazz.methods) {
                         launch {
                             if (mn is CompiledMethod) {
+
 
                                 mn.fieldReferences().forEach {
                                     launch {
@@ -58,7 +67,9 @@ class DoublePassScanner : Scanner() {
                                         it.addToClass()
                                     }
                                 }
-                                mn.analyzeBlocks()
+                                launch {
+                                    mn.analyzeBlocks()
+                                }.join()
                             }
                         }
                     }
@@ -113,8 +124,23 @@ fun main() {
     scanner.addProcessor(FieldRenamer())
     scanner.addProcessor(MethodRenamer())
     scanner.addProcessor(ClassRenamer())
-//
+    var i = 0
+    scanner.addProcessor(oneOff(CompiledField::class) {
+        val grouped = it.references.groupBy { fr -> fr.field()?.parent }
+        val map = grouped.mapValues { entry -> entry.value.size }
+        val refLimit = 1
+        if (it.isStatic() && grouped.isNotEmpty() && grouped.size == refLimit) {
+            val first = grouped.keys.first()
+            if (first != null) {
+                it.annotate("Moved", "from" to it.parent.name, "to" to first.name)
+                it.move(first)
+                i++
+            }
+        }
+    })
     scanner.addProcessor(JarOutputProcessor())
     scanner.scan()
     scanner.run()
+    println(i)
+
 }
