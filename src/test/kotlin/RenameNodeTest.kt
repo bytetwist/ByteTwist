@@ -21,6 +21,7 @@ private val log = KotlinLogging.logger {}
 @ExperimentalCoroutinesApi
 class RenameNodeTest {
 
+    @InternalCoroutinesApi
     private val scanner = DoublePassScanner()
 
 

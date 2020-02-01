@@ -35,6 +35,7 @@ class MemberMoveTest {
     }
 
     companion object {
+        @InternalCoroutinesApi
         private val scanner = DoublePassScanner()
 
         @InternalCoroutinesApi

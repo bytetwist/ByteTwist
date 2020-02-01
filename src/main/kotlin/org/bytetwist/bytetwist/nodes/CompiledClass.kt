@@ -1,16 +1,12 @@
 package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import org.objectweb.asm.*
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.system.measureTimeMillis
 
 /**
  * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [CompiledMethod] and all
@@ -163,7 +159,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
 
-            this@CompiledClass.fields.forEach { fieldNode ->
+            fields.forEach { fieldNode ->
                 if (fieldNode is CompiledField) {
                     References.fieldNames.remove("$oldName.${fieldNode.name}")
                     References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
@@ -176,7 +172,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
 
 
-            this@CompiledClass.methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
+            methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
                 References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
                 References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
                 methodNode.invocations.forEach {

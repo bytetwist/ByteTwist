@@ -1,4 +1,5 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
 import org.junit.jupiter.api.BeforeEach
@@ -14,14 +15,17 @@ private val log = KotlinLogging.logger {}
 @ExperimentalCoroutinesApi
 class ScannerTest {
 
+    @InternalCoroutinesApi
     private val scanner = DoublePassScanner()
 
+    @InternalCoroutinesApi
     @BeforeEach
     fun runScan() {
         scanner.inputDir = File(ScannerTest::class::java.javaClass.getResource("JavaTestClass.class").file)
         scanner.scan()
     }
 
+    @InternalCoroutinesApi
     @Test
     fun scanTest() {
         assertEquals(1, scanner.processors.nodes.size)
@@ -30,6 +34,7 @@ class ScannerTest {
         assertEquals(2, scanner.processors.nodes.first().methods.filterIsInstance(ConstructorNode::class.java).size)
     }
 
+    @InternalCoroutinesApi
     @Test
     fun referencesTest() {
         val field1 = scanner.processors.nodes.first().fields.first() as CompiledField

@@ -1,4 +1,5 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.bytetwist.bytetwist.References
@@ -10,14 +11,17 @@ import java.io.File
 @ExperimentalCoroutinesApi
 class InheritanceTest {
 
+    @InternalCoroutinesApi
     private val scanner = DoublePassScanner()
 
+    @InternalCoroutinesApi
     @BeforeEach
     fun scanResources() {
         scanner.inputDir = File("src/test/resources")
         scanner.scan()
     }
 
+    @InternalCoroutinesApi
     @Test
     fun parentTest() {
         val testClass = scanner.nodes.find { compiledClass -> compiledClass.name == "JavaTestClass" }
