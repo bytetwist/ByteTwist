@@ -133,7 +133,7 @@ class CompiledField(
      * Adds a static access modifier to the field.
      */
     fun setStatic() {
-        access = access.or(Modifier.STATIC)
+        access = access.rem(Modifier.STATIC)
     }
 
     fun annotate(

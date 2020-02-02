@@ -37,7 +37,7 @@ class JumpOptimizingProcessor : AbstractNodeProcessor<CompiledMethod>() {
                 if (it.opcode == Opcodes.GOTO) {
                     val op = target.opcode
                     if (op >= Opcodes.IRETURN && op <= Opcodes.RETURN || op == Opcodes.ATHROW) {
-                        node.instructions.set(it, target.clone(null));
+                        node.instructions.set(it, target.clone(null))
                     }
                 }
 

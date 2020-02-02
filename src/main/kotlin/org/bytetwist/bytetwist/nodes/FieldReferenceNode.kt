@@ -1,9 +1,8 @@
 package org.bytetwist.bytetwist.nodes
 
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.FieldInsnNode
 import org.bytetwist.bytetwist.References
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.FieldInsnNode
 
 /**
  * An abstraction of a FieldInsnNode that includes references to the CompiledField Object and the referencing method

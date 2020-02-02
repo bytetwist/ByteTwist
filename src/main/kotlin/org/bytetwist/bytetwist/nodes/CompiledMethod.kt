@@ -1,18 +1,19 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.NetworkBuilder
-import com.google.common.graph.ValueGraphBuilder
+import com.google.common.graph.GraphBuilder
+import com.google.common.graph.MutableGraph
+import org.bytetwist.bytetwist.References
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.tree.*
-import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.processors.log
 import java.lang.reflect.Modifier
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.collections.HashSet
 
 
 /**
@@ -41,7 +42,7 @@ open class CompiledMethod(
 
     val exceptionThrowExpressions = CopyOnWriteArraySet<ThrowExpressionNode>()
 
-    val blocks = LinkedHashSet<CompiledBlockNode>()
+    val blocks = HashSet<CompiledBlockNode>()
 
     /**
      * A list of all references to fields that this method makes. (Includes Field Reads/Writes)
@@ -162,44 +163,110 @@ open class CompiledMethod(
         (instructions.last as FieldReferenceNode).addToField()
     }
 
+    val cfg: MutableGraph<CompiledBlockNode>
+        get() {
+            return GraphBuilder.directed().allowsSelfLoops(true).build()
+        }
+
     fun analyzeBlocks() {
-        val cfg = ValueGraphBuilder.directed().allowsSelfLoops(true).build<CompiledBlockNode, AbstractInsnNode>()
-        val mainBlock = CompiledBlockNode(this)
         var block = CompiledBlockNode(this)
-        //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
-        //val frames = analyzer.analyze(this.parent.name, this)
-        var i = 0
-        while (i < (instructions.size())) {
-            var insn = instructions[i]
-            mainBlock.add(insn)
-            if (insn !is JumpInsnNode) {
-                block.add(insn)
-            } else {
-                block.add(insn)
-                val target = insn.label as AbstractInsnNode
-                val oldBlock = block
-                block = CompiledBlockNode(this)
-                cfg.putEdgeValue(oldBlock, block, insn)
-                oldBlock.edges.add(insn to block)
-                blocks.add(oldBlock)
-                val targetBlock = instructions.buildBlock(this, instructions.indexOf(target))
-                blocks.add(targetBlock)
-                cfg.putEdgeValue(oldBlock, targetBlock, insn)
+        val startNewBlock = CopyOnWriteArrayList<AbstractInsnNode>()
+        val cfg = cfg
+        instructions.forEachIndexed { i, insnNode ->
+            when {
+                i == 0 -> {
+                    block = CompiledBlockNode(this)
+                    block.add(insnNode)
+                }
+                insnNode is JumpInsnNode -> {
+                    block.add(insnNode)
+                    val oldblock = block
+                    block = CompiledBlockNode(this)
+                    cfg.putEdge(oldblock, block)
+                    startNewBlock.add(insnNode)
+                    blocks += oldblock
+                }
+                startNewBlock.contains(insnNode) -> {
+                    val oldBlock = block
+                    startNewBlock.remove(insnNode)
+                    block = CompiledBlockNode(this)
+                    block.add(insnNode)
+                    cfg.putEdge(oldBlock, block)
+                    blocks += oldBlock
 
-            }
-            i++
-            if (insn == instructions.last) {
-                mainBlock.add(insn)
-                blocks.add(mainBlock)
-
+                }
+                else -> {
+                    if (block.size == 0 && blocks.size > 0) {
+                    }
+                    block.add(insnNode)
+                    if (i == instructions.size()) {
+                        blocks += block
+                    }
+                }
             }
         }
-        var n = 0;
+
 //        blocks.forEach {
-//            log.info { "${cfg.inDegree(it)} \t ${cfg.outDegree(it)}" }
-//
+//            log.info { cfg.inDegree(it) }
 //        }
+//        log.info { "${blocks.size} ${cfg.edges().size}"  }
     }
+        //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
+        //val frames = analyzer.analyze(this.parent.name, this)
+//        var i = 0
+//        while (i < (instructions.size())) {
+//            var insn = instructions[i]
+//            mainBlock.add(insn)
+//            if (insn !is JumpInsnNode) {
+//                block.add(insn)
+//            } else {
+//                block.add(insn)
+//                val target = insn.label as AbstractInsnNode
+//                val oldBlock = block
+//                block = CompiledBlockNode(this)
+//                cfg.putEdgeValue(oldBlock, block, insn)
+//                oldBlock.edges.add(insn to block)
+//                blocks.add(oldBlock)
+//                if (insn.opcode == Opcodes.GOTO) {
+//                    i = instructions.indexOf((insn as JumpInsnNode).label)
+//                    mainBlock.add(insn)
+//                    i++
+//                    continue
+//                }
+//                val targetBlock = instructions.buildBlock(this, instructions.indexOf(target))
+//                if (!blocks.contains(targetBlock)) {
+//                    blocks.add(targetBlock)
+//                }
+//                cfg.putEdgeValue(oldBlock, targetBlock, insn)
+//
+//            }
+//            i++
+//            if (insn == instructions.last) {
+//                mainBlock.add(insn)
+//                blocks.add(mainBlock)
+//
+//            }
+//        }
+//        var n = 0;
+//        log.info { blocks.size
+//            blocks.forEach { firstBlock ->
+//                var s = "node${blocks.indexOf(firstBlock)} "
+//                cfg.successors(firstBlock).forEach {
+//                    if (cfg.hasEdgeConnecting(firstBlock, it)) {
+//                        s += "-> node${blocks.indexOf(it)} "
+//                    }
+//                }
+//                log.info { s }
+//            }
+//        }
+//
+//            cfg.edges().forEach {
+//                log.info { "node${blocks.indexOf(it.source())} -> node${blocks.indexOf(it.target())}" }
+//            }
+//          //  log.info { "${cfg.inDegree(it)} \t ${cfg.outDegree(it)}" }
+
+
+
 
     override fun visitTypeInsn(opcode: Int, type: String?) {
         val classReference = ClassReferenceNode(this, opcode, type)

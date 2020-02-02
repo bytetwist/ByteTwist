@@ -1,14 +1,10 @@
 package org.bytetwist.bytetwist.processors
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.nodes.*
-import org.bytetwist.bytetwist.processors.common.JarOutputProcessor
-import java.lang.IllegalStateException
 import java.util.concurrent.CopyOnWriteArraySet
-import javax.annotation.processing.AbstractProcessor
-import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 
 /**
  * Runs each processor sequentially over the entire node list before proceeding to the next processor.
@@ -42,7 +38,7 @@ open class ProcessingQueue {
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methods(): Flow<CompiledMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) as Iterable<CompiledMethod> }.asFlow())
+        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) }.asFlow())
     }
 
     @ExperimentalCoroutinesApi

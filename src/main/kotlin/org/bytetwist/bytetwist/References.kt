@@ -1,5 +1,6 @@
 package org.bytetwist.bytetwist
 
+import org.bytetwist.bytetwist.References.fieldNames
 import org.bytetwist.bytetwist.nodes.CompiledClass
 import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
@@ -18,6 +19,10 @@ object References {
 
     val methodNames = ConcurrentHashMap<String, CompiledMethod>()
 
+    fun findClass(name: String): CompiledClass? {
+        return classNames[name]
+    }
+
     /**
      * Finds a [CompiledMethod] by the [CompiledMethod.name] value.
      * Useful when you don't have a reference to the owner or the descriptor/signature
@@ -26,12 +31,24 @@ object References {
         return methodNames.values.find { c -> c.name == name }
     }
 
-    /**
-     * Finds a [CompiledField] by the [CompiledField.name] value.
-     * Useful when you don't have a reference to the owner
-     */
     fun findField(name: String) : CompiledField? {
         return fieldNames.values.find { f -> f.name == name }
     }
 
+}
+
+inline fun findClass(name: String): CompiledClass? {
+    return References.classNames[name]
+}
+
+fun findMethod(name: String) : CompiledMethod? {
+    return References.methodNames.values.find { c -> c.name == name }
+}
+
+/**
+ * Finds a [CompiledField] by the [CompiledField.name] value.
+ * Useful when you don't have a reference to the owner
+ */
+fun findField(name: String) : CompiledField? {
+    return fieldNames.values.find { f -> f.name == name }
 }

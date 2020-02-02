@@ -1,8 +1,8 @@
 package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
-import org.objectweb.asm.*
 import org.bytetwist.bytetwist.References
+import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
@@ -28,7 +28,9 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
     val subClasses = CopyOnWriteArraySet<CompiledClass>()
 
-    val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
+    val implementedBy = CopyOnWriteArraySet<CompiledClass>()
+
+        val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
     val constructors: List<ConstructorNode>
         get() = super.methods.filterIsInstance(ConstructorNode::class.java)
@@ -242,12 +244,16 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     /**
      * Returns if this class is abstract or not
      */
-    fun isAbstract() = Modifier.isAbstract(access)
+    fun isAbstract(): Boolean {
+        return Modifier.isAbstract(access)
+    }
 
     fun buildHierarchy() {
-        val classes = References.classNames.values.filter { compiledClass ->
-            compiledClass.superName == this.name
+        //GlobalScope.launch {
+            val classes = References.classNames.values.filter { compiledClass ->
+                compiledClass.superName == this@CompiledClass.name
+            }
+            this@CompiledClass.subClasses.addAll(classes)
         }
-        this.subClasses.addAll(classes)
-    }
+    //}
 }

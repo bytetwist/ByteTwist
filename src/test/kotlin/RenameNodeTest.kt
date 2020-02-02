@@ -1,7 +1,5 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
-import mu.KLogger
-import mu.KLogging
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.nodes.CompiledField
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.reflect.KClass
-import kotlin.test.assert
 import kotlin.test.assertNotNull
 
 private val log = KotlinLogging.logger {}

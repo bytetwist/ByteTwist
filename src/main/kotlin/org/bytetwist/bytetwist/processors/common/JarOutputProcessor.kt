@@ -1,7 +1,6 @@
 package org.bytetwist.bytetwist.processors.common
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.nodes.CompiledClass
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
