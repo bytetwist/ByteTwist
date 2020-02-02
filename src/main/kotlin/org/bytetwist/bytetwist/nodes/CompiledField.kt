@@ -36,8 +36,7 @@ class CompiledField(
         val annotationNode = FieldAnnotationNode(this, descriptor)
         if (visible) {
             visibleAnnotations.add(annotationNode)
-        }
-        else {
+        } else {
             invisibleAnnotations.add(annotationNode)
         }
         return annotationNode
@@ -56,6 +55,13 @@ class CompiledField(
         References.fieldNames.remove(oldName)
         References.fieldNames["${parent.name}.$name"] = this
     }
+
+//    fun annotate(init: CompiledAnnotation.(CompiledField, String) -> Unit, descriptor: String): CompiledAnnotation {
+//
+//
+//        val annotation = CompiledAnnotation(this, descriptor)
+//
+//    }
 
     /**
      * Removes this CompiledField/FieldNode from its parent class and removes all references to the field
@@ -91,7 +97,7 @@ class CompiledField(
      * Sets the field as Abstract/non-abstract
      */
     fun setAbstract() {
-       access = access.or(Modifier.ABSTRACT)
+        access = access.or(Modifier.ABSTRACT)
     }
 
     /**
@@ -127,6 +133,25 @@ class CompiledField(
      * Adds a static access modifier to the field.
      */
     fun setStatic() {
-        access = access.or(Modifier.STATIC)
+        access = access.rem(Modifier.STATIC)
     }
+
+    fun annotate(
+        annotationName: String,
+        vararg fields: Pair<String, *>
+    ) {
+        val ann = visitAnnotation(annotationName, true) as FieldAnnotationNode
+        ann.visitEnd()
+        if (fields.any()) {
+            for (field in fields) {
+                ann.field(field.first, field.second)
+            }
+        }
+        this.visibleAnnotations.add(ann)
+    }
+
 }
+
+
+
+

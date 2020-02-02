@@ -1,16 +1,24 @@
 package org.bytetwist.bytetwist.scanners
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.exceptions.NoInputDir
-import org.objectweb.asm.ClassReader
 import org.bytetwist.bytetwist.nodes.CompiledClass
+import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
 import org.bytetwist.bytetwist.processors.common.*
+import org.bytetwist.bytetwist.processors.log
+import org.bytetwist.bytetwist.processors.oneOff
+import org.objectweb.asm.ClassReader
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import kotlin.system.measureTimeMillis
 
+@InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class DoublePassScanner : Scanner() {
 
@@ -18,52 +26,69 @@ class DoublePassScanner : Scanner() {
 
     val nodes = processors.nodes
 
+
+
     /**
      * Scans the user submitted input location for any compiled class files
      */
     override fun scan() {
-        runBlocking {
-            if (inputDir == null) {
-                throw NoInputDir()
-            }
-            inputDir!!.walkTopDown().forEach {
-                loadBytesFromFile(it)
-            }
-            classFiles.forEach {
-                val classNode = CompiledClass()
-                ClassReader(it).apply {
-                    accept(classNode, ClassReader.EXPAND_FRAMES)
-                }
-                processors.nodes.add(classNode)
-            }
-            processors.nodes.forEach { clazz ->
-                launch {
-                    clazz.buildHierarchy()
-                    for (mn in clazz.methods) {
+        if (inputDir == null) {
+            throw NoInputDir()
+        }
+        log.info { "Scanning finished in " +
+            measureTimeMillis {
+                runBlocking {
+                    inputDir!!.walkTopDown().forEach {
+                        loadBytesFromFile(it)
+                    }
+                    classFiles.forEach {
+                        val classNode = CompiledClass()
+                        ClassReader(it).apply {
+                            accept(classNode, ClassReader.SKIP_DEBUG)
+                        }
+                        processors.nodes.add(classNode)
+                    }
+                    processors.nodes.onEach { clazz ->
                         launch {
-                            if (mn is CompiledMethod) {
+                            clazz.buildHierarchy()
+                        }
+                        launch {
+                            for (mn in clazz.methods) {
 
-                                mn.fieldReferences().forEach {
-                                    launch {
-                                        it.addToField()
+                                launch {
+
+                                    if (mn is CompiledMethod) {
+                                        launch {
+                                            mn.analyzeBlocks()
+                                        }
+                                        launch {
+                                            for (feldRef in mn.fieldReferences()) {
+                                                launch {
+                                                    feldRef.addToField()
+                                                }
+                                            }
+                                        }
+                                        launch {
+                                            for (methodCalls in mn.methodCalls()) {
+                                                launch {
+                                                    methodCalls.addToMethod()
+                                                }
+                                            }
+                                        }
+                                        launch {
+                                            for (typeRefs in mn.typeReferences()) {
+                                                launch {
+                                                    typeRefs.addToClass()
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                                mn.methodCalls().forEach {
-                                    launch {
-                                        it.addToMethod()
-                                    }
-                                }
-                                mn.typeReferences().forEach {
-                                    launch {
-                                        it.addToClass()
-                                    }
-                                }
-                                mn.analyzeBlocks()
                             }
                         }
                     }
                 }
-            }
+            } / 1000.0 + " ms."
         }
     }
 
@@ -113,8 +138,34 @@ fun main() {
     scanner.addProcessor(FieldRenamer())
     scanner.addProcessor(MethodRenamer())
     scanner.addProcessor(ClassRenamer())
-//
+    var i = 0
+    scanner.addProcessor(oneOff(CompiledField::class) {
+        val grouped = it.references.groupBy { fr -> fr.field()?.parent }
+        val map = grouped.mapValues { entry -> entry.value.size }
+        val refLimit = 1
+        if (it.isStatic() && grouped.isNotEmpty() && grouped.size == refLimit) {
+            val first = grouped.keys.first()
+            if (first != null) {
+                it.annotate("Moved", "from" to it.parent.name, "to" to first.name)
+                it.move(first)
+                i++
+            }
+        }
+    })
+    scanner.addProcessor(oneOff(CompiledMethod::class) {
+        if (it.fieldWrites().size == 1 && it.fieldReads().isEmpty()) {
+           // log.info { "method ${it.name} is probably a setter for ${it.fieldWrites().first().name}" }
+            //log.info { it.fieldWrites().first().previous }
+        }
+    })
+    scanner.addProcessor(oneOff(CompiledMethod::class) {
+        if (it.fieldReads().size == 1 && it.fieldWrites().isEmpty()) {
+            //log.info { "method ${it.name} is probably a getter for ${it.fieldReads().first().name}" }
+        }
+    })
     scanner.addProcessor(JarOutputProcessor())
     scanner.scan()
     scanner.run()
+    println(i)
+
 }

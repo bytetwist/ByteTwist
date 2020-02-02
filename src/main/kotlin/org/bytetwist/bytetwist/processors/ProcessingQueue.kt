@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist.processors
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.nodes.*
 import java.util.concurrent.CopyOnWriteArraySet
@@ -8,18 +9,19 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * Runs each processor sequentially over the entire node list before proceeding to the next processor.
  */
+@InternalCoroutinesApi
 open class ProcessingQueue {
 
     val nodes = CopyOnWriteArraySet<CompiledClass>()
     val methodNodes = CopyOnWriteArraySet<CompiledMethod>()
     val fieldNodes = CopyOnWriteArraySet<CompiledField>()
-    var processors = arrayListOf<AbstractNodeProcessor<in CompiledNode>>()
+    var processors = sequenceOf<AbstractNodeProcessor<in CompiledNode>>().constrainOnce()
 
     /**
      * Adds a processor to the end of the processing queue.
      */
     fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
-        processors.add(processor as AbstractNodeProcessor<in CompiledNode>)
+        processors += processor as AbstractNodeProcessor<in CompiledNode>
     }
 
     @ExperimentalCoroutinesApi
@@ -36,7 +38,7 @@ open class ProcessingQueue {
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methods(): Flow<CompiledMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) as Iterable<CompiledMethod> }.asFlow())
+        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) }.asFlow())
     }
 
     @ExperimentalCoroutinesApi
@@ -62,6 +64,7 @@ open class ProcessingQueue {
         }.asFlow())
     }
 
+    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methodRefs(): Flow<MethodReferenceNode> = flow {
         this.emitAll(nodes.flatMap { c ->

@@ -1,8 +1,8 @@
 package org.bytetwist.bytetwist.nodes
 
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.FieldInsnNode
 import org.bytetwist.bytetwist.References
+import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.FieldInsnNode
 
 /**
  * An abstraction of a FieldInsnNode that includes references to the CompiledField Object and the referencing method
@@ -16,7 +16,7 @@ open class FieldReferenceNode(
 ) :
     FieldInsnNode(opcode, owner, name, descriptor), CompiledNode {
 
-    fun staticReference() = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC
+    fun staticReference() = opcode == GETSTATIC || opcode == PUTSTATIC
 
     /**
      * the field referenced by this instruction
@@ -46,7 +46,8 @@ class FieldWrite(method: CompiledMethod, opcode: Int, owner: String, name: Strin
 
 
 object FieldOpcodes {
-    val WRITE_CODES = listOf(Opcodes.PUTFIELD, Opcodes.PUTSTATIC, Opcodes.H_PUTFIELD, Opcodes.H_PUTSTATIC)
-    val READ_CODES = listOf(Opcodes.GETFIELD, Opcodes.GETSTATIC, Opcodes.H_GETFIELD, Opcodes.H_GETSTATIC)
+    val WRITE_CODES = listOf(PUTFIELD, PUTSTATIC, H_PUTFIELD, H_PUTSTATIC)
+    val READ_CODES = listOf(GETFIELD, GETSTATIC, H_GETFIELD, H_GETSTATIC)
+    val INT_ARITHMATIC = listOf(ISUB, IADD, IMUL, IDIV)
 
 }

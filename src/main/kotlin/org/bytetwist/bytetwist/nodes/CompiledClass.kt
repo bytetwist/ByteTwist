@@ -1,8 +1,8 @@
 package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
-import org.objectweb.asm.*
 import org.bytetwist.bytetwist.References
+import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
@@ -28,7 +28,9 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
     val subClasses = CopyOnWriteArraySet<CompiledClass>()
 
-    val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
+    val implementedBy = CopyOnWriteArraySet<CompiledClass>()
+
+        val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
     val constructors: List<ConstructorNode>
         get() = super.methods.filterIsInstance(ConstructorNode::class.java)
@@ -149,58 +151,70 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     @Beta
     fun rename(newName: String) {
         val oldName = this.name
+
         subClasses.forEach {
             it.superName = newName
         }
+
+
         this.name = newName
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
-        this.fields.forEach { fieldNode ->
-            if (fieldNode is CompiledField) {
-                References.fieldNames.remove("$oldName.${fieldNode.name}")
-                References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
-                fieldNode.references.forEach {
+
+            fields.forEach { fieldNode ->
+                if (fieldNode is CompiledField) {
+                    References.fieldNames.remove("$oldName.${fieldNode.name}")
+                    References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
+                    fieldNode.references.forEach {
+                        it.owner = newName
+                        it.addToField()
+                    }
+                }
+            }
+
+
+
+            methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
+                References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
+                References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
+                methodNode.invocations.forEach {
                     it.owner = newName
-                    it.addToField()
+                    it.addToMethod()
+                    if (it.desc.contains(oldName)) {
+                        it.desc = it.desc.replace("L$oldName;", "L$name;")
+                    }
                 }
             }
-        }
-        this.methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
-            References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
-            References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
-            methodNode.invocations.forEach {
-                it.owner = newName
-                it.addToMethod()
-                if (it.desc.contains(oldName)) {
-                    it.desc = it.desc.replace("L$oldName;", "L$name;")
-                }
-            }
-        }
+
+
+
         typeReferences.forEach {
             it.desc = it.desc.replace("L$oldName;", "L$name;")
         }
 
+            References.methodNames.values.forEach {
 
-        References.methodNames.values.forEach {
-            if (it.desc.contains(oldName)) {
-                it.desc = it.desc.replace("L$oldName;", "L$name;")
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
+                }
             }
-            if (it.signature != null) {
-                it.signature = it.signature.replace("L$oldName", "L$newName")
+
+            References.fieldNames.values.forEach {
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
+                }
             }
-        }
-        References.fieldNames.values.forEach {
-            if (it.desc.contains(oldName)) {
-                it.desc = it.desc.replace("L$oldName;", "L$name;")
-            }
-            if (it.signature != null) {
-                it.signature = it.signature.replace("L$oldName", "L$newName")
-            }
-        }
+
 
 //            }
-
     }
+
 
     /**
      * Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise
@@ -230,12 +244,16 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     /**
      * Returns if this class is abstract or not
      */
-    fun isAbstract() = Modifier.isAbstract(access)
+    fun isAbstract(): Boolean {
+        return Modifier.isAbstract(access)
+    }
 
     fun buildHierarchy() {
-        val classes = References.classNames.values.filter { compiledClass ->
-            compiledClass.superName == this.name
+        //GlobalScope.launch {
+            val classes = References.classNames.values.filter { compiledClass ->
+                compiledClass.superName == this@CompiledClass.name
+            }
+            this@CompiledClass.subClasses.addAll(classes)
         }
-        this.subClasses.addAll(classes)
-    }
+    //}
 }

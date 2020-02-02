@@ -1,4 +1,5 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
@@ -12,8 +13,10 @@ private val log = KotlinLogging.logger {}
 @ExperimentalCoroutinesApi
 class BlockTest {
 
+    @InternalCoroutinesApi
     private val scanner = DoublePassScanner()
 
+    @InternalCoroutinesApi
     @BeforeEach
     fun scanResources() {
         scanner.inputDir = File("src/test/resources")
@@ -23,7 +26,7 @@ class BlockTest {
     @Test
     fun testBlocks() {
         References.methodNames.values.find { m -> m.name == "methodWith5Blocks"}?.run {
-            assertEquals(5, this.blocks.size)
+            assertEquals(4, this.blocks.size)
         }
     }
 }

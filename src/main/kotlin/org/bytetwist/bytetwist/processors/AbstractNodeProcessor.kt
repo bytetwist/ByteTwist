@@ -1,7 +1,8 @@
 package org.bytetwist.bytetwist.processors
 
 import com.google.common.base.Stopwatch
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.nodes.CompiledNode
@@ -72,9 +73,6 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
 
 }
 
-/**
- *
- */
 fun <T : CompiledNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
     return object : AbstractNodeProcessor<T>() {
         override val type = type
