@@ -7,10 +7,11 @@ import org.bytetwist.bytetwist.nodes.CompiledField
 import org.bytetwist.bytetwist.nodes.CompiledMethod
 import java.io.File
 import java.util.jar.JarFile
+import kotlin.coroutines.CoroutineContext
 
 @InternalCoroutinesApi
 @Deprecated("Use DoublePassScanner")
-class SinglePassScanner : Scanner() {
+class SinglePassScanner(override val coroutineContext: CoroutineContext) : Scanner() {
 
 
     /**

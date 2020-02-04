@@ -1,5 +1,6 @@
 package org.bytetwist.bytetwist.scanners
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -9,11 +10,10 @@ import org.bytetwist.bytetwist.processors.ProcessingQueue
 import java.io.File
 
 @InternalCoroutinesApi
-abstract class Scanner {
+abstract class Scanner : CoroutineScope {
 
     var inputDir: File? = null
-
-    val processors = ProcessingQueue()
+    lateinit var processors: ProcessingQueue
 
     /**
      * Adds a processor to the Processing Queue

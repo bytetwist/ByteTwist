@@ -44,20 +44,21 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
     /**
      *
      */
-    open fun subscribe(flow: Flow<T>) {
-        runBlocking {
+    open suspend fun subscribe(flow: Flow<T>) {
+
             flow.collect { accept(it) }
-        }
+
     }
 
     private fun accept(node: T) {
-        if (!timer.isRunning) {
-            timer.start()
-        }
-        if (preProcess(node)) {
-            process(node)
-            nodesProcessed.getAndIncrement()
-        }
+            if (!timer.isRunning) {
+                timer.start()
+            }
+            if (preProcess(node)) {
+                process(node)
+                nodesProcessed.getAndIncrement()
+            }
+
     }
 
     inline fun <reified T : CompiledNode> type() = T::class
