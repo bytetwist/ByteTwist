@@ -4,15 +4,19 @@ package org.bytetwist.bytetwist.nodes
 import com.google.common.graph.GraphBuilder
 import com.google.common.graph.MutableGraph
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.analysis.*
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
 import kotlin.collections.HashSet
 
 
@@ -65,6 +69,9 @@ open class CompiledMethod(
     fun methodCalls() = instructions.filterIsInstance(MethodReferenceNode::class.java)
 
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
+
+    lateinit var blockTreeModel: DefaultTreeModel
+
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
@@ -168,51 +175,73 @@ open class CompiledMethod(
             return GraphBuilder.directed().allowsSelfLoops(true).build()
         }
 
+    fun findBlock(firstInstruction: AbstractInsnNode) =
+        blocks.find { block -> block.first() == firstInstruction }
+
+    fun findBlockByLast(lastInstruction: AbstractInsnNode) =
+        blocks.find { block -> block.last() == lastInstruction }
+
     fun analyzeBlocks() {
         var block = CompiledBlockNode(this)
         val startNewBlock = CopyOnWriteArrayList<AbstractInsnNode>()
         val cfg = cfg
-        instructions.forEachIndexed { i, insnNode ->
-            when {
-                i == 0 -> {
+        lateinit var firstBlock: DefaultMutableTreeNode
+        lateinit var lastChild: DefaultMutableTreeNode
+        for (insnNode in instructions) {
+            when (insnNode) {
+                instructions.first -> {
                     block = CompiledBlockNode(this)
                     block.add(insnNode)
                 }
-                insnNode is JumpInsnNode -> {
+                is JumpInsnNode -> {
                     block.add(insnNode)
-                    val oldblock = block
+                    blocks.add(block)
                     block = CompiledBlockNode(this)
-                    cfg.putEdge(oldblock, block)
-                    startNewBlock.add(insnNode)
-                    blocks += oldblock
-                }
-                startNewBlock.contains(insnNode) -> {
-                    val oldBlock = block
-                    startNewBlock.remove(insnNode)
-                    block = CompiledBlockNode(this)
-                    block.add(insnNode)
-                    cfg.putEdge(oldBlock, block)
-                    blocks += oldBlock
-
                 }
                 else -> {
-                    if (block.size == 0 && blocks.size > 0) {
-                    }
                     block.add(insnNode)
-                    if (i == instructions.size()) {
-                        blocks += block
+                    if (insnNode == instructions.last) {
+                        blocks.add(block)
                     }
                 }
             }
         }
+        try {
+            analyzer.analyze(this.parent.name, this)
+                log.info { "${block.size}" }
+
+        } catch (e: AnalyzerException) {
+            log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+        }
+
+
+    }
+
+    override fun visitLineNumber(line: Int, start: Label?) {
+
+    }
+
+    val analyzer = object : Analyzer<BasicValue>(BasicVerifier()) {
+
+        override fun newControlFlowEdge(insnIndex: Int, successorIndex: Int) {
+            findBlockByLast(instructions[insnIndex])?.let { findBlock(instructions[successorIndex])?.edges?.add(it) }
+
+        }
+
+
+        override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
+            return super.newControlFlowExceptionEdge(insnIndex, successorIndex)
+        }
+    }
+
 
 //        blocks.forEach {
 //            log.info { cfg.inDegree(it) }
 //        }
 //        log.info { "${blocks.size} ${cfg.edges().size}"  }
-    }
-        //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
-        //val frames = analyzer.analyze(this.parent.name, this)
+
+    //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
+    //val frames = analyzer.analyze(this.parent.name, this)
 //        var i = 0
 //        while (i < (instructions.size())) {
 //            var insn = instructions[i]
@@ -264,8 +293,6 @@ open class CompiledMethod(
 //                log.info { "node${blocks.indexOf(it.source())} -> node${blocks.indexOf(it.target())}" }
 //            }
 //          //  log.info { "${cfg.inDegree(it)} \t ${cfg.outDegree(it)}" }
-
-
 
 
     override fun visitTypeInsn(opcode: Int, type: String?) {

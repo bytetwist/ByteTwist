@@ -7,14 +7,35 @@ import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.JumpInsnNode
 import org.objectweb.asm.tree.LabelNode
 import java.util.concurrent.CopyOnWriteArrayList
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.MutableTreeNode
 
 typealias Block = CompiledBlockNode
 class CompiledBlockNode(
     val method: CompiledMethod
 ) : CopyOnWriteArrayList<AbstractInsnNode>(), CompiledNode {
 
+    /**
+     * Returns a string representation of this list.  The string
+     * representation consists of the string representations of the list's
+     * elements in the order they are returned by its iterator, enclosed in
+     * square brackets (`"[]"`).  Adjacent elements are separated by
+     * the characters `", "` (comma and space).  Elements are
+     * converted to strings as by [String.valueOf].
+     *
+     * @return a string representation of this list
+     */
+    override fun toString(): String {
+        return "Insn ${method.instructions.indexOf(first())}: ${first()} - ${method.instructions.indexOf(last())}: ${last()}"
+    }
 
-    val edges = HashMultimap.create<AbstractInsnNode, CompiledBlockNode>()
+    public val edges = ArrayList<CompiledBlockNode>()
+
+    public val successors = HashSet<Block>()
+
+    public val predecessors = HashSet<Block>()
+
 
     companion object {
         val UNCONDITIONAL_JUMP = listOf(Opcodes.GOTO, Opcodes.JSR, Opcodes.RET)
@@ -35,6 +56,10 @@ class Edge(block: CompiledBlockNode, label: LabelNode) : LabelNode(label.label) 
 
     var from: Block? = null
 
+}
+enum class EdgeDirection {
+    IN,
+    OUT
 }
 
 
