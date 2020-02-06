@@ -13,10 +13,10 @@ public class NodeForRenaming {
         return s;
     }
 
-    public void paramsTest(NodeForRenaming nodeForRenaming)
+    public NodeForRenaming paramsTest(NodeForRenaming nodeForRenaming)
     {
         renameMe(s);
         // Make sure param types get renamed when renaming class
-        return;
+        return this;
     }
 }

@@ -114,9 +114,9 @@ open class ByteMethod(
 
 
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
-        val annotationNode = MethodAnnotationNode(this, descriptor)
-
-        return super.visitAnnotation(descriptor, visible)
+        val annotationNode = ByteAnnotation(this, descriptor)
+        visibleAnnotations.add(annotationNode)
+        return annotationNode
     }
 
     override fun getLabelNode(label: Label?): LabelNode {
@@ -160,7 +160,7 @@ open class ByteMethod(
         }
         try {
             analyzer.analyze(this.parent.name, this)
-            annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+           // annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
 
         } catch (e: AnalyzerException) {
             log.error { e.message + " ${e.node} + ${e.node.opcode}" }
@@ -169,6 +169,9 @@ open class ByteMethod(
 
     }
 
+    override fun visitAnnotationDefault(): AnnotationVisitor {
+        return super.visitAnnotationDefault()
+    }
 
 
     override fun visitLineNumber(line: Int, start: Label?) {
