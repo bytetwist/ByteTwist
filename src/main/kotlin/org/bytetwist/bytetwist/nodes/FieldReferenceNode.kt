@@ -5,16 +5,16 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.FieldInsnNode
 
 /**
- * An abstraction of a FieldInsnNode that includes references to the CompiledField Object and the referencing method
+ * An abstraction of a FieldInsnNode that includes references to the ByteField Object and the referencing method
  */
 open class FieldReferenceNode(
-    val method: CompiledMethod,
-    opcode: Int,
-    owner: String,
-    name: String,
-    descriptor: String?
+        val method: ByteMethod,
+        opcode: Int,
+        owner: String,
+        name: String,
+        descriptor: String?
 ) :
-    FieldInsnNode(opcode, owner, name, descriptor), CompiledNode {
+    FieldInsnNode(opcode, owner, name, descriptor), ByteNode {
 
     fun staticReference() = opcode == GETSTATIC || opcode == PUTSTATIC
 
@@ -24,7 +24,7 @@ open class FieldReferenceNode(
     fun field() = References.fieldNames["$owner.$name"]
 
     /**
-     * Adds this reference to the CompiledField object it references
+     * Adds this reference to the ByteField object it references
      */
     fun addToField() {
         if (field() == null) {
@@ -36,13 +36,13 @@ open class FieldReferenceNode(
     }
 }
 
-class FieldRead(method: CompiledMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
+class FieldRead(method: ByteMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
     FieldReferenceNode(method, opcode, owner, name, descriptor),
-    CompiledNode
+    ByteNode
 
-class FieldWrite(method: CompiledMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
+class FieldWrite(method: ByteMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
     FieldReferenceNode(method, opcode, owner, name, descriptor),
-    CompiledNode
+    ByteNode
 
 
 object FieldOpcodes {

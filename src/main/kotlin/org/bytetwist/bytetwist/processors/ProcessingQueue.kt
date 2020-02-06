@@ -12,16 +12,16 @@ import java.util.concurrent.CopyOnWriteArraySet
 @InternalCoroutinesApi
 open class ProcessingQueue {
 
-    val nodes = CopyOnWriteArraySet<CompiledClass>()
-    val methodNodes = CopyOnWriteArraySet<CompiledMethod>()
-    val fieldNodes = CopyOnWriteArraySet<CompiledField>()
-    var processors = sequenceOf<AbstractNodeProcessor<in CompiledNode>>().constrainOnce()
+    val nodes = CopyOnWriteArraySet<ByteClass>()
+    val methodNodes = CopyOnWriteArraySet<ByteMethod>()
+    val fieldNodes = CopyOnWriteArraySet<ByteField>()
+    var processors = sequenceOf<AbstractNodeProcessor<in ByteNode>>().constrainOnce()
 
     /**
      * Adds a processor to the end of the processing queue.
      */
-    fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
-        processors += processor as AbstractNodeProcessor<in CompiledNode>
+    fun <T : ByteNode> addProcessor(processor: AbstractNodeProcessor<in T>) {
+        processors += processor as AbstractNodeProcessor<in ByteNode>
     }
 
     @ExperimentalCoroutinesApi
@@ -32,21 +32,21 @@ open class ProcessingQueue {
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun fields() = flow {
-        this.emitAll(nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<CompiledField> }.asFlow())
+        this.emitAll(nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<ByteField> }.asFlow())
     }
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
-    fun methods(): Flow<CompiledMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(CompiledMethod::class.java) }.asFlow())
+    fun methods(): Flow<ByteMethod> = flow {
+        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(ByteMethod::class.java) }.asFlow())
     }
 
     @ExperimentalCoroutinesApi
-    fun annotations(): Flow<CompiledAnnotation> = flow {
-        this.emitAll(listOf(nodes.flatMap { c -> c.visibleAnnotations as Iterable<CompiledAnnotation> }).flatten().asFlow())
+    fun annotations(): Flow<ByteAnnotation> = flow {
+        this.emitAll(listOf(nodes.flatMap { c -> c.visibleAnnotations as Iterable<ByteAnnotation> }).flatten().asFlow())
         this.emitAll(nodes.flatMap { compiledClass ->
             compiledClass.fields.flatMap { fieldNode ->
-               fieldNode.visibleAnnotations as List<CompiledAnnotation>
+               fieldNode.visibleAnnotations as List<ByteAnnotation>
             }
         }.asFlow())
 
@@ -56,7 +56,7 @@ open class ProcessingQueue {
     fun fieldRefs(): Flow<FieldReferenceNode> = flow {
         this.emitAll(nodes.flatMap { c ->
             c.methods.flatMap { node ->
-                (node as CompiledMethod).instructions.filterIsInstance(
+                (node as ByteMethod).instructions.filterIsInstance(
                     FieldReferenceNode::class.java
                 )
             }
@@ -69,7 +69,7 @@ open class ProcessingQueue {
     fun methodRefs(): Flow<MethodReferenceNode> = flow {
         this.emitAll(nodes.flatMap { c ->
             c.methods.flatMap { node ->
-                (node as CompiledMethod).instructions.filterIsInstance(
+                (node as ByteMethod).instructions.filterIsInstance(
                     MethodReferenceNode::class.java
                 )
             }
@@ -85,15 +85,15 @@ open class ProcessingQueue {
             while (this.hasNext()) {
                 val processor = this.next()
                 when (processor.type) {
-                    CompiledClass::class -> processor.subscribe(classes())
-                    CompiledMethod::class -> processor.subscribe(methods())
+                    ByteClass::class -> processor.subscribe(classes())
+                    ByteMethod::class -> processor.subscribe(methods())
                     ConstructorNode::class -> processor.subscribe(methods().filterIsInstance<ConstructorNode>())
-                    CompiledField::class -> processor.subscribe(fields())
+                    ByteField::class -> processor.subscribe(fields())
                     FieldReferenceNode::class -> processor.subscribe(fieldRefs())
                     FieldWrite::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldWrite>())
                     FieldRead::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldRead>())
                     MethodReferenceNode::class -> processor.subscribe(methodRefs())
-                    CompiledAnnotation::class -> processor.subscribe(annotations())
+                    ByteAnnotation::class -> processor.subscribe(annotations())
                 }
                 processor.complete()
             }

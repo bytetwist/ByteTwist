@@ -1,16 +1,16 @@
 package org.bytetwist.bytetwist.processors.common
 
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 
-class UnusedMethodProcessor : AbstractNodeProcessor<CompiledMethod>() {
-    override val type = CompiledMethod::class
+class UnusedMethodProcessor : AbstractNodeProcessor<ByteMethod>() {
+    override val type = ByteMethod::class
 
-    override fun process(node: CompiledMethod) {
+    override fun process(node: ByteMethod) {
         node.delete()
     }
 
-    override fun preProcess(node: CompiledMethod): Boolean {
+    override fun preProcess(node: ByteMethod): Boolean {
         return node.invocations.size == 0
     }
 }

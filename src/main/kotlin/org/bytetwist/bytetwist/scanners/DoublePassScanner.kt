@@ -5,12 +5,10 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.exceptions.NoInputDir
-import org.bytetwist.bytetwist.nodes.CompiledClass
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteClass
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.common.*
 import org.bytetwist.bytetwist.processors.log
-import org.bytetwist.bytetwist.processors.oneOff
 import org.objectweb.asm.ClassReader
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
@@ -42,9 +40,9 @@ class DoublePassScanner : Scanner() {
                         loadBytesFromFile(it)
                     }
                     classFiles.forEach {
-                        val classNode = CompiledClass()
+                        val classNode = ByteClass()
                         ClassReader(it).apply {
-                            accept(classNode, ClassReader.SKIP_DEBUG)
+                            accept(classNode, ClassReader.EXPAND_FRAMES)
                         }
                         processors.nodes.add(classNode)
                     }
@@ -57,9 +55,9 @@ class DoublePassScanner : Scanner() {
 
                                 launch {
 
-                                    if (mn is CompiledMethod) {
+                                    if (mn is ByteMethod) {
                                         launch {
-                                            mn.analyzeBlocks()
+                                            mn.buildBlocks()
                                         }
                                         launch {
                                             for (feldRef in mn.fieldReferences()) {
@@ -131,41 +129,27 @@ fun main() {
     val classProcessor =
         BasicClassProcessor()// as AbstractProcessor<*>
     val scanner = DoublePassScanner()
-    scanner.inputDir = File("C:\\Users\\andrea\\IdeaProjects\\bytetwist\\186.jar")
-    scanner.addProcessor(AbstractMethodProcessor())
-    scanner.addProcessor(UnusedMethodProcessor())
-    scanner.addProcessor(UnusedFieldProcessor())
+    scanner.inputDir = File("gamepack_obf.jar")
     scanner.addProcessor(FieldRenamer())
     scanner.addProcessor(MethodRenamer())
-    scanner.addProcessor(ClassRenamer())
-    var i = 0
-    scanner.addProcessor(oneOff(CompiledField::class) {
-        val grouped = it.references.groupBy { fr -> fr.field()?.parent }
-        val map = grouped.mapValues { entry -> entry.value.size }
-        val refLimit = 1
-        if (it.isStatic() && grouped.isNotEmpty() && grouped.size == refLimit) {
-            val first = grouped.keys.first()
-            if (first != null) {
-                it.annotate("Moved", "from" to it.parent.name, "to" to first.name)
-                it.move(first)
-                i++
-            }
-        }
-    })
-    scanner.addProcessor(oneOff(CompiledMethod::class) {
-        if (it.fieldWrites().size == 1 && it.fieldReads().isEmpty()) {
-           // log.info { "method ${it.name} is probably a setter for ${it.fieldWrites().first().name}" }
-            //log.info { it.fieldWrites().first().previous }
-        }
-    })
-    scanner.addProcessor(oneOff(CompiledMethod::class) {
-        if (it.fieldReads().size == 1 && it.fieldWrites().isEmpty()) {
-            //log.info { "method ${it.name} is probably a getter for ${it.fieldReads().first().name}" }
-        }
-    })
+    scanner.addProcessor(AbstractMethodProcessor())
+//    scanner.addProcessor(
+//        oneOff(ByteMethod::class) {
+//            if (it.name == "method320") {
+//                runBlocking {
+//                    with(JFrame()) {
+//                        add(JTree(it.blockTreeModel))
+//                        pack()
+//                        isEnabled = true
+//                        isVisible = true
+//                    }
+//                }
+//            }
+//            else
+//                log.info { it.name }
+//        })
     scanner.addProcessor(JarOutputProcessor())
     scanner.scan()
     scanner.run()
-    println(i)
 
 }

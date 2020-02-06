@@ -2,7 +2,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.CompiledField
+import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.nodes.ConstructorNode
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -36,8 +36,8 @@ class ScannerTest {
     @InternalCoroutinesApi
     @Test
     fun referencesTest() {
-        val field1 = scanner.processors.nodes.first().fields.first() as CompiledField
-        val field2 = scanner.processors.nodes.first().fields.last() as CompiledField
+        val field1 = scanner.processors.nodes.first().fields.first() as ByteField
+        val field2 = scanner.processors.nodes.first().fields.last() as ByteField
         val method1 = scanner.processors.nodes.first().constructors.first() as ConstructorNode
         val method2 = References.findMethod("testMethod2")!!
         assertEquals(5, field1.references.size)

@@ -2,9 +2,9 @@ package org.bytetwist.bytetwist.scanners
 
 import kotlinx.coroutines.*
 import org.objectweb.asm.ClassReader
-import org.bytetwist.bytetwist.nodes.CompiledClass
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteClass
+import org.bytetwist.bytetwist.nodes.ByteField
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import java.io.File
 import java.util.jar.JarFile
 
@@ -98,10 +98,10 @@ class SinglePassScanner : Scanner() {
     /**
      * Reads a Compiled Class from a ByteArray
      * @param b - The ByteArray
-     * @return The CompiledClass object that represents the bytes
+     * @return The ByteClass object that represents the bytes
      */
-    private fun readClass(b: ByteArray): CompiledClass {
-        val node = CompiledClass()
+    private fun readClass(b: ByteArray): ByteClass {
+        val node = ByteClass()
         ClassReader(b).apply {
             accept(node, ClassReader.SKIP_DEBUG)
         }
@@ -117,17 +117,17 @@ class SinglePassScanner : Scanner() {
         return JarFile(f)
     }
 
-    private fun scanFields(classNode: CompiledClass) {
+    private fun scanFields(classNode: ByteClass) {
         classNode.fields.forEach {
-            if (it is CompiledField) {
+            if (it is ByteField) {
                 processors.fieldNodes.add(it)
             }
         }
     }
 
-    private fun scanMethods(classNode: CompiledClass) {
+    private fun scanMethods(classNode: ByteClass) {
         classNode.methods.forEach {
-            if (it is CompiledMethod) {
+            if (it is ByteMethod) {
                 processors.methodNodes.add(it)
             }
         }

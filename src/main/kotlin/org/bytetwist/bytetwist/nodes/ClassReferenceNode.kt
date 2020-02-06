@@ -4,21 +4,21 @@ import org.bytetwist.bytetwist.References
 import org.objectweb.asm.tree.TypeInsnNode
 
 /**
- * An abstraction that represents an instruction referencing a [CompiledClass] that was scanned.
- * Also keeps a reference to the [CompiledMethod] that this instruction is in with the [ClassReferenceNode.method]
+ * An abstraction that represents an instruction referencing a [ByteClass] that was scanned.
+ * Also keeps a reference to the [ByteMethod] that this instruction is in with the [ClassReferenceNode.method]
  * property.
  */
 class ClassReferenceNode(
-    val method: CompiledMethod,
-    opcode: Int,
-    descriptor: String?
+        val method: ByteMethod,
+        opcode: Int,
+        descriptor: String?
 ) : TypeInsnNode(
     opcode,
     descriptor
-), CompiledNode {
+), ByteNode {
 
     /**
-     * Adds this Class Reference object to the [CompiledClass] that it references.
+     * Adds this Class Reference object to the [ByteClass] that it references.
      */
     fun addToClass() {
         References.classNames[

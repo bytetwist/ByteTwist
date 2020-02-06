@@ -26,7 +26,7 @@ class BlockTest {
     @Test
     fun testBlocks() {
         References.methodNames.values.find { m -> m.name == "methodWith5Blocks"}?.run {
-            assertEquals(4, this.blocks.size)
+            assertEquals(5, this.blocks.size)
         }
     }
 }

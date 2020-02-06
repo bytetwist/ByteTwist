@@ -1,17 +1,17 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.GraphBuilder
-import com.google.common.graph.MutableGraph
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
+import org.objectweb.asm.Type
+import org.objectweb.asm.commons.TryCatchBlockSorter
 import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.analysis.*
 import java.lang.reflect.Modifier
-import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashSet
 
@@ -19,13 +19,13 @@ import kotlin.collections.HashSet
 /**
  * An abstraction of the ClassNode
  */
-open class CompiledMethod(
-    val parent: CompiledClass,
-    access: Int,
-    name: String,
-    descriptor: String?,
-    signature: String?,
-    exceptions: Array<out String>?
+open class ByteMethod(
+        val parent: ByteClass,
+        access: Int,
+        name: String,
+        descriptor: String?,
+        signature: String?,
+        exceptions: Array<out String>?
 ) : MethodNode(
     Opcodes.ASM7,
     access,
@@ -33,16 +33,17 @@ open class CompiledMethod(
     descriptor,
     signature,
     exceptions
-), CompiledNode {
+), ByteNode {
 
     /**
      * A list of MethodReferences in which this method is invoked
      */
     val invocations = CopyOnWriteArraySet<MethodReferenceNode>()
 
-    val exceptionThrowExpressions = CopyOnWriteArraySet<ThrowExpressionNode>()
-
-    val blocks = HashSet<CompiledBlockNode>()
+    /**
+     * A HashSet of all of the [ByteBlockNode] that make up this method (excluding try/catch blocks)
+     */
+    val blocks = HashSet<Block>()
 
     /**
      * A list of all references to fields that this method makes. (Includes Field Reads/Writes)
@@ -65,6 +66,7 @@ open class CompiledMethod(
     fun methodCalls() = instructions.filterIsInstance(MethodReferenceNode::class.java)
 
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
+
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
@@ -95,35 +97,9 @@ open class CompiledMethod(
     override fun visitInsn(opcode: Int) {
         instructions.add(InsnNode(opcode))
 
-        if (opcode == Opcodes.ATHROW) {
-            addThrowExpressionNode(instructions.last)
-        }
     }
 
-    private fun addThrowExpressionNode(throwInstruction: AbstractInsnNode) {
-        val throwInstructions = LinkedList<AbstractInsnNode>()
-        if (throwInstruction.previous !is MethodInsnNode) {
-            if (throwInstruction.previous.opcode == 25) {
-                // We can't handle this until the entire method has been read. Need to implement later
-                return
-            }
-        }
-        val invokeSpecial = throwInstruction.previous
-        if (invokeSpecial.opcode == Opcodes.INVOKESPECIAL) {
-            throwInstructions.add(throwInstruction)
-            throwInstructions.add(invokeSpecial)
-            var dup = invokeSpecial.previous
-            while (dup.opcode != Opcodes.NEW) {
-                throwInstructions.add(dup)
-                dup = dup.previous
-            }
-            dup as TypeInsnNode
-            throwInstructions.add(dup)
-            val throwExpression =
-                ThrowExpressionNode(this, dup.desc, throwInstructions)
-            exceptionThrowExpressions.add(throwExpression)
-        }
-    }
+
 
     override fun visitLocalVariable(
         name: String?,
@@ -139,12 +115,8 @@ open class CompiledMethod(
 
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
         val annotationNode = MethodAnnotationNode(this, descriptor)
-        if (visible) {
-            visibleAnnotations.add(annotationNode)
-        } else {
-            invisibleAnnotations.add(annotationNode)
-        }
-        return annotationNode
+
+        return super.visitAnnotation(descriptor, visible)
     }
 
     override fun getLabelNode(label: Label?): LabelNode {
@@ -163,109 +135,65 @@ open class CompiledMethod(
         (instructions.last as FieldReferenceNode).addToField()
     }
 
-    val cfg: MutableGraph<CompiledBlockNode>
-        get() {
-            return GraphBuilder.directed().allowsSelfLoops(true).build()
-        }
-
-    fun analyzeBlocks() {
-        var block = CompiledBlockNode(this)
-        val startNewBlock = CopyOnWriteArrayList<AbstractInsnNode>()
-        val cfg = cfg
-        instructions.forEachIndexed { i, insnNode ->
-            when {
-                i == 0 -> {
-                    block = CompiledBlockNode(this)
+    fun buildBlocks() {
+        // Sort try catch blocks
+        //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
+        var block = ByteBlockNode(this)
+        for (insnNode in instructions) {
+            when (insnNode) {
+                instructions.first -> {
+                    block = ByteBlockNode(this)
                     block.add(insnNode)
                 }
-                insnNode is JumpInsnNode -> {
+                is JumpInsnNode -> {
                     block.add(insnNode)
-                    val oldblock = block
-                    block = CompiledBlockNode(this)
-                    cfg.putEdge(oldblock, block)
-                    startNewBlock.add(insnNode)
-                    blocks += oldblock
-                }
-                startNewBlock.contains(insnNode) -> {
-                    val oldBlock = block
-                    startNewBlock.remove(insnNode)
-                    block = CompiledBlockNode(this)
-                    block.add(insnNode)
-                    cfg.putEdge(oldBlock, block)
-                    blocks += oldBlock
-
+                    blocks.add(block)
+                    block = ByteBlockNode(this)
                 }
                 else -> {
-                    if (block.size == 0 && blocks.size > 0) {
-                    }
                     block.add(insnNode)
-                    if (i == instructions.size()) {
-                        blocks += block
+                    if (insnNode == instructions.last) {
+                        blocks.add(block)
                     }
                 }
             }
         }
+        try {
+            analyzer.analyze(this.parent.name, this)
+            annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
 
-//        blocks.forEach {
-//            log.info { cfg.inDegree(it) }
-//        }
-//        log.info { "${blocks.size} ${cfg.edges().size}"  }
+        } catch (e: AnalyzerException) {
+            log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+        }
+
+
     }
-        //val analyzer = Analyzer<SourceValue>(SourceInterpreter())
-        //val frames = analyzer.analyze(this.parent.name, this)
-//        var i = 0
-//        while (i < (instructions.size())) {
-//            var insn = instructions[i]
-//            mainBlock.add(insn)
-//            if (insn !is JumpInsnNode) {
-//                block.add(insn)
-//            } else {
-//                block.add(insn)
-//                val target = insn.label as AbstractInsnNode
-//                val oldBlock = block
-//                block = CompiledBlockNode(this)
-//                cfg.putEdgeValue(oldBlock, block, insn)
-//                oldBlock.edges.add(insn to block)
-//                blocks.add(oldBlock)
-//                if (insn.opcode == Opcodes.GOTO) {
-//                    i = instructions.indexOf((insn as JumpInsnNode).label)
-//                    mainBlock.add(insn)
-//                    i++
-//                    continue
-//                }
-//                val targetBlock = instructions.buildBlock(this, instructions.indexOf(target))
-//                if (!blocks.contains(targetBlock)) {
-//                    blocks.add(targetBlock)
-//                }
-//                cfg.putEdgeValue(oldBlock, targetBlock, insn)
-//
-//            }
-//            i++
-//            if (insn == instructions.last) {
-//                mainBlock.add(insn)
-//                blocks.add(mainBlock)
-//
-//            }
-//        }
-//        var n = 0;
-//        log.info { blocks.size
-//            blocks.forEach { firstBlock ->
-//                var s = "node${blocks.indexOf(firstBlock)} "
-//                cfg.successors(firstBlock).forEach {
-//                    if (cfg.hasEdgeConnecting(firstBlock, it)) {
-//                        s += "-> node${blocks.indexOf(it)} "
-//                    }
-//                }
-//                log.info { s }
-//            }
-//        }
-//
-//            cfg.edges().forEach {
-//                log.info { "node${blocks.indexOf(it.source())} -> node${blocks.indexOf(it.target())}" }
-//            }
-//          //  log.info { "${cfg.inDegree(it)} \t ${cfg.outDegree(it)}" }
 
 
+
+    override fun visitLineNumber(line: Int, start: Label?) {
+
+    }
+
+    private val analyzer = object : Analyzer<BasicValue>(BasicVerifier()) {
+
+        override fun newControlFlowEdge(insnIndex: Int, successorIndex: Int) {
+            findBlockByLast(instructions[insnIndex])?.let {
+                val b = findBlock(instructions[successorIndex])
+                if (b?.edges?.add(it to EdgeDirection.OUT) == true) {
+                    it.edges.add(b to EdgeDirection.IN)
+                }
+            }
+        }
+
+        override fun newControlFlowExceptionEdge(insnIndex: Int, tryCatchBlock: TryCatchBlockNode?): Boolean {
+            return super.newControlFlowExceptionEdge(insnIndex, tryCatchBlock)
+        }
+
+        override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
+            return super.newControlFlowExceptionEdge(insnIndex, successorIndex)
+        }
+    }
 
 
     override fun visitTypeInsn(opcode: Int, type: String?) {
@@ -305,10 +233,10 @@ open class CompiledMethod(
     }
 
     /**
-     * Moves this method to the specified CompiledClass and updates all references to this method
-     * @param destination - The CompiledClass object
+     * Moves this method to the specified ByteClass and updates all references to this method
+     * @param destination - The ByteClass object
      */
-    fun move(destination: CompiledClass) {
+    fun move(destination: ByteClass) {
         References.methodNames.remove("${parent.name}.$name.$desc")
         destination.visitMethod(access, name, desc, signature, exceptions.toTypedArray()).visitEnd()
         this.invocations.forEach {
@@ -341,5 +269,15 @@ open class CompiledMethod(
 
     fun setStatic() {
         access = access.or(Modifier.STATIC)
+    }
+
+    fun annotate(name: String,
+                  vararg fieldsToValues: Pair<String, *>) {
+        with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
+            fieldsToValues.asIterable().forEach {
+                this.visit(it.first, it.second)
+            }
+            this.visitEnd()
+        }
     }
 }

@@ -4,23 +4,24 @@ import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.FieldNode
 import org.bytetwist.bytetwist.References
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AnnotationNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
- * field, as well as a property of the owning CompiledClass: parent
+ * field, as well as a property of the owning ByteClass: parent
  */
-class CompiledField(
-    val parent: CompiledClass,
-    access: Int,
-    name: String,
-    descriptor: String,
-    signature: String?,
-    value: Any?
+class ByteField(
+        val parent: ByteClass,
+        access: Int,
+        name: String,
+        descriptor: String,
+        signature: String?,
+        value: Any?
 ) : FieldNode(Opcodes.ASM7, access, name, descriptor, signature, value),
-    CompiledNode {
+    ByteNode {
 
     /**
      * A Set of all FieldReferenceNode's that reference this particular field
@@ -56,15 +57,15 @@ class CompiledField(
         References.fieldNames["${parent.name}.$name"] = this
     }
 
-//    fun annotate(init: CompiledAnnotation.(CompiledField, String) -> Unit, descriptor: String): CompiledAnnotation {
+//    fun annotate(init: ByteAnnotation.(ByteField, String) -> Unit, descriptor: String): ByteAnnotation {
 //
 //
-//        val annotation = CompiledAnnotation(this, descriptor)
+//        val annotation = ByteAnnotation(this, descriptor)
 //
 //    }
 
     /**
-     * Removes this CompiledField/FieldNode from its parent class and removes all references to the field
+     * Removes this ByteField/FieldNode from its parent class and removes all references to the field
      */
     fun delete() {
         parent.fields.remove(this)
@@ -75,10 +76,10 @@ class CompiledField(
     }
 
     /**
-     * Moves this Field to the specified CompiledClass and updates all the references to the field
-     * @param destination - The CompiledClass object to move the field to
+     * Moves this Field to the specified ByteClass and updates all the references to the field
+     * @param destination - The ByteClass object to move the field to
      */
-    fun move(destination: CompiledClass) {
+    fun move(destination: ByteClass) {
         References.fieldNames.remove("${parent.name}.$name")
         destination.visitField(access, name, desc, signature, value)
         this.references.forEach {
@@ -136,20 +137,15 @@ class CompiledField(
         access = access.rem(Modifier.STATIC)
     }
 
-    fun annotate(
-        annotationName: String,
-        vararg fields: Pair<String, *>
-    ) {
-        val ann = visitAnnotation(annotationName, true) as FieldAnnotationNode
-        ann.visitEnd()
-        if (fields.any()) {
-            for (field in fields) {
-                ann.field(field.first, field.second)
+    fun annotate(name: String,
+                 vararg fieldsToValues: Pair<String, *>) {
+        with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
+            fieldsToValues.asIterable().forEach {
+                this.visit(it.first, it.second)
             }
+            this.visitEnd()
         }
-        this.visibleAnnotations.add(ann)
     }
-
 }
 
 

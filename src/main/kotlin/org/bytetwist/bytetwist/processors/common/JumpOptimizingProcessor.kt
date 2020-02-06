@@ -4,18 +4,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.JumpInsnNode
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import kotlin.reflect.KClass
 
 
 
 @ExperimentalCoroutinesApi
-class JumpOptimizingProcessor : AbstractNodeProcessor<CompiledMethod>() {
-    override val type: KClass<CompiledMethod> = CompiledMethod::class
+class JumpOptimizingProcessor : AbstractNodeProcessor<ByteMethod>() {
+    override val type: KClass<ByteMethod> = ByteMethod::class
 
 
-    override fun process(node: CompiledMethod) {
+    override fun process(node: ByteMethod) {
         for (it in node.instructions) {
             if (it is JumpInsnNode) {
                 var label = it.label

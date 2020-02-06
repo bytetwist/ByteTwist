@@ -3,10 +3,10 @@ package org.bytetwist.bytetwist.nodes
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AnnotationNode
 
-open class CompiledAnnotation(
-    val annotates: CompiledNode,
-    var descriptor: String?
-) : AnnotationNode(Opcodes.ASM7, descriptor), CompiledNode {
+open class ByteAnnotation(
+        val annotates: ByteNode,
+        var descriptor: String?
+) : AnnotationNode(Opcodes.ASM7, descriptor), ByteNode {
 
     fun field(name: String, value: Any?) {
         super.visit(name, value)
@@ -19,25 +19,25 @@ open class CompiledAnnotation(
 }
 
 class ClassAnnotationNode(
-    annotates: CompiledClass,
-    descriptor: String?
-) : CompiledAnnotation(
+        annotates: ByteClass,
+        descriptor: String?
+) : ByteAnnotation(
     annotates,
     descriptor
-), CompiledNode
+), ByteNode
 
 class FieldAnnotationNode(
-    annotates: CompiledField,
-    descriptor: String?
-) : CompiledAnnotation(
+        annotates: ByteField,
+        descriptor: String?
+) : ByteAnnotation(
     annotates,
     descriptor
-), CompiledNode
+), ByteNode
 
 class MethodAnnotationNode(
-    annotates: CompiledNode,
-    descriptor: String?
-) : CompiledAnnotation(
+        annotates: ByteNode,
+        descriptor: String?
+) : ByteAnnotation(
     annotates,
     descriptor
-), CompiledNode
+), ByteNode
