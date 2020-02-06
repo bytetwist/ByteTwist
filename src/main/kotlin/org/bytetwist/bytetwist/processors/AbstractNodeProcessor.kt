@@ -5,14 +5,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.bytetwist.bytetwist.nodes.CompiledNode
+import org.bytetwist.bytetwist.nodes.ByteNode
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
 internal val log = KotlinLogging.logger { }
 
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractNodeProcessor<T : CompiledNode> {
+abstract class AbstractNodeProcessor<T : ByteNode> {
 
 
     private val timer = Stopwatch.createUnstarted()
@@ -60,7 +60,7 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
         }
     }
 
-    inline fun <reified T : CompiledNode> type() = T::class
+    inline fun <reified T : ByteNode> type() = T::class
 
     abstract val type: KClass<T>
 
@@ -73,7 +73,7 @@ abstract class AbstractNodeProcessor<T : CompiledNode> {
 
 }
 
-fun <T : CompiledNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
+fun <T : ByteNode> oneOff(type: KClass<T>, process: (node: T) -> Unit): AbstractNodeProcessor<T> {
     return object : AbstractNodeProcessor<T>() {
         override val type = type
 

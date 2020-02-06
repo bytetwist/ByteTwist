@@ -1,9 +1,9 @@
 package org.bytetwist.bytetwist
 
 import org.bytetwist.bytetwist.References.fieldNames
-import org.bytetwist.bytetwist.nodes.CompiledClass
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteClass
+import org.bytetwist.bytetwist.nodes.ByteField
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -13,42 +13,42 @@ import java.util.concurrent.ConcurrentHashMap
  *
  */
 object References {
-    val classNames = ConcurrentHashMap<String, CompiledClass>()
+    val classNames = ConcurrentHashMap<String, ByteClass>()
 
-    val fieldNames = ConcurrentHashMap<String, CompiledField>()
+    val fieldNames = ConcurrentHashMap<String, ByteField>()
 
-    val methodNames = ConcurrentHashMap<String, CompiledMethod>()
+    val methodNames = ConcurrentHashMap<String, ByteMethod>()
 
-    fun findClass(name: String): CompiledClass? {
+    fun findClass(name: String): ByteClass? {
         return classNames[name]
     }
 
     /**
-     * Finds a [CompiledMethod] by the [CompiledMethod.name] value.
+     * Finds a [ByteMethod] by the [ByteMethod.name] value.
      * Useful when you don't have a reference to the owner or the descriptor/signature
      */
-    fun findMethod(name: String) : CompiledMethod? {
+    fun findMethod(name: String) : ByteMethod? {
         return methodNames.values.find { c -> c.name == name }
     }
 
-    fun findField(name: String) : CompiledField? {
+    fun findField(name: String) : ByteField? {
         return fieldNames.values.find { f -> f.name == name }
     }
 
 }
 
-inline fun findClass(name: String): CompiledClass? {
+inline fun findClass(name: String): ByteClass? {
     return References.classNames[name]
 }
 
-fun findMethod(name: String) : CompiledMethod? {
+fun findMethod(name: String) : ByteMethod? {
     return References.methodNames.values.find { c -> c.name == name }
 }
 
 /**
- * Finds a [CompiledField] by the [CompiledField.name] value.
+ * Finds a [ByteField] by the [ByteField.name] value.
  * Useful when you don't have a reference to the owner
  */
-fun findField(name: String) : CompiledField? {
+fun findField(name: String) : ByteField? {
     return fieldNames.values.find { f -> f.name == name }
 }

@@ -3,7 +3,7 @@ package org.bytetwist.bytetwist.scanners
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import org.bytetwist.bytetwist.nodes.CompiledNode
+import org.bytetwist.bytetwist.nodes.ByteNode
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.ProcessingQueue
 import java.io.File
@@ -18,7 +18,7 @@ abstract class Scanner {
     /**
      * Adds a processor to the Processing Queue
      */
-    fun <T : CompiledNode> addProcessor(processor: AbstractNodeProcessor<T>) {
+    fun <T : ByteNode> addProcessor(processor: AbstractNodeProcessor<T>) {
         processors.addProcessor(processor)
     }
 

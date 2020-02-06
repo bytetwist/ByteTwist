@@ -5,19 +5,15 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.exceptions.NoInputDir
-import org.bytetwist.bytetwist.nodes.CompiledClass
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteClass
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.common.*
 import org.bytetwist.bytetwist.processors.log
-import org.bytetwist.bytetwist.processors.oneOff
 import org.objectweb.asm.ClassReader
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
-import javax.swing.JFrame
-import javax.swing.JTree
 import kotlin.system.measureTimeMillis
 
 @InternalCoroutinesApi
@@ -44,7 +40,7 @@ class DoublePassScanner : Scanner() {
                         loadBytesFromFile(it)
                     }
                     classFiles.forEach {
-                        val classNode = CompiledClass()
+                        val classNode = ByteClass()
                         ClassReader(it).apply {
                             accept(classNode, ClassReader.EXPAND_FRAMES)
                         }
@@ -59,9 +55,9 @@ class DoublePassScanner : Scanner() {
 
                                 launch {
 
-                                    if (mn is CompiledMethod) {
+                                    if (mn is ByteMethod) {
                                         launch {
-                                            mn.analyzeBlocks()
+                                            mn.buildBlocks()
                                         }
                                         launch {
                                             for (feldRef in mn.fieldReferences()) {
@@ -133,10 +129,12 @@ fun main() {
     val classProcessor =
         BasicClassProcessor()// as AbstractProcessor<*>
     val scanner = DoublePassScanner()
-    scanner.inputDir = File("C:\\Users\\Jesse\\Downloads\\DodianClient2.jar")
+    scanner.inputDir = File("gamepack_obf.jar")
+    scanner.addProcessor(FieldRenamer())
+    scanner.addProcessor(MethodRenamer())
     scanner.addProcessor(AbstractMethodProcessor())
 //    scanner.addProcessor(
-//        oneOff(CompiledMethod::class) {
+//        oneOff(ByteMethod::class) {
 //            if (it.name == "method320") {
 //                runBlocking {
 //                    with(JFrame()) {

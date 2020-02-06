@@ -1,8 +1,8 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteField
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeAll
@@ -30,7 +30,7 @@ class MemberMoveTest {
         assertNotNull(clazz)
         val oldClass = References.classNames["MoveMemberTest"]
         assertNotNull(oldClass)
-        assertEquals(2, oldClass.methods.filterIsInstance(CompiledMethod::class.java).size)
+        assertEquals(2, oldClass.methods.filterIsInstance(ByteMethod::class.java).size)
         assertEquals(2, clazz.methods.size)
     }
 
@@ -44,17 +44,17 @@ class MemberMoveTest {
         fun scanResources() {
             scanner.inputDir = File("src/test/resources")
             scanner.scan()
-            scanner.addProcessor(oneOff(CompiledField::class) {
+            scanner.addProcessor(oneOff(ByteField::class) {
                 if (it.isStatic() && it.name == "moveMe") {
                     References.classNames["DestinationClass"]?.let { it1 -> it.move(it1) }
                 }
             })
-            scanner.addProcessor(oneOff(CompiledMethod::class) {
+            scanner.addProcessor(oneOff(ByteMethod::class) {
                 if (it.isStatic() && it.name == "moveMe") {
                     it.move(References.classNames["DestinationClass"]!!)
                 }
             })
-//            scanner.addProcessor(oneOff(CompiledClass::class) {
+//            scanner.addProcessor(oneOff(ByteClass::class) {
 //                Files.write(Paths.get(scanner.inputDir.toString(), "/out/", it.name + ".class"), it.toBytes())
 //            })
             scanner.run()

@@ -2,20 +2,20 @@ package org.bytetwist.bytetwist.nodes
 
 
 /**
- * An abstraction of [CompiledMethod] that is a constructors
+ * An abstraction of [ByteMethod] that is a constructors
  */
 class ConstructorNode(
-    parent: CompiledClass,
-    access: Int,
-    name: String,
-    descriptor: String,
-    signature: String?,
-    exceptions: Array<out String>?
-) : CompiledMethod(
+        parent: ByteClass,
+        access: Int,
+        name: String,
+        descriptor: String,
+        signature: String?,
+        exceptions: Array<out String>?
+) : ByteMethod(
     parent,
     access,
     name,
     descriptor,
     signature,
     exceptions
-), CompiledNode
+), ByteNode

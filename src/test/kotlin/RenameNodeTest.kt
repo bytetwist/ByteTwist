@@ -2,8 +2,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.CompiledField
-import org.bytetwist.bytetwist.nodes.CompiledMethod
+import org.bytetwist.bytetwist.nodes.ByteField
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
@@ -28,7 +28,7 @@ class RenameNodeTest {
         scanner.inputDir = File("src/test/resources")
         scanner.scan()
         scanner.addProcessor(RenameMethod())
-        scanner.addProcessor(oneOff(CompiledField::class) {
+        scanner.addProcessor(oneOff(ByteField::class) {
                 node -> if (node.name == "s") node.rename("stringValue")
         })
         scanner.run()
@@ -58,10 +58,10 @@ class RenameNodeTest {
         assert(References.findMethod("paramsTest")?.desc?.contains("NewClassName")!!)
     }
 
-    class RenameMethod(override val type: KClass<CompiledMethod> = CompiledMethod::class) :
-        AbstractNodeProcessor<CompiledMethod>() {
+    class RenameMethod(override val type: KClass<ByteMethod> = ByteMethod::class) :
+        AbstractNodeProcessor<ByteMethod>() {
 
-        override fun process(node: CompiledMethod) {
+        override fun process(node: ByteMethod) {
             if (node.name == "renameMe") {
                 node.rename("fine")
             }

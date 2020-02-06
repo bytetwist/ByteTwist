@@ -9,26 +9,26 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
- * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [CompiledMethod] and all
- * the objects in the fields field can be cast to [CompiledField].
+ * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [ByteMethod] and all
+ * the objects in the fields field can be cast to [ByteField].
  *
- * A CompiledClass is part of an inheritance hierarchy. It's subclasses can be accessed through
+ * A ByteClass is part of an inheritance hierarchy. It's subclasses can be accessed through
  * the [subClasses] property and it's parent class (if it has one) can be accessed through [superClass].
  * If the class has a parent class that was not scanned by ByteTwist then the only reference to the parent class
  * is through the field [superName].
  *
- * A CompiledClass also has access to all instructions that reference the class in the form of a [ClassReferenceNode],
+ * A ByteClass also has access to all instructions that reference the class in the form of a [ClassReferenceNode],
  * which are stored in the [typeReferences] property.
  *
- * The CompiledClass has many methods that allow modification of the class without having to worry about references.
+ * The ByteClass has many methods that allow modification of the class without having to worry about references.
  *
  * TODO: Interfaces, Enums, DSL/methods for easily generating new CompiledClasses
  */
-open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
+open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
 
-    val subClasses = CopyOnWriteArraySet<CompiledClass>()
+    val subClasses = CopyOnWriteArraySet<ByteClass>()
 
-    val implementedBy = CopyOnWriteArraySet<CompiledClass>()
+    val implementedBy = CopyOnWriteArraySet<ByteClass>()
 
         val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
@@ -65,7 +65,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         signature: String?,
         value: Any?
     ): FieldVisitor {
-        val field = CompiledField(
+        val field = ByteField(
             this,
             access,
             name,
@@ -92,7 +92,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     }
 
     /**
-     * Visits a class method or constructor and builds a [CompiledMethod] or [ConstructorNode] object.
+     * Visits a class method or constructor and builds a [ByteMethod] or [ConstructorNode] object.
      * Note: constructors are not represented as subtypes of CompiledMethods
      * it to this classes list of methods/constructors
      */
@@ -115,8 +115,8 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         descriptor: String,
         signature: String?,
         exceptions: Array<out String>?
-    ): CompiledMethod {
-        val method = CompiledMethod(
+    ): ByteMethod {
+        val method = ByteMethod(
             this,
             access,
             name,
@@ -162,7 +162,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
         References.classNames[this.name] = this
 
             fields.forEach { fieldNode ->
-                if (fieldNode is CompiledField) {
+                if (fieldNode is ByteField) {
                     References.fieldNames.remove("$oldName.${fieldNode.name}")
                     References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
                     fieldNode.references.forEach {
@@ -174,7 +174,7 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
 
 
 
-            methods.filterIsInstance(CompiledMethod::class.java).forEach { methodNode ->
+            methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
                 References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
                 References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
                 methodNode.invocations.forEach {
@@ -219,10 +219,10 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     /**
      * Returns the super class of this class, if the super class is one of the classes scanned. Returns null otherwise
      * If you are trying to return just the name of the super class, use the ASM implementation of superName
-     * @return The CompiledClass object of the super class if the super class was one of the scanned classes, otherwise
+     * @return The ByteClass object of the super class if the super class was one of the scanned classes, otherwise
      * null
      */
-    fun superClass(): CompiledClass? = References.classNames.getOrDefault(superName, null)
+    fun superClass(): ByteClass? = References.classNames.getOrDefault(superName, null)
 
 
     /**
@@ -251,9 +251,9 @@ open class CompiledClass : ClassNode(Opcodes.ASM7), CompiledNode {
     fun buildHierarchy() {
         //GlobalScope.launch {
             val classes = References.classNames.values.filter { compiledClass ->
-                compiledClass.superName == this@CompiledClass.name
+                compiledClass.superName == this@ByteClass.name
             }
-            this@CompiledClass.subClasses.addAll(classes)
+            this@ByteClass.subClasses.addAll(classes)
         }
     //}
 }

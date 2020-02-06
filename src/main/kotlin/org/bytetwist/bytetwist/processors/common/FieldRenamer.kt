@@ -1,20 +1,21 @@
 package org.bytetwist.bytetwist.processors.common
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.bytetwist.bytetwist.nodes.CompiledField
+import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 
 @ExperimentalCoroutinesApi
-class FieldRenamer : AbstractNodeProcessor<CompiledField>() {
+class FieldRenamer : AbstractNodeProcessor<ByteField>() {
 
 
-    override fun process(node: CompiledField) {
+    override fun process(node: ByteField) {
+        node.annotate("Renamed", "oldName" to node.name)
         node.rename("field$nodesProcessed")
     }
 
-    override fun preProcess(node: CompiledField): Boolean {
+    override fun preProcess(node: ByteField): Boolean {
         return node.name.length <= 3 || node.name.length > 60
     }
 
-    override val type = CompiledField::class
+    override val type = ByteField::class
 }
