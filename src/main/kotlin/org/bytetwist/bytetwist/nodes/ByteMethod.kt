@@ -164,6 +164,7 @@ open class ByteMethod(
                 }
             }
         }
+
         try {
             analyzer.analyze(this.parent.name, this)
            // annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
