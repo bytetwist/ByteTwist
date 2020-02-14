@@ -19,4 +19,16 @@ public class BlockTestClass {
             return;
         }
     }
+
+    public void tryCatchBlock()
+    {
+        try
+        {
+            System.out.println("try block");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

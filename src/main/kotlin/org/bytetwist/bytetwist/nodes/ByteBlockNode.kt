@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 typealias Block = ByteBlockNode
 
-class ByteBlockNode(
+open class ByteBlockNode(
         val method: ByteMethod
 ) : CopyOnWriteArrayList<AbstractInsnNode>(), ByteNode {
 
@@ -38,6 +38,10 @@ class ByteBlockNode(
                 Opcodes.IF_ICMPGT, Opcodes.IF_ICMPLE, Opcodes.IF_ICMPGE, Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE, Opcodes.LCMP,
                 Opcodes.FCMPL, Opcodes.FCMPG, Opcodes.DCMPL, Opcodes.DCMPG)
     }
+
+}
+
+class TryCatchBlock(method: ByteMethod) : ByteBlockNode(method), ByteNode {
 
 }
 
