@@ -1,5 +1,6 @@
 package org.bytetwist.bytetwist.nodes
 
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.LabelNode
 import org.objectweb.asm.tree.TryCatchBlockNode
 
@@ -15,4 +16,9 @@ class ByteTryCatch(
         handler,
         type
 ), ByteNode {
+
+        /**
+         *
+         */
+        fun getType() = Type.getObjectType(type)
 }
