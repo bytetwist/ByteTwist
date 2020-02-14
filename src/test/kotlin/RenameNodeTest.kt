@@ -2,6 +2,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.findClass
+import org.bytetwist.bytetwist.findMethod
 import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
@@ -10,8 +12,10 @@ import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.objectweb.asm.Type
 import java.io.File
 import kotlin.reflect.KClass
+import kotlin.test.assert
 import kotlin.test.assertNotNull
 
 private val log = KotlinLogging.logger {}
@@ -56,6 +60,8 @@ class RenameNodeTest {
         assert(References.classNames["NewClassName"] == c)
         assertEquals(c, References.findMethod("fine")!!.parent)
         assert(References.findMethod("paramsTest")?.desc?.contains("NewClassName")!!)
+        assertEquals(findClass("NewClassName")!!.subClasses.first().superName, "NewClassName")
+        assertEquals(Type.getReturnType(References.findMethod("paramsTest")?.desc).className, "NewClassName")
     }
 
     class RenameMethod(override val type: KClass<ByteMethod> = ByteMethod::class) :

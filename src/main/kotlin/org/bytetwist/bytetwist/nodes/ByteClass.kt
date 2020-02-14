@@ -26,6 +26,9 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
 
+    /**
+     * A list of scanned [ByteClass] that extend this class.
+     */
     val subClasses = CopyOnWriteArraySet<ByteClass>()
 
     val implementedBy = CopyOnWriteArraySet<ByteClass>()
@@ -183,6 +186,10 @@ open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
                     if (it.desc.contains(oldName)) {
                         it.desc = it.desc.replace("L$oldName;", "L$name;")
                     }
+                }
+                if (methodNode.signature != null && methodNode.signature.contains(Type.getObjectType(oldName).descriptor)) {
+                    methodNode.signature = methodNode.signature.replace(Type.getObjectType(oldName).descriptor,
+                            Type.getObjectType(newName).descriptor)
                 }
             }
 
