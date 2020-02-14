@@ -1,18 +1,24 @@
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.findField
 import org.bytetwist.bytetwist.findMethod
+import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @InternalCoroutinesApi
 class FieldModTest {
 
+    @ExperimentalCoroutinesApi
     private val s = DoublePassScanner()
 
+    @ExperimentalCoroutinesApi
     @BeforeEach
     fun setup() {
         s.inputDir = File("src/test/resources")
@@ -33,6 +39,23 @@ class FieldModTest {
     }
 
     @Test
+    fun fieldParent() {
+        val parent = findField("privateStaticField")?.parent
+        assertNotNull(parent)
+    }
+
+    @Test
+    fun deleteTest() {
+        val field = findField("privateStaticField")
+        assertNotNull(field)
+        val parent = field.parent
+        assertNotNull(parent)
+        field.delete()
+        assertNull(findField("privateStaticField"))
+        assertFalse(parent.fields.map { f -> f.name }.contains("privateStaticField"))
+    }
+
+    @Test
     fun methodModTest() {
         with (findMethod("testMethod1")) {
             assertNotNull(this)
@@ -47,6 +70,14 @@ class FieldModTest {
             setAbstract()
             assertTrue { isAbstract() }
         }
+    }
+
+    @Test
+    fun annotateTest() {
+        val field = findField("privateStaticField")
+        assertNotNull(field)
+        field.annotate("test")
+        assert(field.visibleAnnotations.size == 1)
     }
 
 

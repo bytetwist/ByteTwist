@@ -72,7 +72,8 @@ class ByteField(
         references.forEach {
             it.method.instructions.remove(it)
         }
-        References.fieldNames.remove(name)
+        References.fieldNames.remove("${parent.name}.${this.name}")
+        parent.fields.remove(this)
     }
 
     /**

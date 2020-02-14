@@ -52,3 +52,10 @@ fun findMethod(name: String) : ByteMethod? {
 fun findField(name: String) : ByteField? {
     return fieldNames.values.find { f -> f.name == name }
 }
+
+/**
+ * Get's a method from a
+ */
+fun ByteClass.getMethodByName(methodName: String) : ByteMethod? {
+    return this.methods.associateBy { methodNode -> methodNode.name }[methodName] as ByteMethod
+}

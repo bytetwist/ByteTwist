@@ -90,8 +90,14 @@ open class ByteMethod(
 
     override fun visitTryCatchBlock(start: Label?, end: Label?, handler: Label?, type: String?) {
         instructions.indexOf(getLabelNode(start))
-        getLabelNode(start)
-        super.visitTryCatchBlock(start, end, handler, type)
+        if (type != null) {
+            val tryCatch = ByteTryCatch(this, getLabelNode(start),
+                getLabelNode(end), getLabelNode(handler), type)
+            this.tryCatchBlocks.add(tryCatch)
+            return
+        }
+        this.tryCatchBlocks.add(ByteTryCatch(this, getLabelNode(start),
+            getLabelNode(end), getLabelNode(handler), ""))
     }
 
     override fun visitInsn(opcode: Int) {
