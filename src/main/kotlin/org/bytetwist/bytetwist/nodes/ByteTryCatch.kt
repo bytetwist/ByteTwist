@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist.nodes
 
 import org.objectweb.asm.Type
+import org.objectweb.asm.tree.JumpInsnNode
 import org.objectweb.asm.tree.LabelNode
 import org.objectweb.asm.tree.TryCatchBlockNode
 
@@ -11,8 +12,8 @@ class ByteTryCatch(
     val method: ByteMethod,
     start: LabelNode,
     end: LabelNode,
-    handler: LabelNode,
-    type: String
+    handler: LabelNode?,
+    type: String?
 ) : TryCatchBlockNode(
     start,
     end,
@@ -25,6 +26,11 @@ class ByteTryCatch(
      *
      */
     fun getType() = Type.getObjectType(type)
+
+    fun buildMethodBlocks() {
+        tryBlock()
+        catchBlock()
+    }
 
     fun tryBlock(): ByteBlockNode {
         if (method.blocks.isNotEmpty() && method.findBlock(start) != null) {
@@ -44,6 +50,26 @@ class ByteTryCatch(
             method.blocks.add(block)
         }
             return block
+    }
+
+    fun catchBlock(): ByteBlockNode {
+        if (method.blocks.isNotEmpty() && method.findBlock(handler) != null) {
+//            if (!this.tryBlock().edges.contains(method.findBlock(handler) to EdgeDirection.OUT)) {
+//                this.tryBlock().edges.add(((method.findBlock(handler) as ByteBlockNode to EdgeDirection.OUT)!!))
+//            }
+            return method.findBlock(handler)!!
+        }
+        val block = Block(method)
+        method.instructions.filter { abstractInsnNode ->
+            method.instructions.indexOf(abstractInsnNode) >= method.instructions.indexOf(handler)
+        }
+            .forEach { insnNode ->
+                if (insnNode !is JumpInsnNode) {
+                    block.add(insnNode)
+                }
+            }
+        method.blocks.add(block)
+        return block
     }
 
 }

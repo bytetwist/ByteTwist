@@ -8,7 +8,6 @@ import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.Type
-import org.objectweb.asm.commons.TryCatchBlockSorter
 import org.objectweb.asm.tree.*
 import org.objectweb.asm.tree.analysis.*
 import java.lang.reflect.Modifier
@@ -20,12 +19,12 @@ import kotlin.collections.HashSet
  * An abstraction of the ClassNode
  */
 open class ByteMethod(
-        val parent: ByteClass,
-        access: Int,
-        name: String,
-        descriptor: String?,
-        signature: String?,
-        exceptions: Array<out String>?
+    val parent: ByteClass,
+    access: Int,
+    name: String,
+    descriptor: String?,
+    signature: String?,
+    exceptions: Array<out String>?
 ) : MethodNode(
     Opcodes.ASM7,
     access,
@@ -34,6 +33,17 @@ open class ByteMethod(
     signature,
     exceptions
 ), ByteNode {
+    override fun visitVarInsn(opcode: Int, `var`: Int) {
+        val reference = ByteVariableReference(opcode, `var`)
+        instructions.add(reference)
+    }
+
+    override fun visitEnd() {
+
+
+
+    }
+
 
     /**
      * A list of MethodReferences in which this method is invoked
@@ -91,13 +101,19 @@ open class ByteMethod(
     override fun visitTryCatchBlock(start: Label?, end: Label?, handler: Label?, type: String?) {
         instructions.indexOf(getLabelNode(start))
         if (type != null) {
-            val tryCatch = ByteTryCatch(this, getLabelNode(start),
-                getLabelNode(end), getLabelNode(handler), type)
+            val tryCatch = ByteTryCatch(
+                this, getLabelNode(start),
+                getLabelNode(end), getLabelNode(handler), type
+            )
             this.tryCatchBlocks.add(tryCatch)
             return
         }
-        this.tryCatchBlocks.add(ByteTryCatch(this, getLabelNode(start),
-            getLabelNode(end), getLabelNode(handler), ""))
+        this.tryCatchBlocks.add(
+            ByteTryCatch(
+                this, getLabelNode(start),
+                getLabelNode(end), getLabelNode(handler), "Exception"
+            )
+        )
     }
 
     override fun visitInsn(opcode: Int) {
@@ -107,15 +123,33 @@ open class ByteMethod(
 
 
 
+
     override fun visitLocalVariable(
-        name: String?,
-        descriptor: String?,
+        name: String,
+        descriptor: String,
         signature: String?,
         start: Label?,
         end: Label?,
         index: Int
     ) {
-        super.visitLocalVariable(name, descriptor, signature, start, end, index)
+        val byteVar = ByteVariable(
+            this,
+            name,
+            descriptor,
+            signature,
+            getLabelNode(start),
+            getLabelNode(end),
+            index
+        )
+        log.info { byteVar }
+        localVariables.add(byteVar)
+        val refs = instructions.filterIsInstance(ByteVariableReference::class.java).filter {
+            it.`var` == index
+        }
+        if (!refs.isNullOrEmpty()) {
+            refs.onEach { byteVar.references.add(it) }
+            log.info { "adding local variable ref" }
+        }
     }
 
 
@@ -164,13 +198,33 @@ open class ByteMethod(
                 }
             }
         }
+        if (!this.tryCatchBlocks.isNullOrEmpty()) {
+            this.tryCatchBlocks.forEach { tryCatchBlock ->
+                if (tryCatchBlock != null) {
+                    (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
+                }
+
+            }
+        }
 
         try {
-            analyzer.analyze(this.parent.name, this)
-           // annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+            val frames = analyzer.analyze(this.parent.name, this)
+            instructions.zip(frames).forEach {
+                if (it.second == null) {
+                    log.debug { ";)" }
+                }
+            }
+            annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+            annotate("TryCatchs", "number" to tryCatchBlocks.size)
 
         } catch (e: AnalyzerException) {
-            log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+            //log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+        }
+
+        if (localVariables != null && localVariables.isNotEmpty()) {
+            localVariables.forEach {
+                annotate("Local Variable ${it.name}", "References" to (it as ByteVariable).references.size)
+            }
         }
 
 
@@ -201,7 +255,14 @@ open class ByteMethod(
         }
 
         override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
-            return super.newControlFlowExceptionEdge(insnIndex, successorIndex)
+            findBlockByLast(instructions[insnIndex])?.let {
+                val b = findBlock(instructions[successorIndex])
+                if (b?.edges?.add(it to EdgeDirection.OUT) == true) {
+                    it.edges.add(b to EdgeDirection.IN)
+                    return true
+                }
+            }
+            return false
         }
     }
 
@@ -281,8 +342,10 @@ open class ByteMethod(
         access = access.or(Modifier.STATIC)
     }
 
-    fun annotate(name: String,
-                  vararg fieldsToValues: Pair<String, *>) {
+    fun annotate(
+        name: String,
+        vararg fieldsToValues: Pair<String, Any>
+    ) {
         with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
             fieldsToValues.asIterable().forEach {
                 this.visit(it.first, it.second)

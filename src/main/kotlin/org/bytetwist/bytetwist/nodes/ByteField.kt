@@ -135,7 +135,10 @@ class ByteField(
      * Adds a static access modifier to the field.
      */
     fun setStatic() {
-        access = access.rem(Modifier.STATIC)
+        access = access.or(Modifier.STATIC)
+        references.forEach {
+            //TODO
+        }
     }
 
     fun annotate(name: String,

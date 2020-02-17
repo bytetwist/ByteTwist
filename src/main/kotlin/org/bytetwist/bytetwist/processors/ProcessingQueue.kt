@@ -12,7 +12,6 @@ import java.util.concurrent.CopyOnWriteArraySet
 @InternalCoroutinesApi
 open class ProcessingQueue {
 
-    val nodes = CopyOnWriteArraySet<ByteClass>()
     val methodNodes = CopyOnWriteArraySet<ByteMethod>()
     val fieldNodes = CopyOnWriteArraySet<ByteField>()
     var processors = sequenceOf<AbstractNodeProcessor<in ByteNode>>().constrainOnce()
@@ -26,25 +25,30 @@ open class ProcessingQueue {
 
     @ExperimentalCoroutinesApi
     private fun classes() = flow {
-        this.emitAll(nodes.asFlow())
+        this.emitAll(Companion.nodes.asFlow())
     }
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun fields() = flow {
-        this.emitAll(nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<ByteField> }.asFlow())
+        this.emitAll(Companion.nodes.flatMap { compiledClass -> compiledClass.fields as Iterable<ByteField> }.asFlow())
     }
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methods(): Flow<ByteMethod> = flow {
-        this.emitAll(nodes.flatMap { c -> c.methods.filterIsInstance(ByteMethod::class.java) }.asFlow())
+        this.emitAll(Companion.nodes.flatMap { c -> c.methods.filterIsInstance(ByteMethod::class.java) }.asFlow())
+    }
+
+    @ExperimentalCoroutinesApi
+    fun blocks(): Flow<ByteBlockNode> = flow {
+        methods().onEach { byteMethod -> byteMethod.blocks.onEach { emit(it) } }
     }
 
     @ExperimentalCoroutinesApi
     fun annotations(): Flow<ByteAnnotation> = flow {
-        this.emitAll(listOf(nodes.flatMap { c -> c.visibleAnnotations as Iterable<ByteAnnotation> }).flatten().asFlow())
-        this.emitAll(nodes.flatMap { compiledClass ->
+        this.emitAll(listOf(Companion.nodes.flatMap { c -> c.visibleAnnotations as Iterable<ByteAnnotation> }).flatten().asFlow())
+        this.emitAll(Companion.nodes.flatMap { compiledClass ->
             compiledClass.fields.flatMap { fieldNode ->
                fieldNode.visibleAnnotations as List<ByteAnnotation>
             }
@@ -54,7 +58,7 @@ open class ProcessingQueue {
 
     @ExperimentalCoroutinesApi
     fun fieldRefs(): Flow<FieldReferenceNode> = flow {
-        this.emitAll(nodes.flatMap { c ->
+        this.emitAll(Companion.nodes.flatMap { c ->
             c.methods.flatMap { node ->
                 (node as ByteMethod).instructions.filterIsInstance(
                     FieldReferenceNode::class.java
@@ -67,7 +71,7 @@ open class ProcessingQueue {
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methodRefs(): Flow<MethodReferenceNode> = flow {
-        this.emitAll(nodes.flatMap { c ->
+        this.emitAll(Companion.nodes.flatMap { c ->
             c.methods.flatMap { node ->
                 (node as ByteMethod).instructions.filterIsInstance(
                     MethodReferenceNode::class.java
@@ -94,10 +98,15 @@ open class ProcessingQueue {
                     FieldRead::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldRead>())
                     MethodReferenceNode::class -> processor.subscribe(methodRefs())
                     ByteAnnotation::class -> processor.subscribe(annotations())
+                    ByteBlockNode::class -> processor.subscribe(blocks())
                 }
                 processor.complete()
             }
         }
+    }
+
+    companion object {
+        var nodes = CopyOnWriteArraySet<ByteClass>()
     }
 }
 

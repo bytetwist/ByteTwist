@@ -2,18 +2,21 @@ package org.bytetwist.bytetwist.scanners
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.exceptions.NoInputDir
-import org.bytetwist.bytetwist.nodes.ByteClass
-import org.bytetwist.bytetwist.nodes.ByteMethod
+import org.bytetwist.bytetwist.nodes.*
+import org.bytetwist.bytetwist.processors.ProcessingQueue
 import org.bytetwist.bytetwist.processors.common.*
 import org.bytetwist.bytetwist.processors.log
+import org.bytetwist.bytetwist.processors.oneOff
 import org.objectweb.asm.ClassReader
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import kotlin.streams.asStream
 import kotlin.system.measureTimeMillis
 
 @InternalCoroutinesApi
@@ -22,8 +25,7 @@ class DoublePassScanner : Scanner() {
 
     private val classFiles = CopyOnWriteArrayList<ByteArray>()
 
-    val nodes = processors.nodes
-
+    val nodes = ProcessingQueue.nodes
 
 
     /**
@@ -33,50 +35,53 @@ class DoublePassScanner : Scanner() {
         if (inputDir == null) {
             throw NoInputDir()
         }
-        log.info { "Scanning finished in " +
-            measureTimeMillis {
-                runBlocking {
-                    inputDir!!.walkTopDown().forEach {
-                        loadBytesFromFile(it)
-                    }
-                    classFiles.forEach {
-                        val classNode = ByteClass()
-                        ClassReader(it).apply {
-                            accept(classNode, ClassReader.EXPAND_FRAMES)
-                        }
-                        processors.nodes.add(classNode)
-                    }
-                    processors.nodes.onEach { clazz ->
-                        launch {
-                            clazz.buildHierarchy()
-                        }
-                        launch {
-                            for (mn in clazz.methods) {
-
+        log.info {
+            "Scanning finished in " +
+                    measureTimeMillis {
+                        runBlocking {
+                            inputDir!!.walkTopDown().asSequence().forEach {
+                                    loadBytesFromFile(it)
+                            }
+                            classFiles.forEach {
+                                val classNode = ByteClass()
+                                ClassReader(it).apply {
+                                    accept(classNode, ClassReader.EXPAND_FRAMES)
+                                }
+                                ProcessingQueue.nodes.add(classNode)
+                            }
+                            ProcessingQueue.nodes.onEach { clazz ->
                                 launch {
+                                    clazz.buildHierarchy()
+                                }
+                                launch {
+                                    for (mn in clazz.methods) {
 
-                                    if (mn is ByteMethod) {
                                         launch {
-                                            mn.buildBlocks()
-                                        }
-                                        launch {
-                                            for (feldRef in mn.fieldReferences()) {
+
+                                            if (mn is ByteMethod) {
                                                 launch {
-                                                    feldRef.addToField()
+                                                    mn.buildBlocks()
                                                 }
-                                            }
-                                        }
-                                        launch {
-                                            for (methodCalls in mn.methodCalls()) {
                                                 launch {
-                                                    methodCalls.addToMethod()
+                                                    for (feldRef in mn.fieldReferences()) {
+                                                        launch {
+                                                            feldRef.addToField()
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        }
-                                        launch {
-                                            for (typeRefs in mn.typeReferences()) {
                                                 launch {
-                                                    typeRefs.addToClass()
+                                                    for (methodCalls in mn.methodCalls()) {
+                                                        launch {
+                                                            methodCalls.addToMethod()
+                                                        }
+                                                    }
+                                                }
+                                                launch {
+                                                    for (typeRefs in mn.typeReferences()) {
+                                                        launch {
+                                                            typeRefs.addToClass()
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -84,9 +89,7 @@ class DoublePassScanner : Scanner() {
                                 }
                             }
                         }
-                    }
-                }
-            } / 1000.0 + " ms."
+                    } / 1000.0 + " ms."
         }
     }
 
@@ -129,10 +132,19 @@ fun main() {
     val classProcessor =
         BasicClassProcessor()// as AbstractProcessor<*>
     val scanner = DoublePassScanner()
-    scanner.inputDir = File("gamepack_obf.jar")
+    scanner.inputDir = File("186.jar")
+//    scanner.addProcessor(oneOff(ByteMethod::class) { bm ->
+//        bm.blocks.filterNotNull().forEach {
+//            log.info {
+//                "${bm.blocks.size}: $it -> ${it.edges.size} edges"
+//            }
+//        }
+//    })
+    scanner.addProcessor(AbstractMethodProcessor())
     scanner.addProcessor(FieldRenamer())
     scanner.addProcessor(MethodRenamer())
-    scanner.addProcessor(AbstractMethodProcessor())
+    scanner.addProcessor(ClassRenamer())
+    scanner.addProcessor(JumpOptimizingProcessor())
 //    scanner.addProcessor(
 //        oneOff(ByteMethod::class) {
 //            if (it.name == "method320") {

@@ -15,7 +15,7 @@ internal val log = KotlinLogging.logger { }
 abstract class AbstractNodeProcessor<T : ByteNode> {
 
 
-    private val timer = Stopwatch.createUnstarted()
+    internal val timer = Stopwatch.createUnstarted()
 
     internal val nodesProcessed = AtomicInteger()
 

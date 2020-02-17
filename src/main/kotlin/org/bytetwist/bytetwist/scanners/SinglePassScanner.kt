@@ -5,6 +5,7 @@ import org.objectweb.asm.ClassReader
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.nodes.ByteMethod
+import org.bytetwist.bytetwist.processors.ProcessingQueue
 import java.io.File
 import java.util.jar.JarFile
 
@@ -31,7 +32,7 @@ class SinglePassScanner : Scanner() {
                 }.start()
             }
         }
-        processors.nodes.forEach {
+        ProcessingQueue.nodes.forEach {
             launch {
                 scanFields(it)
             }
@@ -85,7 +86,7 @@ class SinglePassScanner : Scanner() {
      */
     private fun loadClass(bytes: ByteArray) {
         val node = readClass(bytes)
-        processors.nodes.add(node)
+        ProcessingQueue.nodes.add(node)
     }
 
     /**
