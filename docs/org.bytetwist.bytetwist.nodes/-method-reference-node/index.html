@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MethodReferenceNode - ByteTwist</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.nodes</a>&nbsp;/&nbsp;<a href="./index.html">MethodReferenceNode</a><br/>
+<br/>
+<h1>MethodReferenceNode</h1>
+<code><span class="keyword">class </span><span class="identifier">MethodReferenceNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MethodInsnNode</span><span class="symbol">, </span><a href="../-byte-node.html"><span class="identifier">ByteNode</span></a></code>
+<p>An Abstraction of a MethodInsnNode that includes a reference to the method it calls</p>
+<h3>Parameters</h3>
+<p><a name="calledFrom"></a>
+<code>calledFrom</code> - : the <a href="../-byte-method/index.html">ByteMethod</a> that this method call exists in</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>An Abstraction of a MethodInsnNode that includes a reference to the method it calls</p>
+<code><span class="identifier">MethodReferenceNode</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/calledFrom">calledFrom</span><span class="symbol">:</span>&nbsp;<a href="../-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/opcode">opcode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/owner">owner</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.MethodReferenceNode$<init>(org.bytetwist.bytetwist.nodes.ByteMethod, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/isInterface">isInterface</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="called-from.html">calledFrom</a></h4>
+</td>
+<td>
+<p>: the <a href="../-byte-method/index.html">ByteMethod</a> that this method call exists in</p>
+<code><span class="keyword">val </span><span class="identifier">calledFrom</span><span class="symbol">: </span><a href="../-byte-method/index.html"><span class="identifier">ByteMethod</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="add-to-method.html">addToMethod</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addToMethod</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get-method.html">getMethod</a></h4>
+</td>
+<td>
+<p>If the method that this reference calls exists as a <a href="../-byte-method/index.html">ByteMethod</a> that was scanned then return that as the value</p>
+<code><span class="keyword">fun </span><span class="identifier">getMethod</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

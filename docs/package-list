@@ -1,0 +1,9 @@
+$dokka.format:html
+$dokka.linkExtension:html
+
+org.bytetwist.bytetwist
+org.bytetwist.bytetwist.exceptions
+org.bytetwist.bytetwist.nodes
+org.bytetwist.bytetwist.processors
+org.bytetwist.bytetwist.processors.common
+org.bytetwist.bytetwist.scanners

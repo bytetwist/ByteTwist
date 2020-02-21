@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>UnusedFieldProcessor - ByteTwist</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.processors.common</a>&nbsp;/&nbsp;<a href="./index.html">UnusedFieldProcessor</a><br/>
+<br/>
+<h1>UnusedFieldProcessor</h1>
+<code><span class="keyword">class </span><span class="identifier">UnusedFieldProcessor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">&gt;</span></code>
+<p>A basic/common processor that deletes (<a href="../../org.bytetwist.bytetwist.nodes/-byte-field/delete.html">ByteField.delete</a>) all fields that don't have any references</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>A basic/common processor that deletes (<a href="../../org.bytetwist.bytetwist.nodes/-byte-field/delete.html">ByteField.delete</a>) all fields that don't have any references</p>
+<code><span class="identifier">UnusedFieldProcessor</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="type.html">type</a></h4>
+</td>
+<td>
+<p>The <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> type of node that this processor will process. Annoying but couldn't figure out a better way</p>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="process.html">process</a></h4>
+</td>
+<td>
+<p>Processes each object that is accepted and passes <a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/should-process.html">shouldProcess</a>. This is where the main code for
+analysis/transformation, etc should go.</p>
+<code><span class="keyword">fun </span><span class="identifier">process</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedFieldProcessor$process(org.bytetwist.bytetwist.nodes.ByteField)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="should-process.html">shouldProcess</a></h4>
+</td>
+<td>
+<p>Determines if this processor should process a node. If not overridden, the processor will process all
+scanned objects of type <a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html#T">T</a></p>
+<code><span class="keyword">fun </span><span class="identifier">shouldProcess</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedFieldProcessor$shouldProcess(org.bytetwist.bytetwist.nodes.ByteField)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

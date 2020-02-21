@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Loader - ByteTwist</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist</a>&nbsp;/&nbsp;<a href="./index.html">Loader</a><br/>
+<br/>
+<h1>Loader</h1>
+<code><span class="identifier">@ExperimentalCoroutinesApi</span> <span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Loader</span></code>
+<p>This class is the main entrance point for the API. It is used to link a <a href="../../org.bytetwist.bytetwist.scanners/-double-pass-scanner/index.html">DoublePassScanner</a> and a
+<a href="../../org.bytetwist.bytetwist.processors/-processing-queue/index.html">ProcessingQueue</a> to run all of the processors added to the queue on the scanned classes.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>This class is the main entrance point for the API. It is used to link a <a href="../../org.bytetwist.bytetwist.scanners/-double-pass-scanner/index.html">DoublePassScanner</a> and a
+<a href="../../org.bytetwist.bytetwist.processors/-processing-queue/index.html">ProcessingQueue</a> to run all of the processors added to the queue on the scanned classes.</p>
+<code><span class="identifier">Loader</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="processors.html">processors</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">processors</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.processors/-processing-queue/index.html"><span class="identifier">ProcessingQueue</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="add-processor.html">addProcessor</a></h4>
+</td>
+<td>
+<p>Adds a <a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html">AbstractNodeProcessor</a> to the queue of processors. This must be called before the loader starts
+the processing via the <a href="launch.html">launch</a> method or the processors won't receive any types of node to process.</p>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-node.html"><span class="identifier">ByteNode</span></a><span class="symbol">&gt;</span> <span class="identifier">addProcessor</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.Loader$addProcessor(org.bytetwist.bytetwist.processors.AbstractNodeProcessor((org.bytetwist.bytetwist.Loader.addProcessor.T)))/processor">processor</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><span class="keyword">in</span>&nbsp;<span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="launch.html">launch</a></h4>
+</td>
+<td>
+<p>Starts the processing.</p>
+<code><span class="keyword">fun </span><span class="identifier">launch</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="scan.html">scan</a></h4>
+</td>
+<td>
+<p>Initializes the <a href="../../org.bytetwist.bytetwist.scanners/-double-pass-scanner/index.html">DoublePassScanner</a> and starts the scanning process</p>
+<code><span class="keyword">fun </span><span class="identifier">scan</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.Loader$scan(java.io.File)/input">input</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">scan</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.Loader$scan(kotlin.String)/input">input</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
