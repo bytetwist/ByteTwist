@@ -25,6 +25,8 @@ open class ByteBlockNode(
         return "Node${method.blocks.indexOf(this)}"
     }
 
+    fun print() = toString() + super.toArray().toString() + "Edges[${this.edges}]"
+
     public val edges = ArrayList<Pair<ByteBlockNode, EdgeDirection>>()
 
     public val successors = HashSet<Block>()

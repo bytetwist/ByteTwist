@@ -1,6 +1,7 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.findMethod
+import org.bytetwist.bytetwist.nodes.ByteBlockNode
 import org.bytetwist.bytetwist.nodes.ByteTryCatch
 import org.bytetwist.bytetwist.nodes.TryCatchBlock
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
@@ -35,5 +36,7 @@ class TryCatchBlockTest {
         val tryBlock = tryCatchBlock.tryBlock()
         assertNotNull(tryBlock)
         assert(method.blocks.contains(tryBlock))
+        tryCatchBlock.catchBlock()
+        print(method.blocks.map { ByteBlockNode::edges })
     }
 }

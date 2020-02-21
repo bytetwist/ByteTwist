@@ -1,7 +1,5 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
-import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.findClass
 import org.bytetwist.bytetwist.nodes.ByteAnnotation
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteMethod
@@ -11,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.objectweb.asm.Type
 import java.io.File
-import kotlin.test.assert
 import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi

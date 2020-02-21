@@ -29,8 +29,8 @@ class InheritanceTest {
     fun parentTest() {
         val testClass = scanner.nodes.find { compiledClass -> compiledClass.name == "JavaTestClass" }
         assertNotNull(testClass)
-        assertEquals(testClass?.subClasses?.size, 2)
-        testClass?.subClasses?.forEach {
+        assertEquals(testClass.subClasses.size, 2)
+        testClass.subClasses.forEach {
             assertEquals(it.superClass(), testClass)
         }
     }

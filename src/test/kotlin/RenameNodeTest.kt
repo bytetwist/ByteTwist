@@ -59,10 +59,12 @@ class RenameNodeTest {
         c.rename("NewClassName")
         assert(References.classNames["NewClassName"] == c)
         assertEquals(c, References.findMethod("fine")!!.parent)
-        assert(References.findMethod("paramsTest")?.desc?.contains("NewClassName")!!)
+        val byteMethod = findMethod("paramsTest")
+        log.info { byteMethod?.desc }
+        assert(byteMethod?.desc?.contains("NewClassName")!!)
         assertEquals(findClass("NewClassName")!!.subClasses.first().superName, "NewClassName")
             assertEquals(
-                Type.getReturnType(References.findMethod("paramsTest")?.desc).className,
+                Type.getReturnType(byteMethod?.desc).className,
                 "NewClassName"
             )
     }

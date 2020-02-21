@@ -1,12 +1,17 @@
 package org.bytetwist.bytetwist.nodes
 
 import com.google.common.annotations.Beta
+import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.Executors
+import kotlin.reflect.jvm.reflect
+import kotlin.system.measureTimeMillis
 
 /**
  * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [ByteMethod] and all
@@ -24,7 +29,13 @@ import java.util.concurrent.CopyOnWriteArraySet
  *
  * TODO: Interfaces, Enums, DSL/methods for easily generating new CompiledClasses
  */
-open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
+class ByteClass(
+    name: String = "",
+    signature: String? = null,
+    access: Int = Modifier.PUBLIC,
+    superName: String = "Object",
+    interfaces: Array<String> = emptyArray()
+) : ClassNode(Opcodes.ASM7), ByteNode {
 
     /**
      * A list of scanned [ByteClass] that extend this class.
@@ -33,10 +44,15 @@ open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
 
     val implementedBy = CopyOnWriteArraySet<ByteClass>()
 
-        val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
+    val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
     val constructors: List<ConstructorNode>
         get() = super.methods.filterIsInstance(ConstructorNode::class.java)
+
+    init {
+        References.classNames[name] = this
+        super.visit(super.version, access, name, signature, superName, interfaces)
+    }
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
@@ -159,7 +175,6 @@ open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
             it.superName = newName
         }
 
-
         this.name = newName
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
@@ -257,10 +272,31 @@ open class ByteClass : ClassNode(Opcodes.ASM7), ByteNode {
 
     fun buildHierarchy() {
         //GlobalScope.launch {
-            val classes = References.classNames.values.filter { compiledClass ->
-                compiledClass.superName == this@ByteClass.name
-            }
-            this@ByteClass.subClasses.addAll(classes)
+        val classes = References.classNames.values.filter { compiledClass ->
+            compiledClass.superName == this@ByteClass.name
         }
-    //}
+        this@ByteClass.subClasses.addAll(classes)
+    }
+
+//}
+
 }
+
+class ByteClassBuilder() {
+    lateinit var name: String
+    private var signature: String? = null
+    private var access: Int = Modifier.PUBLIC
+    private var superName: String = "Object"
+    private var interfaces: Array<String> = emptyArray()
+
+    fun build() = ByteClass(name, signature, access, superName, interfaces)
+
+}
+
+@InternalCoroutinesApi
+inline fun newClass(init: ByteClassBuilder.() -> Unit): ByteClass {
+    val byteClass = ByteClassBuilder().apply(init).build()
+    References.classNames.putIfAbsent(byteClass.name, byteClass)
+    return byteClass
+}
+
