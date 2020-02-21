@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.nodes.ByteAnnotation
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteMethod
@@ -17,20 +18,22 @@ class AnnotationGenerationTestification {
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
-    private val scanner = DoublePassScanner()
+    private lateinit var scanner: DoublePassScanner
+    private lateinit var loader: Loader
+
 
 
     @BeforeEach
     fun scanResources() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        loader = Loader()
+        loader.scan(File("src/test/resources"))
     }
 
 
     @Test
     fun testAnnotations() {
         val methods = ArrayList<ByteMethod>()
-        scanner.addProcessor(oneOff(ByteClass::class) { clazz ->
+        loader.addProcessor(oneOff<ByteClass> { clazz ->
             if (clazz.methods.isNotEmpty()) {
                 clazz.methods.forEach {
                     (it as ByteMethod).annotate("ThisIsAnAnnotation", "omg" to "wow")
@@ -38,7 +41,7 @@ class AnnotationGenerationTestification {
                 }
             }
         })
-        scanner.run()
+        loader.launch()
         val m = methods.first()
         assert(m.visibleAnnotations != null)
         assert(m.visibleAnnotations.size > 0)

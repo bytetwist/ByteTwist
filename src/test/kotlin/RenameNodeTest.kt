@@ -1,6 +1,8 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.findClass
 import org.bytetwist.bytetwist.findMethod
@@ -23,19 +25,18 @@ private val log = KotlinLogging.logger {}
 class RenameNodeTest {
 
     @InternalCoroutinesApi
-    private val scanner = DoublePassScanner()
+    private val scanner = Loader()
 
 
     @InternalCoroutinesApi
     @BeforeEach
     fun scanResources() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        scanner.scan(File("src/test/resources"))
         scanner.addProcessor(RenameMethod())
-        scanner.addProcessor(oneOff(ByteField::class) {
+        scanner.addProcessor(oneOff<ByteField> {
                 node -> if (node.name == "s") node.rename("stringValue")
         })
-        scanner.run()
+        scanner.launch()
     }
 
     @Test
@@ -74,7 +75,9 @@ class RenameNodeTest {
 
         override fun process(node: ByteMethod) {
             if (node.name == "renameMe") {
-                node.rename("fine")
+                runBlocking {
+                    node.rename("fine")
+                }
             }
         }
     }

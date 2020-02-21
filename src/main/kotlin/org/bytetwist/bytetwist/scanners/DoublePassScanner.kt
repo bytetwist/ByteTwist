@@ -1,13 +1,9 @@
 package org.bytetwist.bytetwist.scanners
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.bytetwist.bytetwist.exceptions.NoInputDir
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteMethod
-import org.bytetwist.bytetwist.processors.common.*
 import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.ClassReader
 import java.io.File
@@ -18,77 +14,128 @@ import kotlin.system.measureTimeMillis
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
-class DoublePassScanner : Scanner() {
+/**
+ * A reference building type of scanner that iterates over the scanned bytes twice. The first pass does
+ * nothing other than build the pool of scanned classes/methods/etc. Uses coroutines
+ */
+class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
 
     private val classFiles = CopyOnWriteArrayList<ByteArray>()
 
-    val nodes = processors.nodes
-
-
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     /**
      * Scans the user submitted input location for any compiled class files
      */
-    override fun scan() {
-        if (inputDir == null) {
-            throw NoInputDir()
-        }
-        log.info { "Scanning finished in " +
-            measureTimeMillis {
-                runBlocking {
-                    inputDir!!.walkTopDown().forEach {
-                        loadBytesFromFile(it)
-                    }
-                    classFiles.forEach {
-                        val classNode = ByteClass()
-                        ClassReader(it).apply {
-                            accept(classNode, ClassReader.EXPAND_FRAMES)
-                        }
-                        processors.nodes.add(classNode)
-                    }
-                    processors.nodes.onEach { clazz ->
-                        launch {
-                            clazz.buildHierarchy()
-                        }
-                        launch {
-                            for (mn in clazz.methods) {
+    override fun scan() =
+        channelFlow {
+            log.info {
+                "Scanning finished in " +
+                        measureTimeMillis {
+                            with(scope) {
+                                inputDir.walkTopDown().forEach {
+                                    loadBytesFromFile(it)
+                                }
+                                classFiles.forEach { clazz ->
+                                    val byteClass = fromBytes(clazz)
+                                    runBlocking {
+                                        awaitAll(
 
-                                launch {
-
-                                    if (mn is ByteMethod) {
-                                        launch {
-                                            mn.buildBlocks()
-                                        }
-                                        launch {
-                                            for (feldRef in mn.fieldReferences()) {
-                                                launch {
-                                                    feldRef.addToField()
-                                                }
-                                            }
-                                        }
-                                        launch {
-                                            for (methodCalls in mn.methodCalls()) {
-                                                launch {
-                                                    methodCalls.addToMethod()
-                                                }
-                                            }
-                                        }
-                                        launch {
-                                            for (typeRefs in mn.typeReferences()) {
-                                                launch {
-                                                    typeRefs.addToClass()
-                                                }
-                                            }
-                                        }
+                                            async {
+                                                byteClass.buildHierarchy()
+                                            },
+                                            async {
+                                                analyzeMethods(byteClass)
+                                            })
+                                    }
+                                    runBlocking {
+                                        send(byteClass)
                                     }
                                 }
                             }
-                        }
+                        } / 1000.0 + " ms."
+            }
+        }
+
+
+    /**
+     * Builds the set of [org.bytetwist.bytetwist.nodes.ByteBlockNode]s from each method in [clazz].
+     * Also takes all of the [org.bytetwist.bytetwist.nodes.FieldReferenceNode]s in the method and adds them
+     * to the [org.bytetwist.bytetwist.nodes.FieldReferenceNode] if the field was scanned by the scanner.
+     * Does the same with [org.bytetwist.bytetwist.nodes.MethodReferenceNode]s and the
+     * [org.bytetwist.bytetwist.nodes.ClassReferenceNode]
+     */
+    private fun CoroutineScope.analyzeMethods(clazz: ByteClass) {
+        for (mn in clazz.methods) {
+            launch {
+                if (mn is ByteMethod) {
+                    launch {
+                        buildBlocks(mn)
+                    }
+                    launch {
+                        buildFieldReferences(mn)
+                    }
+                    launch {
+                        buildMethodCalls(mn)
+                    }
+                    launch {
+                        buildClassRefs(mn)
                     }
                 }
-            } / 1000.0 + " ms."
+            }
+        }
+
+    }
+
+    /**
+     * Iterates over all of the [org.bytetwist.bytetwist.nodes.ClassReferenceNode] in the
+     * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [ByteClass]
+     */
+    private fun CoroutineScope.buildClassRefs(mn: ByteMethod) {
+        for (typeRefs in mn.typeReferences()) {
+            launch {
+                typeRefs.addToClass()
+            }
         }
     }
+
+    /**
+     * Iterates over all of the [org.bytetwist.bytetwist.nodes.MethodReferenceNode] in the
+     * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [ByteMethod]
+     */
+    private fun CoroutineScope.buildMethodCalls(mn: ByteMethod) {
+        for (methodCalls in mn.methodCalls()) {
+            launch {
+                methodCalls.addToMethod()
+            }
+        }
+    }
+
+    /**
+     * Iterates over all of the [org.bytetwist.bytetwist.nodes.FieldReferenceNode] in the
+     * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [org.bytetwist.bytetwist.nodes.ByteField]
+     */
+    private fun CoroutineScope.buildFieldReferences(mn: ByteMethod) {
+        launch {
+            for (feldRef in mn.fieldReferences()) {
+                launch {
+                    feldRef.addToField()
+                }
+            }
+        }
+    }
+
+    /**
+     * Constructs all of the [org.bytetwist.bytetwist.nodes.Block] found in [ByteMethod] [mn].
+     * Adds them to the [ByteMethod].
+     * This might be expensive depending on the size of the method
+     */
+    private fun CoroutineScope.buildBlocks(mn: ByteMethod) {
+        launch {
+            mn.buildBlocks()
+        }
+    }
+
 
     /**
      * Takes either a .class file or a .jar file and loads the ByteArray into the List of class Files
@@ -103,6 +150,9 @@ class DoublePassScanner : Scanner() {
         }
     }
 
+    /**
+     * Scans a [JarFile] and adds the bytes from all of the class file [JarEntry]s to [classFiles]
+     */
     private fun scanJar(f: JarFile) {
         for (jarEntry in f.entries()) {
             if (jarEntry.name.endsWith("class")) {
@@ -119,44 +169,16 @@ class DoublePassScanner : Scanner() {
      */
     private fun bytes(f: JarFile, jarEntry: JarEntry?) =
         f.getInputStream(jarEntry).readBytes()
-
-
 }
 
-@ExperimentalCoroutinesApi
-@InternalCoroutinesApi
-fun main() {
-    val classProcessor =
-        BasicClassProcessor()// as AbstractProcessor<*>
-    val scanner = DoublePassScanner()
-    scanner.inputDir = File("gamepack_obf.jar")
-    scanner.addProcessor(AbstractMethodProcessor())
-    scanner.addProcessor(UnusedFieldProcessor())
-    scanner.addProcessor(UnusedMethodProcessor())
-    scanner.addProcessor(FieldRenamer())
-    scanner.addProcessor(MethodRenamer())
-    scanner.addProcessor(ClassRenamer())
-    scanner.addProcessor(JumpOptimizingProcessor())
-    scanner.addProcessor(JarOutputProcessor("out1"))
-    scanner.addProcessor(DeadCodeProcessor())
-
-//    scanner.addProcessor(
-//        oneOff(ByteMethod::class) {
-//            if (it.name == "method320") {
-//                runBlocking {
-//                    with(JFrame()) {
-//                        add(JTree(it.blockTreeModel))
-//                        pack()
-//                        isEnabled = true
-//                        isVisible = true
-//                    }
-//                }
-//            }
-//            else
-//                log.info { it.name }
-//        })
-    scanner.addProcessor(JarOutputProcessor())
-    scanner.scan()
-    scanner.run()
-
+/**
+ * Creates a [ByteClass] from a [ByteArray] using a [ClassReader]
+ */
+fun fromBytes(byteArray: ByteArray): ByteClass {
+    val clazz = ByteClass()
+    ClassReader(byteArray).accept(clazz, ClassReader.EXPAND_FRAMES)
+    return clazz
 }
+
+
+

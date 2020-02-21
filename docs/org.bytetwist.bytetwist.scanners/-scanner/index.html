@@ -17,7 +17,7 @@
 <h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">Scanner</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+<code><span class="identifier">Scanner</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.scanners.Scanner$<init>(java.io.File)/inputDir">inputDir</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -29,14 +29,7 @@
 <h4><a href="input-dir.html">inputDir</a></h4>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">inputDir</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">?</span></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="processors.html">processors</a></h4>
-</td>
-<td>
-<code><span class="keyword">val </span><span class="identifier">processors</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.processors/-processing-queue/index.html"><span class="identifier">ProcessingQueue</span></a></code></td>
+<code><span class="keyword">var </span><span class="identifier">inputDir</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a></code></td>
 </tr>
 </tbody>
 </table>
@@ -45,27 +38,11 @@
 <tbody>
 <tr>
 <td>
-<h4><a href="add-processor.html">addProcessor</a></h4>
-</td>
-<td>
-<p>Adds a processor to the Processing Queue</p>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-node.html"><span class="identifier">CompiledNode</span></a><span class="symbol">&gt;</span> <span class="identifier">addProcessor</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.scanners.Scanner$addProcessor(org.bytetwist.bytetwist.processors.AbstractNodeProcessor((org.bytetwist.bytetwist.scanners.Scanner.addProcessor.T)))/processor">processor</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="run.html">run</a></h4>
-</td>
-<td>
-<p>Runs all processors from the ProcessingQueue on the scanned nodes</p>
-<code><span class="keyword">fun </span><span class="identifier">run</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="scan.html">scan</a></h4>
 </td>
 <td>
 <p>Scans the user submitted input location for any compiled class files</p>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">scan</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">scan</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Flow</span><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -77,14 +54,9 @@
 <h4><a href="../-double-pass-scanner/index.html">DoublePassScanner</a></h4>
 </td>
 <td>
+<p>A reference building type of scanner that iterates over the scanned bytes twice. The first pass does
+nothing other than build the pool of scanned classes/methods/etc. Uses coroutines</p>
 <code><span class="keyword">class </span><span class="identifier">DoublePassScanner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scanner</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="../-single-pass-scanner/index.html">SinglePassScanner</a></h4>
-</td>
-<td>
-<code><span class="keyword">class </span><s><span class="identifier">SinglePassScanner</span></s>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Scanner</span></a></code></td>
 </tr>
 </tbody>
 </table>

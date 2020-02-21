@@ -9,9 +9,9 @@ import org.objectweb.asm.tree.TypeInsnNode
  * property.
  */
 class ClassReferenceNode(
-        val method: ByteMethod,
-        opcode: Int,
-        descriptor: String?
+    val method: ByteMethod,
+    opcode: Int,
+    descriptor: String?
 ) : TypeInsnNode(
     opcode,
     descriptor

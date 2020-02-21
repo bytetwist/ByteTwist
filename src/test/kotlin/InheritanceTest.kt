@@ -1,10 +1,10 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.findClass
-import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.io.File
 import kotlin.test.assertFalse
@@ -15,21 +15,20 @@ import kotlin.test.assertTrue
 class InheritanceTest {
 
     @InternalCoroutinesApi
-    private val scanner = DoublePassScanner()
+    private val scanner = Loader()
 
     @InternalCoroutinesApi
     @BeforeEach
     fun scanResources() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        scanner.scan(File("src/test/resources"))
     }
 
     @InternalCoroutinesApi
     @Test
     fun parentTest() {
-        val testClass = scanner.nodes.find { compiledClass -> compiledClass.name == "JavaTestClass" }
+        val testClass = scanner.processors.nodes.find { compiledClass -> compiledClass.name == "JavaTestClass" }
         assertNotNull(testClass)
-        assertEquals(testClass.subClasses.size, 2)
+        assertEquals(2, testClass.subClasses.size)
         testClass.subClasses.forEach {
             assertEquals(it.superClass(), testClass)
         }

@@ -1,14 +1,13 @@
 package org.bytetwist.bytetwist.nodes
 
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AbstractInsnNode
 import java.util.concurrent.CopyOnWriteArrayList
 
 typealias Block = ByteBlockNode
 
 open class ByteBlockNode(
-        val method: ByteMethod
+    val method: ByteMethod
 ) : CopyOnWriteArrayList<AbstractInsnNode>(), ByteNode {
 
     /**
@@ -35,10 +34,12 @@ open class ByteBlockNode(
 
     companion object {
         val UNCONDITIONAL_JUMP = listOf(Opcodes.GOTO, Opcodes.JSR, Opcodes.RET)
-        val CONDITIONAL_JUMP = listOf(Opcodes.IFEQ, Opcodes.IFLT, Opcodes.IFLE, Opcodes.IFNE, Opcodes.IFGT,
-                Opcodes.IFGE, Opcodes.IFNULL, Opcodes.IFNONNULL, Opcodes.IF_ICMPEQ, Opcodes.IF_ICMPNE, Opcodes.IF_ICMPLT,
-                Opcodes.IF_ICMPGT, Opcodes.IF_ICMPLE, Opcodes.IF_ICMPGE, Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE, Opcodes.LCMP,
-                Opcodes.FCMPL, Opcodes.FCMPG, Opcodes.DCMPL, Opcodes.DCMPG)
+        val CONDITIONAL_JUMP = listOf(
+            Opcodes.IFEQ, Opcodes.IFLT, Opcodes.IFLE, Opcodes.IFNE, Opcodes.IFGT,
+            Opcodes.IFGE, Opcodes.IFNULL, Opcodes.IFNONNULL, Opcodes.IF_ICMPEQ, Opcodes.IF_ICMPNE, Opcodes.IF_ICMPLT,
+            Opcodes.IF_ICMPGT, Opcodes.IF_ICMPLE, Opcodes.IF_ICMPGE, Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE, Opcodes.LCMP,
+            Opcodes.FCMPL, Opcodes.FCMPG, Opcodes.DCMPL, Opcodes.DCMPG
+        )
     }
 
 }
@@ -60,14 +61,14 @@ enum class EdgeDirection {
  * @param firstInstruction - The first instruction in the block you are trying to get
  */
 fun ByteMethod.findBlock(firstInstruction: AbstractInsnNode) =
-        blocks.find { block -> block.first() == firstInstruction }
+    blocks.find { block -> block.first() == firstInstruction }
 
 /**
  * Finds a block by it's last [AbstractInsnNode] in a method that has already computed all of its blocks.
  * @param lastInstruction - The last instruction in the block you are trying to get
  */
 fun ByteMethod.findBlockByLast(lastInstruction: AbstractInsnNode) =
-        blocks.find { block -> block.last() == lastInstruction }
+    blocks.find { block -> block.last() == lastInstruction }
 
 
 

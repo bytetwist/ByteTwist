@@ -12,7 +12,7 @@ class FieldReferenceProcessor : AbstractNodeProcessor<FieldReferenceNode>() {
 
     }
 
-    override fun preProcess(node: FieldReferenceNode): Boolean {
+    override fun shouldProcess(node: FieldReferenceNode): Boolean {
         return node.field() != null// && node.opcode != Opcodes.INVOKEVIRTUAL
     }
 }

@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findClass
 import org.bytetwist.bytetwist.getMethodByName
 import org.bytetwist.bytetwist.nodes.ByteClass
@@ -16,14 +17,13 @@ import kotlin.test.assertNotNull
 class MethodModTest {
 
     @ExperimentalCoroutinesApi
-    private val s = DoublePassScanner()
+    private val s = Loader()
     private lateinit var methodModClass: ByteClass
 
     @ExperimentalCoroutinesApi
     @BeforeEach
     fun setup() {
-        s.inputDir = File("src/test/resources")
-        s.scan()
+        s.scan(File("src/test/resources"))
         methodModClass = findClass("MethodModClass")!!
     }
 

@@ -13,6 +13,7 @@
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html">org.bytetwist.bytetwist.processors.AbstractNodeProcessor</a></h5>
+<p>Abstract class for a processor that will accept all instances of its type for processing.</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-basic-class-processor/index.html">org.bytetwist.bytetwist.processors.common.BasicClassProcessor</a></h5>
@@ -21,65 +22,89 @@
 <h5><a href="../org.bytetwist.bytetwist.processors/-basic-field-processor/index.html">org.bytetwist.bytetwist.processors.BasicFieldProcessor</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.processors/-basic-method-processor/index.html">org.bytetwist.bytetwist.processors.BasicMethodProcessor</a></h5>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-block.html">org.bytetwist.bytetwist.nodes.Block</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-block.html">org.bytetwist.bytetwist.nodes.Block</a></h5>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-annotation/index.html">org.bytetwist.bytetwist.nodes.ByteAnnotation</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-block-node/index.html">org.bytetwist.bytetwist.nodes.ByteBlockNode</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-class/index.html">org.bytetwist.bytetwist.nodes.ByteClass</a></h5>
+<p>An Abstraction of the ClassNode. All of the objects in the methods field can be cast to <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> and all
+the objects in the fields field can be cast to <a href="../org.bytetwist.bytetwist.nodes/-byte-field/index.html">ByteField</a>.</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-class-builder/index.html">org.bytetwist.bytetwist.nodes.ByteClassBuilder</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-field/index.html">org.bytetwist.bytetwist.nodes.ByteField</a></h5>
+<p>An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
+field, as well as a property of the owning ByteClass: parent</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">org.bytetwist.bytetwist.nodes.ByteMethod</a></h5>
+<p>An abstraction of the ClassNode</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-node.html">org.bytetwist.bytetwist.nodes.ByteNode</a></h5>
+<p>The interface that is implemented by anything that can be processed with an
+<a href="../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html">org.bytetwist.bytetwist.processors.AbstractNodeProcessor</a>. Generally, implementors of this interface are referential
+based abstractions of ASMs tree node classes</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-try-catch/index.html">org.bytetwist.bytetwist.nodes.ByteTryCatch</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-variable/index.html">org.bytetwist.bytetwist.nodes.ByteVariable</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-variable-reference/index.html">org.bytetwist.bytetwist.nodes.ByteVariableReference</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-class-annotation-node/index.html">org.bytetwist.bytetwist.nodes.ClassAnnotationNode</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-class-reference-node/index.html">org.bytetwist.bytetwist.nodes.ClassReferenceNode</a></h5>
-<p>An abstraction that represents an instruction referencing a <a href="../org.bytetwist.bytetwist.nodes/-compiled-class/index.html">CompiledClass</a> that was scanned.
-Also keeps a reference to the <a href="../org.bytetwist.bytetwist.nodes/-compiled-method/index.html">CompiledMethod</a> that this instruction is in with the <a href="../org.bytetwist.bytetwist.nodes/-class-reference-node/method.html">ClassReferenceNode.method</a>
+<p>An abstraction that represents an instruction referencing a <a href="../org.bytetwist.bytetwist.nodes/-byte-class/index.html">ByteClass</a> that was scanned.
+Also keeps a reference to the <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> that this instruction is in with the <a href="../org.bytetwist.bytetwist.nodes/-class-reference-node/method.html">ClassReferenceNode.method</a>
 property.</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-class-renamer/index.html">org.bytetwist.bytetwist.processors.common.ClassRenamer</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-annotation/index.html">org.bytetwist.bytetwist.nodes.CompiledAnnotation</a></h5>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-block-node/index.html">org.bytetwist.bytetwist.nodes.CompiledBlockNode</a></h5>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-class/index.html">org.bytetwist.bytetwist.nodes.CompiledClass</a></h5>
-<p>An Abstraction of the ClassNode. All of the objects in the methods field can be cast to <a href="../org.bytetwist.bytetwist.nodes/-compiled-method/index.html">CompiledMethod</a> and all
-the objects in the fields field can be cast to <a href="../org.bytetwist.bytetwist.nodes/-compiled-field/index.html">CompiledField</a>.</p>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-field/index.html">org.bytetwist.bytetwist.nodes.CompiledField</a></h5>
-<p>An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
-field, as well as a property of the owning CompiledClass: parent</p>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-method/index.html">org.bytetwist.bytetwist.nodes.CompiledMethod</a></h5>
-<p>An abstraction of the ClassNode</p>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-compiled-node.html">org.bytetwist.bytetwist.nodes.CompiledNode</a></h5>
-</tr>
-<tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-constructor-node/index.html">org.bytetwist.bytetwist.nodes.ConstructorNode</a></h5>
-<p>An abstraction of <a href="../org.bytetwist.bytetwist.nodes/-compiled-method/index.html">CompiledMethod</a> that is a constructors</p>
+<p>A subtype of <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
+always be named "" or ""</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.processors.common/-dead-code-processor/index.html">org.bytetwist.bytetwist.processors.common.DeadCodeProcessor</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.scanners/-double-pass-scanner/index.html">org.bytetwist.bytetwist.scanners.DoublePassScanner</a></h5>
+<p>A reference building type of scanner that iterates over the scanned bytes twice. The first pass does
+nothing other than build the pool of scanned classes/methods/etc. Uses coroutines</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-edge-direction/index.html">org.bytetwist.bytetwist.nodes.EdgeDirection</a></h5>
+<p>A bit redundant but can be useful for analysis</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-annotation-node/index.html">org.bytetwist.bytetwist.nodes.FieldAnnotationNode</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-opcodes/index.html">org.bytetwist.bytetwist.nodes.FieldOpcodes</a></h5>
+<p>Used for determining the subtype of <a href="../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html">FieldReferenceNode</a> of an instruction</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-read/index.html">org.bytetwist.bytetwist.nodes.FieldRead</a></h5>
+<p>A <a href="../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html">FieldReferenceNode</a> that reads a value from a Field</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html">org.bytetwist.bytetwist.nodes.FieldReferenceNode</a></h5>
-<p>An abstraction of a FieldInsnNode that includes references to the CompiledField Object and the referencing method</p>
+<p>An abstraction of a FieldInsnNode that includes references to the ByteField Object and the referencing method</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-field-reference-processor/index.html">org.bytetwist.bytetwist.processors.common.FieldReferenceProcessor</a></h5>
@@ -89,19 +114,21 @@ field, as well as a property of the owning CompiledClass: parent</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-write/index.html">org.bytetwist.bytetwist.nodes.FieldWrite</a></h5>
+<p>A type of <a href="../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html">FieldReferenceNode</a> that represents changing/setting/updating a field value</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-if-int-expression/index.html">org.bytetwist.bytetwist.nodes.IfIntExpression</a></h5>
-</tr>
-<tr>
- (extensions in package org.bytetwist.bytetwist.nodes)
-<h5><a href="../org.bytetwist.bytetwist.nodes/org.objectweb.asm.tree.-insn-list/index.html">org.objectweb.asm.tree.InsnList</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-jar-output-processor/index.html">org.bytetwist.bytetwist.processors.common.JarOutputProcessor</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-jump-optimizing-processor/index.html">org.bytetwist.bytetwist.processors.common.JumpOptimizingProcessor</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist/-loader/index.html">org.bytetwist.bytetwist.Loader</a></h5>
+<p>This class is the main entrance point for the API. It is used to link a <a href="../org.bytetwist.bytetwist.scanners/-double-pass-scanner/index.html">DoublePassScanner</a> and a
+<a href="../org.bytetwist.bytetwist.processors/-processing-queue/index.html">ProcessingQueue</a> to run all of the processors added to the queue on the scanned classes.</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-method-annotation-node/index.html">org.bytetwist.bytetwist.nodes.MethodAnnotationNode</a></h5>
@@ -123,19 +150,23 @@ field, as well as a property of the owning CompiledClass: parent</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist/-references/index.html">org.bytetwist.bytetwist.References</a></h5>
-<p>Stores Maps of names to <a href="#">CompiledNode</a> objects.</p>
+<p>Stores Maps of names to <a href="../org.bytetwist.bytetwist.nodes/-byte-node.html">org.bytetwist.bytetwist.nodes.ByteNode</a> objects.</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.scanners/-scanner/index.html">org.bytetwist.bytetwist.scanners.Scanner</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.scanners/-single-pass-scanner/index.html">org.bytetwist.bytetwist.scanners.SinglePassScanner</a></h5>
+<h5><a href="../org.bytetwist.bytetwist/-settings/index.html">org.bytetwist.bytetwist.Settings</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-throw-expression-node/index.html">org.bytetwist.bytetwist.nodes.ThrowExpressionNode</a></h5>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-try-catch-block/index.html">org.bytetwist.bytetwist.nodes.TryCatchBlock</a></h5>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.exceptions/-uninitialized-scanner/index.html">org.bytetwist.bytetwist.exceptions.UninitializedScanner</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-unused-field-processor/index.html">org.bytetwist.bytetwist.processors.common.UnusedFieldProcessor</a></h5>
+<p>A basic/common processor that deletes (<a href="../org.bytetwist.bytetwist.nodes/-byte-field/delete.html">ByteField.delete</a>) all fields that don't have any references</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-unused-method-processor/index.html">org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor</a></h5>

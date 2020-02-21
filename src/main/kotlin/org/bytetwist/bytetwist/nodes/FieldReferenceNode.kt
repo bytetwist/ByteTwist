@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.FieldInsnNode
 
 /**
  * An abstraction of a FieldInsnNode that includes references to the ByteField Object and the referencing method
+ * @param method: The [ByteMethod] that this instruction belongs to
  */
 open class FieldReferenceNode(
         val method: ByteMethod,
@@ -14,8 +15,16 @@ open class FieldReferenceNode(
         name: String,
         descriptor: String?
 ) :
-    FieldInsnNode(opcode, owner, name, descriptor), ByteNode {
+    FieldInsnNode(
+        opcode,
+        owner,
+        name,
+        descriptor
+    ), ByteNode {
 
+    /**
+     * Returns true if this reference is a reference to a Static field. False otherwise
+     */
     fun staticReference() = opcode == GETSTATIC || opcode == PUTSTATIC
 
     /**
@@ -36,15 +45,47 @@ open class FieldReferenceNode(
     }
 }
 
-class FieldRead(method: ByteMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
-    FieldReferenceNode(method, opcode, owner, name, descriptor),
+/**
+ * A [FieldReferenceNode] that reads a value from a Field
+ */
+class FieldRead(
+    method: ByteMethod,
+    opcode: Int,
+    owner: String,
+    name: String,
+    descriptor: String?
+) :
+    FieldReferenceNode(
+        method,
+        opcode,
+        owner,
+        name,
+        descriptor
+    ),
     ByteNode
 
-class FieldWrite(method: ByteMethod, opcode: Int, owner: String, name: String, descriptor: String?) :
-    FieldReferenceNode(method, opcode, owner, name, descriptor),
+/**
+ * A type of [FieldReferenceNode] that represents changing/setting/updating a field value
+ */
+class FieldWrite(
+    method: ByteMethod,
+    opcode: Int,
+    owner: String,
+    name: String,
+    descriptor: String?
+) :
+    FieldReferenceNode(
+        method,
+        opcode,
+        owner,
+        name,
+        descriptor
+    ),
     ByteNode
 
-
+/**
+ * Used for determining the subtype of [FieldReferenceNode] of an instruction
+ */
 object FieldOpcodes {
     val WRITE_CODES = listOf(PUTFIELD, PUTSTATIC, H_PUTFIELD, H_PUTSTATIC)
     val READ_CODES = listOf(GETFIELD, GETSTATIC, H_GETFIELD, H_GETSTATIC)

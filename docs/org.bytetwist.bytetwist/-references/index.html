@@ -9,31 +9,52 @@
 <br/>
 <h1>References</h1>
 <code><span class="keyword">object </span><span class="identifier">References</span></code>
-<p>Stores Maps of names to <a href="#">CompiledNode</a> objects.</p>
+<p>Stores Maps of names to <a href="../../org.bytetwist.bytetwist.nodes/-byte-node.html">org.bytetwist.bytetwist.nodes.ByteNode</a> objects.</p>
 <p>The String key of the map uses the same format that <a href="#">org.objectweb.asm.commons.Remapper</a> uses.</p>
 <h3>Properties</h3>
 <table>
 <tbody>
 <tr>
 <td>
+<h4><a href="blocks.html">blocks</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">blocks</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArrayList.html"><span class="identifier">CopyOnWriteArrayList</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-block.html"><span class="identifier">Block</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="class-names.html">classNames</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">classNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-class/index.html"><span class="identifier">CompiledClass</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">classNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="field-names.html">fieldNames</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">fieldNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-field/index.html"><span class="identifier">CompiledField</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">fieldNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="field-references.html">fieldReferences</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">fieldReferences</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArrayList.html"><span class="identifier">CopyOnWriteArrayList</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html"><span class="identifier">FieldReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="method-names.html">methodNames</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">methodNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">methodNames</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"><span class="identifier">ConcurrentHashMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="type-references.html">typeReferences</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">typeReferences</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArrayList.html"><span class="identifier">CopyOnWriteArrayList</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-class-reference-node/index.html"><span class="identifier">ClassReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -42,21 +63,26 @@
 <tbody>
 <tr>
 <td>
+<h4><a href="find-class.html">findClass</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">findClass</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.References$findClass(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.nodes/-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="find-field.html">findField</a></h4>
 </td>
 <td>
-<p>Finds a <a href="../../org.bytetwist.bytetwist.nodes/-compiled-field/index.html">CompiledField</a> by the <a href="#">CompiledField.name</a> value.
-Useful when you don't have a reference to the owner</p>
-<code><span class="keyword">fun </span><span class="identifier">findField</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.References$findField(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-field/index.html"><span class="identifier">CompiledField</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">findField</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.References$findField(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.nodes/-byte-field/index.html"><span class="identifier">ByteField</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
 <h4><a href="find-method.html">findMethod</a></h4>
 </td>
 <td>
-<p>Finds a <a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html">CompiledMethod</a> by the <a href="#">CompiledMethod.name</a> value.
+<p>Finds a <a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> by the <a href="#">ByteMethod.name</a> value.
 Useful when you don't have a reference to the owner or the descriptor/signature</p>
-<code><span class="keyword">fun </span><span class="identifier">findMethod</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.References$findMethod(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">findMethod</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.References$findMethod(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">?</span></code></td>
 </tr>
 </tbody>
 </table>

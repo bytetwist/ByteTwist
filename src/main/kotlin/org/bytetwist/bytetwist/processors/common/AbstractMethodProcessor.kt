@@ -6,7 +6,7 @@ import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 class AbstractMethodProcessor : AbstractNodeProcessor<ByteMethod>() {
     override val type = ByteMethod::class
 
-    override fun preProcess(node: ByteMethod): Boolean {
+    override fun shouldProcess(node: ByteMethod): Boolean {
         return node.isAbstract()
     }
 

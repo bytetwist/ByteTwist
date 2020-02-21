@@ -2,7 +2,8 @@ package org.bytetwist.bytetwist.nodes
 
 
 /**
- * An abstraction of [ByteMethod] that is a constructors
+ * A subtype of [ByteMethod] that represents a constructor method. This also includes static constructors. Will almost
+ * always be named "<init>" or "<clinit>"
  */
 class ConstructorNode(
         parent: ByteClass,

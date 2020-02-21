@@ -8,7 +8,7 @@
 <a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.processors.common</a>&nbsp;/&nbsp;<a href="./index.html">UnusedMethodProcessor</a><br/>
 <br/>
 <h1>UnusedMethodProcessor</h1>
-<code><span class="keyword">class </span><span class="identifier">UnusedMethodProcessor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">&gt;</span></code>
+<code><span class="keyword">class </span><span class="identifier">UnusedMethodProcessor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html"><span class="identifier">AbstractNodeProcessor</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">&gt;</span></code>
 <h3>Constructors</h3>
 <table>
 <tbody>
@@ -17,7 +17,7 @@
 <h4><a href="-init-.html">&lt;init&gt;</a></h4>
 </td>
 <td>
-<code><span class="identifier">UnusedMethodProcessor</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+<code><span class="identifier">UnusedMethodProcessor</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor$<init>(kotlin.reflect.KClass((org.bytetwist.bytetwist.nodes.ByteMethod)))/type">type</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;ByteMethod::class<span class="symbol">)</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -29,7 +29,8 @@
 <h4><a href="type.html">type</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">&gt;</span></code></td>
+<p>The <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> type of node that this processor will process. Annoying but couldn't figure out a better way</p>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -38,17 +39,21 @@
 <tbody>
 <tr>
 <td>
-<h4><a href="pre-process.html">preProcess</a></h4>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">preProcess</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor$preProcess(org.bytetwist.bytetwist.nodes.CompiledMethod)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="process.html">process</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">process</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor$process(org.bytetwist.bytetwist.nodes.CompiledMethod)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-compiled-method/index.html"><span class="identifier">CompiledMethod</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<p>Processes each object that is accepted and passes <a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/should-process.html">shouldProcess</a>. This is where the main code for
+analysis/transformation, etc should go.</p>
+<code><span class="keyword">fun </span><span class="identifier">process</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor$process(org.bytetwist.bytetwist.nodes.ByteMethod)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="should-process.html">shouldProcess</a></h4>
+</td>
+<td>
+<p>Determines if this processor should process a node. If not overridden, the processor will process all
+scanned objects of type <a href="../../org.bytetwist.bytetwist.processors/-abstract-node-processor/index.html#T">T</a></p>
+<code><span class="keyword">fun </span><span class="identifier">shouldProcess</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.processors.common.UnusedMethodProcessor$shouldProcess(org.bytetwist.bytetwist.nodes.ByteMethod)/node">node</span><span class="symbol">:</span>&nbsp;<a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
 </tr>
 </tbody>
 </table>

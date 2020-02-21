@@ -16,6 +16,8 @@
 <h4><a href="-double-pass-scanner/index.html">DoublePassScanner</a></h4>
 </td>
 <td>
+<p>A reference building type of scanner that iterates over the scanned bytes twice. The first pass does
+nothing other than build the pool of scanned classes/methods/etc. Uses coroutines</p>
 <code><span class="keyword">class </span><span class="identifier">DoublePassScanner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-scanner/index.html"><span class="identifier">Scanner</span></a></code></td>
 </tr>
 <tr>
@@ -25,13 +27,6 @@
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Scanner</span></code></td>
 </tr>
-<tr>
-<td>
-<h4><a href="-single-pass-scanner/index.html">SinglePassScanner</a></h4>
-</td>
-<td>
-<code><span class="keyword">class </span><s><span class="identifier">SinglePassScanner</span></s>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-scanner/index.html"><span class="identifier">Scanner</span></a></code></td>
-</tr>
 </tbody>
 </table>
 <h3>Functions</h3>
@@ -39,10 +34,11 @@
 <tbody>
 <tr>
 <td>
-<h4><a href="main.html">main</a></h4>
+<h4><a href="from-bytes.html">fromBytes</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">main</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<p>Creates a <a href="../org.bytetwist.bytetwist.nodes/-byte-class/index.html">ByteClass</a> from a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a> using a <a href="#">ClassReader</a></p>
+<code><span class="keyword">fun </span><span class="identifier">fromBytes</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.scanners$fromBytes(kotlin.ByteArray)/byteArray">byteArray</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../org.bytetwist.bytetwist.nodes/-byte-class/index.html"><span class="identifier">ByteClass</span></a></code></td>
 </tr>
 </tbody>
 </table>

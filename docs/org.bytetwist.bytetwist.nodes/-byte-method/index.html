@@ -1,0 +1,315 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ByteMethod - ByteTwist</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">ByteTwist</a>&nbsp;/&nbsp;<a href="../index.html">org.bytetwist.bytetwist.nodes</a>&nbsp;/&nbsp;<a href="./index.html">ByteMethod</a><br/>
+<br/>
+<h1>ByteMethod</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ByteMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MethodNode</span><span class="symbol">, </span><a href="../-byte-node.html"><span class="identifier">ByteNode</span></a></code>
+<p>An abstraction of the ClassNode</p>
+<h3>Parameters</h3>
+<p><a name="parent"></a>
+<code>parent</code> - : The <a href="../-byte-class/index.html">ByteClass</a> that this method is a member of</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>An abstraction of the ClassNode</p>
+<code><span class="identifier">ByteMethod</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/parent">parent</span><span class="symbol">:</span>&nbsp;<a href="../-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$<init>(org.bytetwist.bytetwist.nodes.ByteClass, kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/exceptions">exceptions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="blocks.html">blocks</a></h4>
+</td>
+<td>
+<p>A HashSet of all of the <a href="../-byte-block-node/index.html">ByteBlockNode</a> that make up this method (excluding try/catch blocks)</p>
+<code><span class="keyword">val </span><span class="identifier">blocks</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-hash-set/index.html"><span class="identifier">HashSet</span></a><span class="symbol">&lt;</span><a href="../-block.html"><span class="identifier">Block</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="invocations.html">invocations</a></h4>
+</td>
+<td>
+<p>A list of MethodReferences in which this method is invoked</p>
+<code><span class="keyword">val </span><span class="identifier">invocations</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArraySet.html"><span class="identifier">CopyOnWriteArraySet</span></a><span class="symbol">&lt;</span><a href="../-method-reference-node/index.html"><span class="identifier">MethodReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="parent.html">parent</a></h4>
+</td>
+<td>
+<p>: The <a href="../-byte-class/index.html">ByteClass</a> that this method is a member of</p>
+<code><span class="keyword">val </span><span class="identifier">parent</span><span class="symbol">: </span><a href="../-byte-class/index.html"><span class="identifier">ByteClass</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="annotate.html">annotate</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">annotate</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/fieldsToValues">fieldsToValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="build-blocks.html">buildBlocks</a></h4>
+</td>
+<td>
+<p>Builds all of the <a href="../-byte-block-node/index.html">ByteBlockNode</a> and <a href="../-byte-try-catch/index.html">ByteTryCatch</a> blocks for this method. Uses coroutines to execute some parts
+of the method asynchronously</p>
+<code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">buildBlocks</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="delete.html">delete</a></h4>
+</td>
+<td>
+<p>Removes this method as well as all invocations of this method in all scanned files</p>
+<code><span class="keyword">fun </span><span class="identifier">delete</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="field-reads.html">fieldReads</a></h4>
+</td>
+<td>
+<p>A List of all Field Reads this method performs</p>
+<code><span class="keyword">fun </span><span class="identifier">fieldReads</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-field-read/index.html"><span class="identifier">FieldRead</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="field-references.html">fieldReferences</a></h4>
+</td>
+<td>
+<p>A list of all references to fields that this method makes. (Includes Field Reads/Writes)</p>
+<code><span class="keyword">fun </span><span class="identifier">fieldReferences</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-field-reference-node/index.html"><span class="identifier">FieldReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="field-writes.html">fieldWrites</a></h4>
+</td>
+<td>
+<p>A List of all field writes this method performs</p>
+<code><span class="keyword">fun </span><span class="identifier">fieldWrites</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-field-write/index.html"><span class="identifier">FieldWrite</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-abstract.html">isAbstract</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isAbstract</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-private.html">isPrivate</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isPrivate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-public.html">isPublic</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isPublic</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="is-static.html">isStatic</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isStatic</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="method-calls.html">methodCalls</a></h4>
+</td>
+<td>
+<p>A list of all invocations of other methods that this method makes</p>
+<code><span class="keyword">fun </span><span class="identifier">methodCalls</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-method-reference-node/index.html"><span class="identifier">MethodReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="move.html">move</a></h4>
+</td>
+<td>
+<p>Moves this method to the specified ByteClass and updates all references to this method</p>
+<code><span class="keyword">fun </span><span class="identifier">move</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$move(org.bytetwist.bytetwist.nodes.ByteClass)/destination">destination</span><span class="symbol">:</span>&nbsp;<a href="../-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="rename.html">rename</a></h4>
+</td>
+<td>
+<p>Renames this method and all invocations of this method</p>
+<code><span class="keyword">suspend</span> <span class="keyword">fun </span><span class="identifier">rename</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$rename(kotlin.String)/newName">newName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="set-abstract.html">setAbstract</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setAbstract</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="set-private.html">setPrivate</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setPrivate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="set-public.html">setPublic</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setPublic</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="set-static.html">setStatic</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setStatic</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="type-references.html">typeReferences</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">typeReferences</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-class-reference-node/index.html"><span class="identifier">ClassReferenceNode</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-annotation.html">visitAnnotation</a></h4>
+</td>
+<td>
+<p>Visits an annotation and creates a ByteAnnotation if the annotation is visible. Then adds it to this methods list
+of visible annotations <a href="#">visibleAnnotations</a>.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitAnnotation</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitAnnotation(kotlin.String, kotlin.Boolean)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitAnnotation(kotlin.String, kotlin.Boolean)/visible">visible</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AnnotationVisitor</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-field-insn.html">visitFieldInsn</a></h4>
+</td>
+<td>
+<p>Visits a field instruction to create a <a href="../-field-reference-node/index.html">FieldReferenceNode</a> and then add it to the list of instructions, as well as
+the maintained lists of references in <a href="../../org.bytetwist.bytetwist/-references/index.html">References</a></p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitFieldInsn</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitFieldInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String)/opcode">opcode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitFieldInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String)/owner">owner</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitFieldInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitFieldInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-insn.html">visitInsn</a></h4>
+</td>
+<td>
+<p>Adds all other InsnNodes to this methods instruction list</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitInsn</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitInsn(kotlin.Int)/opcode">opcode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-line-number.html">visitLineNumber</a></h4>
+</td>
+<td>
+<p>Do nothing, we don't want to keep line numbers</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitLineNumber</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLineNumber(kotlin.Int, org.objectweb.asm.Label)/line">line</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLineNumber(kotlin.Int, org.objectweb.asm.Label)/start">start</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-local-variable.html">visitLocalVariable</a></h4>
+</td>
+<td>
+<p>TODO: this</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitLocalVariable</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/start">start</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/end">end</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitLocalVariable(kotlin.String, kotlin.String, kotlin.String, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.Int)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-method-insn.html">visitMethodInsn</a></h4>
+</td>
+<td>
+<p>Visits a method instruction and adds it to this ByteMethods list of instructions as a <a href="../-method-reference-node/index.html">MethodReferenceNode</a>.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitMethodInsn</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitMethodInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/opcodeAndSource">opcodeAndSource</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitMethodInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/owner">owner</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitMethodInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitMethodInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitMethodInsn(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Boolean)/isInterface">isInterface</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-parameter.html">visitParameter</a></h4>
+</td>
+<td>
+<p>TODO</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitParameter</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitParameter(kotlin.String, kotlin.Int)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitParameter(kotlin.String, kotlin.Int)/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-try-catch-block.html">visitTryCatchBlock</a></h4>
+</td>
+<td>
+<p>Visits a try catch block and creates a <a href="../-byte-try-catch/index.html">ByteTryCatch</a> then adds it to this methods list of try catch blocks <a href="#">tryCatchBlocks</a></p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitTryCatchBlock</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTryCatchBlock(org.objectweb.asm.Label, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.String)/start">start</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTryCatchBlock(org.objectweb.asm.Label, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.String)/end">end</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTryCatchBlock(org.objectweb.asm.Label, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.String)/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTryCatchBlock(org.objectweb.asm.Label, org.objectweb.asm.Label, org.objectweb.asm.Label, kotlin.String)/type">type</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-type-insn.html">visitTypeInsn</a></h4>
+</td>
+<td>
+<p>Visists a type instruction to create a <a href="../-class-reference-node/index.html">ClassReferenceNode</a> and adds it to the <a href="#">instructions</a></p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitTypeInsn</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTypeInsn(kotlin.Int, kotlin.String)/opcode">opcode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitTypeInsn(kotlin.Int, kotlin.String)/type">type</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="visit-var-insn.html">visitVarInsn</a></h4>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">visitVarInsn</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitVarInsn(kotlin.Int, kotlin.Int)/opcode">opcode</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$visitVarInsn(kotlin.Int, kotlin.Int)/var">var</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="../find-block.html">findBlock</a></h4>
+</td>
+<td>
+<p>Finds a block by it's first <a href="#">AbstractInsnNode</a> in a method that has already computed all of its blocks.</p>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">.</span><span class="identifier">findBlock</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes$findBlock(org.bytetwist.bytetwist.nodes.ByteMethod, org.objectweb.asm.tree.AbstractInsnNode)/firstInstruction">firstInstruction</span><span class="symbol">:</span>&nbsp;<span class="identifier">AbstractInsnNode</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-block.html"><span class="identifier">Block</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../find-block-by-last.html">findBlockByLast</a></h4>
+</td>
+<td>
+<p>Finds a block by it's last <a href="#">AbstractInsnNode</a> in a method that has already computed all of its blocks.</p>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">.</span><span class="identifier">findBlockByLast</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes$findBlockByLast(org.bytetwist.bytetwist.nodes.ByteMethod, org.objectweb.asm.tree.AbstractInsnNode)/lastInstruction">lastInstruction</span><span class="symbol">:</span>&nbsp;<span class="identifier">AbstractInsnNode</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-block.html"><span class="identifier">Block</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="../-constructor-node/index.html">ConstructorNode</a></h4>
+</td>
+<td>
+<p>A subtype of <a href="./index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
+always be named "" or ""</p>
+<code><span class="keyword">class </span><span class="identifier">ConstructorNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="../-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
