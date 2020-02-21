@@ -2,6 +2,7 @@ package org.bytetwist.bytetwist
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.bytetwist.bytetwist.exceptions.NoInputDir
 import org.bytetwist.bytetwist.exceptions.UninitializedScanner
 import org.bytetwist.bytetwist.nodes.ByteNode
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
@@ -20,7 +21,7 @@ import java.io.File
  */
 open class Loader {
 
-    private val processors = ProcessingQueue()
+    val processors = ProcessingQueue()
 
     private var scanner: DoublePassScanner? = null
 
@@ -38,7 +39,11 @@ open class Loader {
      * Initializes the [DoublePassScanner] and starts the scanning process
      */
     fun scan(input: String) {
-        scanner = DoublePassScanner(File(input))
+        val file = File(input)
+        if (!file.exists()) {
+            throw NoInputDir()
+        }
+        scanner = DoublePassScanner(file)
         runBlocking {
             runScanner()
         }

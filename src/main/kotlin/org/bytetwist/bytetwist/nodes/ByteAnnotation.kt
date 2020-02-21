@@ -4,9 +4,12 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AnnotationNode
 
 open class ByteAnnotation(
-        val annotates: ByteNode,
-        var descriptor: String?
-) : AnnotationNode(Opcodes.ASM7, descriptor), ByteNode {
+    val annotates: ByteNode,
+    var descriptor: String?
+) : AnnotationNode(
+    Opcodes.ASM7,
+    descriptor
+), ByteNode {
 
     fun field(name: String, value: Any?) {
         super.visit(name, value)
@@ -19,24 +22,24 @@ open class ByteAnnotation(
 }
 
 class ClassAnnotationNode(
-        annotates: ByteClass,
-        descriptor: String?
+    annotates: ByteClass,
+    descriptor: String?
 ) : ByteAnnotation(
     annotates,
     descriptor
 ), ByteNode
 
 class FieldAnnotationNode(
-        annotates: ByteField,
-        descriptor: String?
+    annotates: ByteField,
+    descriptor: String?
 ) : ByteAnnotation(
     annotates,
     descriptor
 ), ByteNode
 
 class MethodAnnotationNode(
-        annotates: ByteNode,
-        descriptor: String?
+    annotates: ByteNode,
+    descriptor: String?
 ) : ByteAnnotation(
     annotates,
     descriptor

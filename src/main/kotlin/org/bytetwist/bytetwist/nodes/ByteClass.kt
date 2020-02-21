@@ -179,34 +179,36 @@ class ByteClass(
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
 
-            fields.forEach { fieldNode ->
-                if (fieldNode is ByteField) {
-                    References.fieldNames.remove("$oldName.${fieldNode.name}")
-                    References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
-                    fieldNode.references.forEach {
-                        it.owner = newName
-                        it.addToField()
-                    }
-                }
-            }
-
-
-
-            methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
-                References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
-                References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
-                methodNode.invocations.forEach {
+        fields.forEach { fieldNode ->
+            if (fieldNode is ByteField) {
+                References.fieldNames.remove("$oldName.${fieldNode.name}")
+                References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
+                fieldNode.references.forEach {
                     it.owner = newName
-                    it.addToMethod()
-                    if (it.desc.contains(oldName)) {
-                        it.desc = it.desc.replace("L$oldName;", "L$name;")
-                    }
-                }
-                if (methodNode.signature != null && methodNode.signature.contains(Type.getObjectType(oldName).descriptor)) {
-                    methodNode.signature = methodNode.signature.replace(Type.getObjectType(oldName).descriptor,
-                            Type.getObjectType(newName).descriptor)
+                    it.addToField()
                 }
             }
+        }
+
+
+
+        methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
+            References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
+            References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
+            methodNode.invocations.forEach {
+                it.owner = newName
+                it.addToMethod()
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+            }
+            if (methodNode.signature != null && methodNode.signature.contains(Type.getObjectType(oldName).descriptor)) {
+                methodNode.signature = methodNode.signature.replace(
+                    Type.getObjectType(oldName).descriptor,
+                    Type.getObjectType(newName).descriptor
+                )
+            }
+        }
 
 
 
@@ -214,24 +216,24 @@ class ByteClass(
             it.desc = it.desc.replace("L$oldName;", "L$name;")
         }
 
-            References.methodNames.values.forEach {
+        References.methodNames.values.forEach {
 
-                if (it.desc.contains(oldName)) {
-                    it.desc = it.desc.replace("L$oldName;", "L$name;")
-                }
-                if (it.signature != null && it.signature.contains("L$oldName;")) {
-                    it.signature = it.signature.replace("L$oldName", "L$newName")
-                }
+            if (it.desc.contains(oldName)) {
+                it.desc = it.desc.replace("L$oldName;", "L$name;")
             }
+            if (it.signature != null && it.signature.contains("L$oldName;")) {
+                it.signature = it.signature.replace("L$oldName", "L$newName")
+            }
+        }
 
-            References.fieldNames.values.forEach {
-                if (it.desc.contains(oldName)) {
-                    it.desc = it.desc.replace("L$oldName;", "L$name;")
-                }
-                if (it.signature != null && it.signature.contains("L$oldName;")) {
-                    it.signature = it.signature.replace("L$oldName", "L$newName")
-                }
+        References.fieldNames.values.forEach {
+            if (it.desc.contains(oldName)) {
+                it.desc = it.desc.replace("L$oldName;", "L$name;")
             }
+            if (it.signature != null && it.signature.contains("L$oldName;")) {
+                it.signature = it.signature.replace("L$oldName", "L$newName")
+            }
+        }
 
 
 //            }

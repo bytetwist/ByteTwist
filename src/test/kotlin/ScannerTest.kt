@@ -1,6 +1,7 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.nodes.ByteField
 import org.bytetwist.bytetwist.nodes.ConstructorNode
@@ -18,18 +19,19 @@ private val log = KotlinLogging.logger {}
 class ScannerTest {
 
     @InternalCoroutinesApi
-    private val scanner = DoublePassScanner()
+    private val loader = Loader()
 
     @InternalCoroutinesApi
     @BeforeEach
     fun runScan() {
-        scanner.inputDir = File(ScannerTest::class::java.javaClass.getResource("JavaTestClass.class").file)
-        scanner.scan()
+        loader.scan(File(ScannerTest::class::java.javaClass.getResource("JavaTestClass.class").file))
     }
 
     @InternalCoroutinesApi
     @Test
     fun scanTest() {
+        loader.launch()
+        val scanner =  loader.processors
         assertEquals(1, scanner.nodes.size)
         assertEquals(2, scanner.nodes.first().fields.size)
         assertEquals(5, scanner.nodes.first().methods.size)
@@ -39,6 +41,8 @@ class ScannerTest {
     @InternalCoroutinesApi
     @Test
     fun referencesTest() {
+        val scanner =  loader.processors
+
         val field1 = scanner.nodes.first().fields.first() as ByteField
         val field2 = scanner.nodes.first().fields.last() as ByteField
         val method1 = scanner.nodes.first().constructors.first() as ConstructorNode

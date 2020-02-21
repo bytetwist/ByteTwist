@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist.processors.common
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import kotlin.reflect.KClass
@@ -12,7 +13,9 @@ class MethodRenamer : AbstractNodeProcessor<ByteMethod>() {
 
     override fun process(node: ByteMethod) {
         node.annotate("Renamed", "oldName" to node.name)
-        node.rename("method${nodesProcessed}")
+        runBlocking {
+            node.rename("method${nodesProcessed}")
+        }
     }
 
     override fun shouldProcess(node: ByteMethod): Boolean {

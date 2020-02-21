@@ -38,13 +38,17 @@ class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
                                 }
                                 classFiles.forEach { clazz ->
                                     val byteClass = fromBytes(clazz)
-                                    launch {
-                                        byteClass.buildHierarchy()
+                                    runBlocking {
+                                        awaitAll(
+
+                                            async {
+                                                byteClass.buildHierarchy()
+                                            },
+                                            async {
+                                                analyzeMethods(byteClass)
+                                            })
                                     }
-                                    launch {
-                                        analyzeMethods(byteClass)
-                                    }
-                                    launch {
+                                    runBlocking {
                                         send(byteClass)
                                     }
                                 }
@@ -96,9 +100,9 @@ class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
     }
 
     /**
-    * Iterates over all of the [org.bytetwist.bytetwist.nodes.MethodReferenceNode] in the
-    * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [ByteMethod]
-    */
+     * Iterates over all of the [org.bytetwist.bytetwist.nodes.MethodReferenceNode] in the
+     * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [ByteMethod]
+     */
     private fun CoroutineScope.buildMethodCalls(mn: ByteMethod) {
         for (methodCalls in mn.methodCalls()) {
             launch {

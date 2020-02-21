@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.findField
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
@@ -11,13 +12,12 @@ import kotlin.test.assertNotNull
 @ExperimentalCoroutinesApi
 class ReferencesTest {
     @InternalCoroutinesApi
-    val scanner = DoublePassScanner()
+    val scanner = Loader()
 
     @InternalCoroutinesApi
     @BeforeEach
     fun scan() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        scanner.scan(File("src/test/resources"))
     }
 
     @Test

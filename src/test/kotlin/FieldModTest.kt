@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findField
 import org.bytetwist.bytetwist.findMethod
 import org.bytetwist.bytetwist.nodes.ByteField
@@ -16,13 +17,13 @@ import kotlin.test.assertTrue
 class FieldModTest {
 
     @ExperimentalCoroutinesApi
-    private val s = DoublePassScanner()
+    private val s = Loader()
 
     @ExperimentalCoroutinesApi
     @BeforeEach
     fun setup() {
-        s.inputDir = File("src/test/resources")
-        s.scan()
+        s.scan(File("src/test/resources"))
+
     }
 
     @Test

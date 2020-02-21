@@ -1,6 +1,7 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,13 +15,12 @@ private val log = KotlinLogging.logger {}
 class BlockTest {
 
     @InternalCoroutinesApi
-    private val scanner = DoublePassScanner()
+    private val loader = Loader()
 
     @InternalCoroutinesApi
     @BeforeEach
     fun scanResources() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        loader.scan(File("src/test/resources"))
     }
 
     @Test

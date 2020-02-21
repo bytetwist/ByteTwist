@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findMethod
 import org.bytetwist.bytetwist.nodes.ByteBlockNode
 import org.bytetwist.bytetwist.nodes.ByteTryCatch
@@ -15,14 +16,13 @@ class TryCatchBlockTest {
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
-    val scanner = DoublePassScanner()
+    val scanner = Loader()
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     @BeforeEach
     fun scan() {
-        scanner.inputDir = File("src/test/resources")
-        scanner.scan()
+        scanner.scan(File("src/test/resources"))
     }
 
     @Test

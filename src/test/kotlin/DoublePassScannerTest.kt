@@ -1,5 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.exceptions.NoInputDir
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Test
@@ -12,15 +13,14 @@ class DoublePassScannerTest {
     @ExperimentalCoroutinesApi
     @Test
     fun noInputTest() {
-        assertThrows<NoInputDir> { DoublePassScanner().scan() }
+
+        assertThrows<NoInputDir> { Loader().scan("null") }
     }
 
     @InternalCoroutinesApi
     @ExperimentalCoroutinesApi
     @Test
     fun jarInputTest() {
-        val scanner = DoublePassScanner()
-        scanner.inputDir = File("src/test/resources/ByteTwist-0.2.jar")
-        scanner.scan()
+        Loader().scan(File("src/test/resources/ByteTwist-0.2.jar"))
     }
 }

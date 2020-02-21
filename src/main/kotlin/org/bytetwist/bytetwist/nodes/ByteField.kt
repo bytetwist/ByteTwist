@@ -14,13 +14,20 @@ import java.util.concurrent.CopyOnWriteArraySet
  * field, as well as a property of the owning ByteClass: parent
  */
 class ByteField(
-        val parent: ByteClass,
-        access: Int,
-        name: String,
-        descriptor: String,
-        signature: String?,
-        value: Any?
-) : FieldNode(Opcodes.ASM7, access, name, descriptor, signature, value),
+    val parent: ByteClass,
+    access: Int,
+    name: String,
+    descriptor: String,
+    signature: String?,
+    value: Any?
+) : FieldNode(
+    Opcodes.ASM7,
+    access,
+    name,
+    descriptor,
+    signature,
+    value
+),
     ByteNode {
 
     /**
@@ -141,8 +148,10 @@ class ByteField(
         }
     }
 
-    fun annotate(name: String,
-                 vararg fieldsToValues: Pair<String, *>) {
+    fun annotate(
+        name: String,
+        vararg fieldsToValues: Pair<String, *>
+    ) {
         with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
             fieldsToValues.asIterable().forEach {
                 this.visit(it.first, it.second)

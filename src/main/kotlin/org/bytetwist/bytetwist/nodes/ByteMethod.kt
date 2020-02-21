@@ -1,6 +1,10 @@
 package org.bytetwist.bytetwist.nodes
 
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
@@ -18,6 +22,7 @@ import kotlin.collections.HashSet
 
 /**
  * An abstraction of the ClassNode
+ * @param parent: The [ByteClass] that this method is a member of
  */
 open class ByteMethod(
     val parent: ByteClass,
@@ -34,17 +39,12 @@ open class ByteMethod(
     signature,
     exceptions
 ), ByteNode {
+
+
     override fun visitVarInsn(opcode: Int, `var`: Int) {
         val reference = ByteVariableReference(opcode, `var`)
         instructions.add(reference)
     }
-
-    override fun visitEnd() {
-
-
-
-    }
-
 
     /**
      * A list of MethodReferences in which this method is invoked
@@ -84,7 +84,10 @@ open class ByteMethod(
         invisibleAnnotations = mutableListOf<AnnotationNode>()
     }
 
-
+    /**
+     * Visits a method instruction and adds it to this ByteMethods list of instructions as a [MethodReferenceNode].
+     *
+     */
     override fun visitMethodInsn(
         opcodeAndSource: Int,
         owner: String?,
@@ -99,7 +102,15 @@ open class ByteMethod(
         instructions.add(methodCall)
     }
 
-    override fun visitTryCatchBlock(start: Label?, end: Label?, handler: Label?, type: String?) {
+    /**
+     * Visits a try catch block and creates a [ByteTryCatch] then adds it to this methods list of try catch blocks [tryCatchBlocks]
+     */
+    override fun visitTryCatchBlock(
+        start: Label?,
+        end: Label?,
+        handler: Label?,
+        type: String?
+    ) {
         instructions.indexOf(getLabelNode(start))
         if (type != null) {
             val tryCatch = ByteTryCatch(
@@ -117,14 +128,9 @@ open class ByteMethod(
         )
     }
 
-    override fun visitInsn(opcode: Int) {
-        instructions.add(InsnNode(opcode))
-
-    }
-
-
-
-
+    /**
+     * TODO: this
+     */
     override fun visitLocalVariable(
         name: String,
         descriptor: String,
@@ -151,18 +157,33 @@ open class ByteMethod(
         }
     }
 
+    /**
+     * Adds all other InsnNodes to this methods instruction list
+     */
+    override fun visitInsn(opcode: Int) {
+        instructions.add(InsnNode(opcode))
+    }
 
+    /**
+     * Visits an annotation and creates a ByteAnnotation if the annotation is visible. Then adds it to this methods list
+     * of visible annotations [visibleAnnotations].
+     */
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
         val annotationNode = ByteAnnotation(this, descriptor)
         visibleAnnotations.add(annotationNode)
         return annotationNode
     }
 
-    override fun getLabelNode(label: Label?): LabelNode {
-        return super.getLabelNode(label)
-    }
-
-    override fun visitFieldInsn(opcode: Int, owner: String, name: String, descriptor: String?) {
+    /**
+     * Visits a field instruction to create a [FieldReferenceNode] and then add it to the list of instructions, as well as
+     * the maintained lists of references in [References]
+     */
+    override fun visitFieldInsn(
+        opcode: Int,
+        owner: String,
+        name: String,
+        descriptor: String?
+    ) {
         when (opcode) {
             in FieldOpcodes.READ_CODES -> {
                 val fieldRead = FieldRead(this, opcode, owner, name, descriptor)
@@ -182,79 +203,101 @@ open class ByteMethod(
         (instructions.last as FieldReferenceNode).addToField()
     }
 
-    fun buildBlocks() {
-        // Sort try catch blocks
-        //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
-        var block = ByteBlockNode(this)
-        for (insnNode in instructions) {
-            when (insnNode) {
-                instructions.first -> {
-                    block = ByteBlockNode(this)
-                    block.add(insnNode)
-                }
-                is JumpInsnNode -> {
-                    block.add(insnNode)
-                    blocks.add(block)
-                    block = ByteBlockNode(this)
-                }
-                else -> {
-                    block.add(insnNode)
-                    if (insnNode == instructions.last) {
+    /**
+     * Builds all of the [ByteBlockNode] and [ByteTryCatch] blocks for this method. Uses coroutines to execute some parts
+     * of the method asynchronously
+     */
+    suspend fun buildBlocks() {
+        coroutineScope {
+            // Sort try catch blocks
+            //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
+            var block = ByteBlockNode(this@ByteMethod)
+            for (insnNode in instructions) {
+                when (insnNode) {
+                    instructions.first -> {
+                        block = ByteBlockNode(this@ByteMethod)
+                        block.add(insnNode)
+                    }
+                    is JumpInsnNode -> {
+                        block.add(insnNode)
                         blocks.add(block)
+                        block = ByteBlockNode(this@ByteMethod)
+                    }
+                    else -> {
+                        block.add(insnNode)
+                        if (insnNode == instructions.last) {
+                            blocks.add(block)
+                        }
                     }
                 }
             }
-        }
-        if (!this.tryCatchBlocks.isNullOrEmpty()) {
-            this.tryCatchBlocks.forEach { tryCatchBlock ->
-                if (tryCatchBlock != null) {
-                    (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
+            if (!this@ByteMethod.tryCatchBlocks.isNullOrEmpty()) {
+                this@ByteMethod.tryCatchBlocks.map { tryCatchBlock ->
+                    async {
+                        if (tryCatchBlock != null) {
+                            (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
+                        }
+                    }
+                }.awaitAll()
+            }
+
+            try {
+                val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
+                instructions.zip(frames).forEach {
+                    if (it.second == null) {
+                        log.debug { ";)" }
+                    }
+                }
+                if (Settings.annotateMethodComplexity) {
+                    launch {
+                        annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+                    }
                 }
 
-            }
-        }
+                if (Settings.annotateTryCatchCount) {
+                    launch {
+                        annotate("TryCatchs", "number" to tryCatchBlocks.size)
+                    }
+                }
 
-        try {
-            val frames = analyzer.analyze(this.parent.name, this)
-            instructions.zip(frames).forEach {
-                if (it.second == null) {
-                    log.debug { ";)" }
+            } catch (e: AnalyzerException) {
+                //log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+            }
+
+            if (Settings.annotateLocalVariables) {
+                launch {
+                    if (localVariables != null && localVariables.isNotEmpty()) {
+                        localVariables.map {
+                            async {
+                                annotate(
+                                    "Local Variable ${it.name}",
+                                    "References" to (it as ByteVariable).references.size
+                                )
+                            }
+                        }.awaitAll()
+                    }
                 }
             }
-            if (Settings.annotateMethodComplexity) {
-                annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
-            }
-
-            if (Settings.annotateTryCatchCount) {
-                annotate("TryCatchs", "number" to tryCatchBlocks.size)
-            }
-
-        } catch (e: AnalyzerException) {
-            //log.error { e.message + " ${e.node} + ${e.node.opcode}" }
+            References.blocks.addAll(this@ByteMethod.blocks)
         }
-
-        if (Settings.annotateLocalVariables) {
-            if (localVariables != null && localVariables.isNotEmpty()) {
-                localVariables.forEach {
-                    annotate("Local Variable ${it.name}", "References" to (it as ByteVariable).references.size)
-                }
-            }
-        }
-        References.blocks.addAll(this.blocks)
-
     }
 
-    override fun visitAnnotationDefault(): AnnotationVisitor {
-        return super.visitAnnotationDefault()
-    }
-
-
+    /**
+     * Do nothing, we don't want to keep line numbers
+     */
     override fun visitLineNumber(line: Int, start: Label?) {
 
     }
 
+    /**
+     * An Analyzer that builds a cfg for this [ByteMethod] and adds the edges to all of this methods blocks.
+     *
+     */
     private val analyzer = object : Analyzer<BasicValue>(BasicVerifier()) {
 
+        /**
+         * Adds a control flow edge from one block to another
+         */
         override fun newControlFlowEdge(insnIndex: Int, successorIndex: Int) {
             findBlockByLast(instructions[insnIndex])?.let {
                 val b = findBlock(instructions[successorIndex])
@@ -268,6 +311,9 @@ open class ByteMethod(
             return super.newControlFlowExceptionEdge(insnIndex, tryCatchBlock)
         }
 
+        /**
+         * Adds an edge from a try block to it's catch handler
+         */
         override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
             findBlockByLast(instructions[insnIndex])?.let {
                 val b = findBlock(instructions[successorIndex])
@@ -280,15 +326,19 @@ open class ByteMethod(
         }
     }
 
-
+    /**
+     * Visists a type instruction to create a [ClassReferenceNode] and adds it to the [instructions]
+     */
     override fun visitTypeInsn(opcode: Int, type: String?) {
         val classReference = ClassReferenceNode(this, opcode, type)
         instructions.add(classReference)
         References.typeReferences.add(classReference)
     }
 
+    /**
+     * TODO
+     */
     override fun visitParameter(name: String?, access: Int) {
-
         super.visitParameter(name, access)
     }
 
@@ -296,14 +346,19 @@ open class ByteMethod(
     /**
      * Renames this method and all invocations of this method
      */
-    fun rename(newName: String) {
+    suspend fun rename(newName: String) {
         val oldName = name
         this.name = newName
         References.methodNames.remove("${parent.name}.${oldName}.${desc}")
         References.methodNames["${parent.name}.${newName}.${desc}"] = this
-        this.invocations.forEach {
-            it.name = newName
-            it.addToMethod()
+        coroutineScope {
+
+            this@ByteMethod.invocations.map {
+                async {
+                    it.name = newName
+                    it.addToMethod()
+                }
+            }.awaitAll()
         }
     }
 
