@@ -2,6 +2,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findClass
+import org.bytetwist.bytetwist.findMethod
 import org.bytetwist.bytetwist.getMethodByName
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteTryCatch
@@ -34,6 +35,14 @@ class MethodModTest {
         assertNotNull(method)
         assert(method.fieldReads().size == 1)
         assert(method.fieldWrites().size == 1)
+    }
+
+    @Test
+    fun testMethodRef() {
+        val m = findMethod("tryCatch")
+        assertNotNull(m)
+        assertEquals(2, m.methodCalls().size)
+        assertEquals(1, m.tryCatchBlocks.size)
     }
 
     @Test
