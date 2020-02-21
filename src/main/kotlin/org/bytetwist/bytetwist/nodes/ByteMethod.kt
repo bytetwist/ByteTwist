@@ -2,6 +2,7 @@ package org.bytetwist.bytetwist.nodes
 
 
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -141,14 +142,12 @@ open class ByteMethod(
             getLabelNode(end),
             index
         )
-        log.info { byteVar }
         localVariables.add(byteVar)
         val refs = instructions.filterIsInstance(ByteVariableReference::class.java).filter {
             it.`var` == index
         }
         if (!refs.isNullOrEmpty()) {
             refs.onEach { byteVar.references.add(it) }
-            log.info { "adding local variable ref" }
         }
     }
 
@@ -214,16 +213,23 @@ open class ByteMethod(
                     log.debug { ";)" }
                 }
             }
-            annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
-            annotate("TryCatchs", "number" to tryCatchBlocks.size)
+            if (Settings.annotateMethodComplexity) {
+                annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+            }
+
+            if (Settings.annotateTryCatchCount) {
+                annotate("TryCatchs", "number" to tryCatchBlocks.size)
+            }
 
         } catch (e: AnalyzerException) {
             //log.error { e.message + " ${e.node} + ${e.node.opcode}" }
         }
 
-        if (localVariables != null && localVariables.isNotEmpty()) {
-            localVariables.forEach {
-                annotate("Local Variable ${it.name}", "References" to (it as ByteVariable).references.size)
+        if (Settings.annotateLocalVariables) {
+            if (localVariables != null && localVariables.isNotEmpty()) {
+                localVariables.forEach {
+                    annotate("Local Variable ${it.name}", "References" to (it as ByteVariable).references.size)
+                }
             }
         }
 

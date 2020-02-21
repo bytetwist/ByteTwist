@@ -33,8 +33,6 @@ class FieldModTest {
             assertTrue { isStatic() }
             setPublic()
             assertTrue { isPublic() }
-            setStatic()
-            assertTrue { !isStatic() }
         }
     }
 

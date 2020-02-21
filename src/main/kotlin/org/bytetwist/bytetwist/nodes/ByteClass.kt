@@ -3,8 +3,6 @@ package org.bytetwist.bytetwist.nodes
 import com.google.common.annotations.Beta
 import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.processors.ProcessingQueue
-import org.bytetwist.bytetwist.processors.ProcessingQueue.Companion.nodes
 import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
@@ -171,9 +169,6 @@ class ByteClass(
 
     @Beta
     fun rename(newName: String) {
-        log.debug {
-            "Renaming Class $name to $newName "
-        }
         val oldName = this.name
 
         subClasses.forEach {
@@ -184,79 +179,63 @@ class ByteClass(
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
 
-        runBlocking {
-            val threadExecutor = Executors.newFixedThreadPool(4)
-
-            threadExecutor.execute {
-                fields.forEach { fieldNode ->
-                    launch {
-                        if (fieldNode is ByteField) {
-                            References.fieldNames.remove("$oldName.${fieldNode.name}")
-                            References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
-                            fieldNode.references.forEach { fieldRef ->
-                                launch {
-                                    fieldRef.owner = newName
-                                    fieldRef.addToField()
-                                }
-                            }
-                        }
+            fields.forEach { fieldNode ->
+                if (fieldNode is ByteField) {
+                    References.fieldNames.remove("$oldName.${fieldNode.name}")
+                    References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
+                    fieldNode.references.forEach {
+                        it.owner = newName
+                        it.addToField()
                     }
                 }
             }
 
-            threadExecutor.execute {
-                methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
-                        References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
-                        References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
-                        methodNode.invocations.forEach {
-                                it.owner = newName
-                                it.addToMethod()
-                                if (it.desc.contains(oldName)) {
-                                    it.desc = it.desc.replace("L$oldName;", "L$name;")
-                                }
-                        }
-                        if (methodNode.signature != null && methodNode.signature
-                                .contains(Type.getObjectType(oldName).descriptor)
-                        ) {
-                            methodNode.signature = methodNode.signature.replace(
-                                Type.getObjectType(oldName).descriptor,
-                                Type.getObjectType(newName).descriptor
-                            )
-                        }
-                }
-            }
 
-            typeReferences.forEach {
-                it.desc = it.desc.replace("L$oldName;", "L$name;")
-            }
 
-            References.methodNames.values.forEach {
-                threadExecutor.execute {
+            methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
+                References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
+                References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
+                methodNode.invocations.forEach {
+                    it.owner = newName
+                    it.addToMethod()
                     if (it.desc.contains(oldName)) {
                         it.desc = it.desc.replace("L$oldName;", "L$name;")
                     }
-                    if (it.signature != null && it.signature.contains("L$oldName;")) {
-                        it.signature = it.signature.replace("L$oldName", "L$newName")
-                    }
+                }
+                if (methodNode.signature != null && methodNode.signature.contains(Type.getObjectType(oldName).descriptor)) {
+                    methodNode.signature = methodNode.signature.replace(Type.getObjectType(oldName).descriptor,
+                            Type.getObjectType(newName).descriptor)
+                }
+            }
+
+
+
+        typeReferences.forEach {
+            it.desc = it.desc.replace("L$oldName;", "L$name;")
+        }
+
+            References.methodNames.values.forEach {
+
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
                 }
             }
 
             References.fieldNames.values.forEach {
-                threadExecutor.execute {
-                    if (it.desc.contains(oldName)) {
-                        it.desc = it.desc.replace("L$oldName;", "L$name;")
-                    }
-                    if (it.signature != null && it.signature.contains("L$oldName;")) {
-                        it.signature = it.signature.replace("L$oldName", "L$newName")
-                    }
+                if (it.desc.contains(oldName)) {
+                    it.desc = it.desc.replace("L$oldName;", "L$name;")
+                }
+                if (it.signature != null && it.signature.contains("L$oldName;")) {
+                    it.signature = it.signature.replace("L$oldName", "L$newName")
                 }
             }
-        threadExecutor.shutdown()
-        }
-    }
 
 
 //            }
+    }
 
 
     /**
@@ -318,8 +297,6 @@ class ByteClassBuilder() {
 inline fun newClass(init: ByteClassBuilder.() -> Unit): ByteClass {
     val byteClass = ByteClassBuilder().apply(init).build()
     References.classNames.putIfAbsent(byteClass.name, byteClass)
-    nodes.add(byteClass)
-
     return byteClass
 }
 

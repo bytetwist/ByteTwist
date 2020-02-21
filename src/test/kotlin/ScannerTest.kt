@@ -30,18 +30,18 @@ class ScannerTest {
     @InternalCoroutinesApi
     @Test
     fun scanTest() {
-        assertEquals(1, ProcessingQueue.nodes.size)
-        assertEquals(2, ProcessingQueue.nodes.first().fields.size)
-        assertEquals(5, ProcessingQueue.nodes.first().methods.size)
-        assertEquals(2, ProcessingQueue.nodes.first().methods.filterIsInstance(ConstructorNode::class.java).size)
+        assertEquals(1, scanner.nodes.size)
+        assertEquals(2, scanner.nodes.first().fields.size)
+        assertEquals(5, scanner.nodes.first().methods.size)
+        assertEquals(2, scanner.nodes.first().methods.filterIsInstance(ConstructorNode::class.java).size)
     }
 
     @InternalCoroutinesApi
     @Test
     fun referencesTest() {
-        val field1 = ProcessingQueue.nodes.first().fields.first() as ByteField
-        val field2 = ProcessingQueue.nodes.first().fields.last() as ByteField
-        val method1 = ProcessingQueue.nodes.first().constructors.first() as ConstructorNode
+        val field1 = scanner.nodes.first().fields.first() as ByteField
+        val field2 = scanner.nodes.first().fields.last() as ByteField
+        val method1 = scanner.nodes.first().constructors.first() as ConstructorNode
         val method2 = References.findMethod("testMethod2")!!
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
