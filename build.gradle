@@ -105,7 +105,7 @@ test {
 
 bintray {
     user = 'bytetwist'
-    key = new File("src/main/resources/bintrayPublishingKey").text
+    key = new File("src/main/resources/bintrayPublishingKey").text ?: ""
     publications = ['maven']
     pkg {
         repo = 'ByteTwist'
