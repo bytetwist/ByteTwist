@@ -2,24 +2,43 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
     id 'org.jetbrains.dokka' version '0.10.0'
     id 'jacoco'
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.4'
+
 }
 
 group 'org.bytetwist'
-version '0.2'
+version '0.3'
 
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url = "https://dl.bintray.com/vorpal-research/kotlin-maven"
+}
 
+
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact kotlinSourcesJar
+            groupId = group
+            artifactId = 'ByteTwist'
+            version = version
+        }
+    }
+    repositories {
+        maven {
+            url = "https://dl.bintray.com/bytetwist/ByteTwist/"
+        }
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
-    api 'org.jetbrains.research:kfg:0.0.6-1'
     api 'org.ow2.asm:asm:7.3'
     api 'org.ow2.asm:asm-commons:7.3'
     api 'org.ow2.asm:asm-tree:7.3'
@@ -81,5 +100,18 @@ test {
     testLogging {
         //showStandardStreams = true
         events "passed", "skipped", "failed"
+    }
+}
+
+bintray {
+    user = 'bytetwist'
+    //key = new File("src/main/resources/bintrayPublishingKey").text ?: ""
+    publications = ['maven']
+    pkg {
+        repo = 'ByteTwist'
+        name = 'bytetwist'
+        version {
+            name = version
+        }
     }
 }
