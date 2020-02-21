@@ -10,9 +10,14 @@ import java.util.zip.ZipEntry
 import kotlin.reflect.KClass
 
 @ExperimentalCoroutinesApi
-class JarOutputProcessor : AbstractNodeProcessor<ByteClass>() {
+class JarOutputProcessor(private val outputName: String = "out") : AbstractNodeProcessor<ByteClass>() {
 
+    private val fileOutputStream = FileOutputStream("$outputName.jar")
+    private val jarOutputStream = JarOutputStream(fileOutputStream)
 
+    init {
+
+    }
 
     override fun process(node: ByteClass) {
         runBlocking {
@@ -32,10 +37,7 @@ class JarOutputProcessor : AbstractNodeProcessor<ByteClass>() {
         super.onComplete()
     }
 
-    companion object {
-        private val fileOutputStream = FileOutputStream("out.jar")
-        val jarOutputStream = JarOutputStream(fileOutputStream)
-    }
+
 
     override val type: KClass<ByteClass>
         get() = ByteClass::class
