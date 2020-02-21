@@ -22,7 +22,7 @@ class ClassRenamer : AbstractNodeProcessor<ByteClass>() {
         super.onComplete()
     }
 
-    override fun preProcess(node: ByteClass): Boolean {
+    override fun shouldProcess(node: ByteClass): Boolean {
         return node.name.length <= 3 || node.name.length > 60
     }
 

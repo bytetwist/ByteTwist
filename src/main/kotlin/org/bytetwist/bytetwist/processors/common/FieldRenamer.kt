@@ -13,7 +13,7 @@ class FieldRenamer : AbstractNodeProcessor<ByteField>() {
         node.rename("field$nodesProcessed")
     }
 
-    override fun preProcess(node: ByteField): Boolean {
+    override fun shouldProcess(node: ByteField): Boolean {
         return node.name.length <= 3 || node.name.length > 60
     }
 

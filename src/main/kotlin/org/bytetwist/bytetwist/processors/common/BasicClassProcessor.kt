@@ -12,7 +12,7 @@ import org.bytetwist.bytetwist.processors.log
 class BasicClassProcessor : AbstractNodeProcessor<ByteClass>() {
      override val type = ByteClass::class
 
-    override fun preProcess(node: ByteClass): Boolean {
+    override fun shouldProcess(node: ByteClass): Boolean {
         return node.methods.filterIsInstance(ByteMethod::class.java).all { methodNode ->
             methodNode.isStatic() } &&
                 node.fields.all { fieldNode -> (fieldNode as ByteField).isStatic() }

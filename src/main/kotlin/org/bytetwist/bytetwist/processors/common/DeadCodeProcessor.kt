@@ -6,7 +6,6 @@ import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.tree.LabelNode
 import org.objectweb.asm.tree.analysis.Analyzer
 import org.objectweb.asm.tree.analysis.BasicInterpreter
-import org.objectweb.asm.tree.analysis.BasicValue
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
@@ -37,7 +36,7 @@ class DeadCodeProcessor : AbstractNodeProcessor<ByteMethod>() {
         log.info { "Removed $deadInstructions dead instructions in $timer" }
     }
 
-    override fun preProcess(node: ByteMethod): Boolean {
-        return super.preProcess(node)
+    override fun shouldProcess(node: ByteMethod): Boolean {
+        return super.shouldProcess(node)
     }
 }

@@ -164,12 +164,20 @@ open class ByteMethod(
 
     override fun visitFieldInsn(opcode: Int, owner: String, name: String, descriptor: String?) {
         when (opcode) {
-            in FieldOpcodes.READ_CODES -> instructions.add(
-                FieldRead(this, opcode, owner, name, descriptor)
-            )
-            in FieldOpcodes.WRITE_CODES -> instructions.add(
-                FieldWrite(this, opcode, owner, name, descriptor)
-            )
+            in FieldOpcodes.READ_CODES -> {
+                val fieldRead = FieldRead(this, opcode, owner, name, descriptor)
+                instructions.add(
+                    fieldRead
+                )
+                References.fieldReferences.add(fieldRead)
+            }
+            in FieldOpcodes.WRITE_CODES -> {
+                val fieldWrite = FieldWrite(this, opcode, owner, name, descriptor)
+                instructions.add(
+                    fieldWrite
+                )
+                References.fieldReferences.add(fieldWrite)
+            }
         }
         (instructions.last as FieldReferenceNode).addToField()
     }
@@ -232,7 +240,7 @@ open class ByteMethod(
                 }
             }
         }
-
+        References.blocks.addAll(this.blocks)
 
     }
 
@@ -276,6 +284,7 @@ open class ByteMethod(
     override fun visitTypeInsn(opcode: Int, type: String?) {
         val classReference = ClassReferenceNode(this, opcode, type)
         instructions.add(classReference)
+        References.typeReferences.add(classReference)
     }
 
     override fun visitParameter(name: String?, access: Int) {

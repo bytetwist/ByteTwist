@@ -15,7 +15,7 @@ class MethodRenamer : AbstractNodeProcessor<ByteMethod>() {
         node.rename("method${nodesProcessed}")
     }
 
-    override fun preProcess(node: ByteMethod): Boolean {
+    override fun shouldProcess(node: ByteMethod): Boolean {
         return node.name.length <= 3 || node.name.length > 60
     }
 }

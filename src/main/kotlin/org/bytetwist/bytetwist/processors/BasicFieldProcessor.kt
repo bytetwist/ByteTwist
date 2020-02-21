@@ -9,7 +9,7 @@ class BasicFieldProcessor : AbstractNodeProcessor<FieldReferenceNode>() {
      override val type: KClass<FieldReferenceNode>
         get() = FieldReferenceNode::class
 
-    override fun preProcess(node: FieldReferenceNode): Boolean {
+    override fun shouldProcess(node: FieldReferenceNode): Boolean {
         return node.field() != null
     }
 
