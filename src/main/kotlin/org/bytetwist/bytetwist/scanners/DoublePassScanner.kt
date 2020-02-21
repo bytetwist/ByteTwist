@@ -131,13 +131,15 @@ fun main() {
     val scanner = DoublePassScanner()
     scanner.inputDir = File("gamepack_obf.jar")
     scanner.addProcessor(AbstractMethodProcessor())
+    scanner.addProcessor(UnusedFieldProcessor())
+    scanner.addProcessor(UnusedMethodProcessor())
     scanner.addProcessor(FieldRenamer())
     scanner.addProcessor(MethodRenamer())
     scanner.addProcessor(ClassRenamer())
     scanner.addProcessor(JumpOptimizingProcessor())
     scanner.addProcessor(JarOutputProcessor("out1"))
-
     scanner.addProcessor(DeadCodeProcessor())
+
 //    scanner.addProcessor(
 //        oneOff(ByteMethod::class) {
 //            if (it.name == "method320") {
