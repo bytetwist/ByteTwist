@@ -3,15 +3,18 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.ByteField
-import org.bytetwist.bytetwist.nodes.ConstructorNode
-import org.bytetwist.bytetwist.nodes.newClass
+import org.bytetwist.bytetwist.Settings
+import org.bytetwist.bytetwist.findClass
+import org.bytetwist.bytetwist.nodes.*
 import org.bytetwist.bytetwist.processors.ProcessingQueue
+import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.File
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 
 private val log = KotlinLogging.logger {}
@@ -62,6 +65,42 @@ class ScannerTest {
             name = "B"
         }
         assertNotNull(clazz)
+    }
+
+    @InternalCoroutinesApi
+    @Test
+    fun loaderTest() {
+        val loader = Loader()
+        assertNotNull(loader)
+        loader.scan("src/test/resources")
+        assertNotNull(findClass("JavaTestClass"))
+        val processingQueue = loader.processors
+        assertNotNull(processingQueue)
+        loader.addProcessor(oneOff<Block> { assertNotNull(it) } )
+        Settings.annotateMethodComplexity = true
+        val annotations = mutableSetOf<ByteAnnotation>()
+        loader.addProcessor(oneOff<ByteAnnotation> { annotations.add(it) })
+        val refs = arrayListOf<FieldReferenceNode>()
+        loader.addProcessor(oneOff<FieldReferenceNode> { refs.add(it) })
+        loader.addProcessor(oneOff<FieldRead> { log.info { it }; refs.add(it) })
+        loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
+        loader.launch()
+        assertNotNull(annotations)
+        assertNotEquals(0, refs.size)
+        refs.clear()
+
+
+    }
+
+    @InternalCoroutinesApi
+    private fun testRefs(
+    ) {
+        val refs = ArrayList<FieldReferenceNode>()
+        val loader = Loader()
+        loader.scan("src/test/resources")
+        loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
+        loader.launch()
+        assertNotEquals(0, refs.size)
     }
 
 }
