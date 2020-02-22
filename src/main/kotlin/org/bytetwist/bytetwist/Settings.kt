@@ -1,7 +1,6 @@
 package org.bytetwist.bytetwist
 
 import org.bytetwist.bytetwist.nodes.ByteMethod
-import org.bytetwist.bytetwist.nodes.TryCatchBlock
 
 
 class Settings {

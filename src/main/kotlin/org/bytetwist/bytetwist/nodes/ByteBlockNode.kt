@@ -44,10 +44,6 @@ open class ByteBlockNode(
 
 }
 
-class TryCatchBlock(method: ByteMethod) : ByteBlockNode(method), ByteNode {
-
-}
-
 /**
  * A bit redundant but can be useful for analysis
  */

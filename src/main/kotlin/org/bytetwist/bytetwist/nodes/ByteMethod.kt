@@ -278,7 +278,7 @@ open class ByteMethod(
                     }
                 }
             }
-            References.blocks.addAll(this@ByteMethod.blocks)
+            //References.blocks.addAll(this@ByteMethod.blocks)
         }
     }
 
@@ -302,13 +302,17 @@ open class ByteMethod(
             findBlockByLast(instructions[insnIndex])?.let {
                 val b = findBlock(instructions[successorIndex])
                 if (b?.edges?.add(it to EdgeDirection.OUT) == true) {
-                    it.edges.add(b to EdgeDirection.IN)
+                   // it.edges.add(b to EdgeDirection.IN)
                 }
             }
         }
 
         override fun newControlFlowExceptionEdge(insnIndex: Int, tryCatchBlock: TryCatchBlockNode?): Boolean {
-            return super.newControlFlowExceptionEdge(insnIndex, tryCatchBlock)
+            findBlock(instructions[insnIndex])?.let {
+                tryCatchBlock as ByteTryCatch
+                it.edges.add((tryCatchBlock as ByteTryCatch).tryBlock() to EdgeDirection.OUT)
+            }
+            return true
         }
 
         /**
@@ -318,7 +322,7 @@ open class ByteMethod(
             findBlockByLast(instructions[insnIndex])?.let {
                 val b = findBlock(instructions[successorIndex])
                 if (b?.edges?.add(it to EdgeDirection.OUT) == true) {
-                    it.edges.add(b to EdgeDirection.IN)
+                    //it.edges.add(b to EdgeDirection.IN)
                     return true
                 }
             }
@@ -422,5 +426,38 @@ open class ByteMethod(
             }
             this.visitEnd()
         }
+    }
+
+    fun addOutEdge(edges: List<Pair<Block, EdgeDirection>>, graph: String) : String {
+        while (edges.isNotEmpty()) {
+            val edge = edges[0]
+            if (edges.size == 1) {
+                return addOutEdge(
+                    edges.minus(edge), "$graph -> ${edge.first.toString()}[dir = " + when (edge.second) {
+                        EdgeDirection.OUT -> "forward"
+                        else -> {
+                            "back"
+                        }
+                    } + "]"
+                )
+            }
+            else {
+                return addOutEdge(
+                    edges.minus(edge), "$graph -> ${edge.first.toString()}"
+                )
+            }
+        }
+        return graph
+    }
+
+    fun printCfgDot() {
+        println("digraph ${this.name}{")
+        blocks.forEach {
+            if (it == blocks.first()) {
+                println(it.toString() + "[shape=box, style=filled,color=\".7 .3 1.0\"];")
+            }
+            println(addOutEdge(it.edges, it.toString()) + ";")
+        }
+        println("}")
     }
 }

@@ -15,7 +15,13 @@ class MethodReferenceNode(
         descriptor: String?,
         isInterface: Boolean
 ) :
-    MethodInsnNode(opcode, owner, name, descriptor, isInterface),
+    MethodInsnNode(
+        opcode,
+        owner,
+        name,
+        descriptor,
+        isInterface
+    ),
     ByteNode {
 
     /**

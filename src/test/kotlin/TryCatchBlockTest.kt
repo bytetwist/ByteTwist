@@ -4,8 +4,6 @@ import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findMethod
 import org.bytetwist.bytetwist.nodes.ByteBlockNode
 import org.bytetwist.bytetwist.nodes.ByteTryCatch
-import org.bytetwist.bytetwist.nodes.TryCatchBlock
-import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File

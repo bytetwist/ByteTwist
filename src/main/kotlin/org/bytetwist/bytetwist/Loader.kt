@@ -4,12 +4,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.exceptions.NoInputDir
 import org.bytetwist.bytetwist.exceptions.UninitializedScanner
+import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.nodes.ByteNode
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.ProcessingQueue
-import org.bytetwist.bytetwist.processors.common.AbstractMethodProcessor
-import org.bytetwist.bytetwist.processors.common.ClassRenamer
-import org.bytetwist.bytetwist.processors.common.JarOutputProcessor
+import org.bytetwist.bytetwist.processors.common.*
+import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import java.io.File
 
@@ -85,9 +85,10 @@ runBlocking {
     loader.scan("C:\\Users\\Jesse\\IdeaProjects\\ByteTwist\\gamepack_obf.jar")
 }
     loader.addProcessor(AbstractMethodProcessor())
-
     loader.addProcessor(ClassRenamer())
-    loader.addProcessor(JarOutputProcessor())
+    loader.addProcessor(MethodRenamer())
+    loader.addProcessor(UnusedMethodProcessor())
+    loader.addProcessor(oneOff<ByteMethod> { it.printCfgDot() })
 
     loader.launch()
 
