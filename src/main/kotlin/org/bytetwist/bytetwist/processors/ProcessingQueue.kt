@@ -3,10 +3,8 @@ package org.bytetwist.bytetwist.processors
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.nodes.*
-import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -54,7 +52,12 @@ open class ProcessingQueue() {
 
     @ExperimentalCoroutinesApi
     fun fieldRefs(): Flow<FieldReferenceNode> = flow {
-        this.emitAll(References.fieldReferences.asFlow())
+        blocks.onEach { byteBlockNode ->
+            byteBlockNode.filterIsInstance<FieldReferenceNode>()
+                .onEach {
+                    emit(it)
+                }
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -73,7 +76,7 @@ open class ProcessingQueue() {
                 when (processor.type) {
                     ByteClass::class -> processor.subscribe(classes())
                     ByteMethod::class -> processor.subscribe(methods())
-                    ConstructorNode::class -> processor.subscribe(methods().filterIsInstance<ConstructorNode>())
+                    ByteConstructor::class -> processor.subscribe(methods().filterIsInstance<ByteConstructor>())
                     ByteField::class -> processor.subscribe(fields())
                     FieldReferenceNode::class -> processor.subscribe(fieldRefs())
                     FieldWrite::class -> processor.subscribe(fieldRefs().filterIsInstance<FieldWrite>())

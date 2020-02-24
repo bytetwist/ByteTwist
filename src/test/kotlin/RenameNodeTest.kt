@@ -51,6 +51,9 @@ class RenameNodeTest {
     fun renameField() {
         val m = References.findField("stringValue")
         assertNotNull(m)
+        m.references.forEach {
+            log.info { it }
+        }
         assertEquals(3, m.references.size)
     }
 

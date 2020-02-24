@@ -3,6 +3,7 @@ package org.bytetwist.bytetwist.nodes
 import org.bytetwist.bytetwist.References
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.FieldInsnNode
+import java.util.Collections.synchronizedList
 
 /**
  * An abstraction of a FieldInsnNode that includes references to the ByteField Object and the referencing method
@@ -41,7 +42,9 @@ open class FieldReferenceNode(
             field?.references?.add(this)
             return
         }
-        field()?.references?.add(this)
+        if (field() != null) {
+            field()!!.references.add(this)
+        }
     }
 }
 

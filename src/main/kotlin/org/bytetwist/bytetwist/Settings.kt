@@ -1,6 +1,7 @@
 package org.bytetwist.bytetwist
 
 import org.bytetwist.bytetwist.nodes.ByteMethod
+import org.bytetwist.bytetwist.nodes.ByteClass
 
 
 class Settings {
@@ -18,6 +19,12 @@ class Settings {
         var annotateTryCatchCount = false
 
         var annotateLocalVariables = false
+
+        /**
+         * Automatically annotates [ByteClass]es after they have been renamed or moved with an annotation that
+         * has their old name or old package.
+         */
+        var annotateClassChanges = false
 
     }
 }

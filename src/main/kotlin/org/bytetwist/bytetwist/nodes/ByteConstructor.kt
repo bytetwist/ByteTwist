@@ -5,7 +5,7 @@ package org.bytetwist.bytetwist.nodes
  * A subtype of [ByteMethod] that represents a constructor method. This also includes static constructors. Will almost
  * always be named "<init>" or "<clinit>"
  */
-class ConstructorNode(
+class ByteConstructor(
         parent: ByteClass,
         access: Int,
         name: String,

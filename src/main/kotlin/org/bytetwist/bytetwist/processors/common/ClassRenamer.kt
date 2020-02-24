@@ -13,14 +13,6 @@ class ClassRenamer : AbstractNodeProcessor<ByteClass>() {
 
     override val type: KClass<ByteClass> = ByteClass::class
 
-    private val abstractProcessed = AtomicInteger()
-    private val interfacesProcessed = AtomicInteger()
-
-
-    override fun onComplete() {
-        log.info { "Renamed $abstractProcessed abstract classes and $interfacesProcessed interfaces" }
-        super.onComplete()
-    }
 
     override fun shouldProcess(node: ByteClass): Boolean {
         return node.name.length <= 3 || node.name.length > 60

@@ -111,7 +111,11 @@ inline fun <reified T : ByteNode> oneOff(crossinline process: (node: T) -> Unit)
             process(node)
         }
 
-        override val type: KClass<T>
-            get() = T::class
+        /**
+         * The [KClass] type of node that this processor will process. Annoying but couldn't figure out a better way
+         */
+        override val type = T::class
+
+
     }
 }

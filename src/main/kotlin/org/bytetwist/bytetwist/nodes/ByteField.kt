@@ -5,9 +5,13 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.FieldNode
 import org.bytetwist.bytetwist.References
 import org.objectweb.asm.Type
+import org.objectweb.asm.signature.SignatureWriter
 import org.objectweb.asm.tree.AnnotationNode
 import java.lang.reflect.Modifier
+import java.util.Collections.synchronizedList
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.reflect.KClass
 
 /**
  * An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
@@ -33,7 +37,7 @@ class ByteField(
     /**
      * A Set of all FieldReferenceNode's that reference this particular field
      */
-    val references = CopyOnWriteArraySet<FieldReferenceNode>()
+    val references = CopyOnWriteArrayList<FieldReferenceNode>()
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
@@ -48,53 +52,6 @@ class ByteField(
             invisibleAnnotations.add(annotationNode)
         }
         return annotationNode
-    }
-
-    /**
-     * Changes the name of this field in it's declaration and in any instructions that reference it @see FieldReferenceNode
-     * @param newName - The new name the field will be changed to
-     */
-    fun rename(newName: String) {
-        val oldName = name
-        this.name = newName
-        references.forEach {
-            it.name = newName
-        }
-        References.fieldNames.remove(oldName)
-        References.fieldNames["${parent.name}.$name"] = this
-    }
-
-//    fun annotate(init: ByteAnnotation.(ByteField, String) -> Unit, descriptor: String): ByteAnnotation {
-//
-//
-//        val annotation = ByteAnnotation(this, descriptor)
-//
-//    }
-
-    /**
-     * Removes this ByteField/FieldNode from its parent class and removes all references to the field
-     */
-    fun delete() {
-        parent.fields.remove(this)
-        references.forEach {
-            it.method.instructions.remove(it)
-        }
-        References.fieldNames.remove("${parent.name}.${this.name}")
-        parent.fields.remove(this)
-    }
-
-    /**
-     * Moves this Field to the specified ByteClass and updates all the references to the field
-     * @param destination - The ByteClass object to move the field to
-     */
-    fun move(destination: ByteClass) {
-        References.fieldNames.remove("${parent.name}.$name")
-        destination.visitField(access, name, desc, signature, value)
-        this.references.forEach {
-            it.owner = destination.name
-            it.addToField()
-        }
-        parent.fields.remove(this)
     }
 
     /**
@@ -159,6 +116,74 @@ class ByteField(
             this.visitEnd()
         }
     }
+    /**
+     * Changes the name of this field in it's declaration and in any instructions that reference it @see FieldReferenceNode
+     * @param newName - The new name the field will be changed to
+     */
+    fun rename(newName: String) {
+        val oldName = name
+        this.name = newName
+        references.forEach {
+            it.name = newName
+        }
+        References.fieldNames.remove(oldName)
+        References.fieldNames["${parent.name}.$name"] = this
+    }
+
+//    fun annotate(init: ByteAnnotation.(ByteField, String) -> Unit, descriptor: String): ByteAnnotation {
+//
+//
+//        val annotation = ByteAnnotation(this, descriptor)
+//
+//    }
+
+    /**
+     * Removes this ByteField/FieldNode from its parent class and removes all references to the field
+     */
+    fun delete() {
+        parent.fields.remove(this)
+        references.forEach {
+            it.method.instructions.remove(it)
+        }
+        References.fieldNames.remove("${parent.name}.${this.name}")
+        parent.fields.remove(this)
+    }
+
+    inline fun <reified T : FieldReferenceNode> createReference(clazz: KClass<T> = T::class) {
+        
+    }
+
+    /**
+     * Moves this Field to the specified ByteClass and updates all the references to the field
+     * @param destination - The ByteClass object to move the field to
+     */
+    fun move(destination: ByteClass) {
+        References.fieldNames.remove("${parent.name}.$name")
+        destination.visitField(access, name, desc, signature, value)
+        this.references.forEach {
+            it.owner = destination.name
+            it.addToField()
+        }
+        parent.fields.remove(this)
+    }
+}
+
+class ByteFieldBuilder() {
+    private lateinit var parent: ByteClass
+    lateinit var name: String
+    private var access: Int = Modifier.PUBLIC
+    private var descriptor:  Type? = null
+    private var signature: String? = null
+    var value: Any? = null
+
+    fun build() = ByteField(parent, access, name, descriptor!!.descriptor, signature, value)
+}
+
+inline fun newField(init: ByteFieldBuilder.() -> Unit): ByteField {
+    val byteField = ByteFieldBuilder().apply(init).build()
+    References.fieldNames.putIfAbsent(byteField.name, byteField)
+    byteField.parent.fields.add(byteField)
+    return byteField
 }
 
 
