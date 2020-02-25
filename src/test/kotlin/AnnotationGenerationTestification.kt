@@ -50,6 +50,7 @@ class AnnotationGenerationTestification {
         assertNotNull(a.descriptor)
         assert(a.annotates == m)
         assert(a.values.isNotEmpty())
+        println(Type.getType(a.descriptor).internalName)
         assert(Type.getType(a.descriptor).internalName == "ThisIsAnAnnotation")
         assert(a.values.first() == "omg")
     }
