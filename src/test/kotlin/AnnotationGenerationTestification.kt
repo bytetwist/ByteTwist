@@ -2,10 +2,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.nodes.ByteAnnotation
-import org.bytetwist.bytetwist.nodes.ByteClass
-import org.bytetwist.bytetwist.nodes.ByteMethod
-import org.bytetwist.bytetwist.nodes.ClassAnnotationNode
+import org.bytetwist.bytetwist.nodes.*
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeEach
@@ -69,7 +66,20 @@ class AnnotationGenerationTestification {
         val newAnnotation = annotations.find { it.desc.contains("classAnnotation") }
         assertNotNull(newAnnotation)
         assertNotNull(newAnnotation.values)
-        assertNotNull(newAnnotation.values.contains("className"))
+        assert(newAnnotation.values.contains("className"))
+    }
+
+    @Test
+    fun fieldAnnotationTest() {
+        loader.addProcessor(oneOff<ByteField> {
+            it.annotate("field", "references" to it.references.size)
+        })
+        loader.launch()
+        val field = References.fieldNames.values.random()
+        assertNotNull(field)
+        val annotation = field.visibleAnnotations.find { it.desc.contains("field")  }
+        assertNotNull(annotation)
+        assert(annotation.values.contains("references"))
     }
 
 }
