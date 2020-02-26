@@ -13,12 +13,9 @@ class DoublePassScannerTest {
     @ExperimentalCoroutinesApi
     @Test
     fun noInputTest() {
-
         assertThrows<NoInputDir> {
             Loader().scan("q23wre    wefwqerf")
         }
-
-
     }
 }
 

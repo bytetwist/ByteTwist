@@ -2,7 +2,7 @@ package org.bytetwist.bytetwist.scanners
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.selects.select
+import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.processors.log
@@ -66,7 +66,6 @@ class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
         }
     }
 
-
     /**
      * Builds the set of [org.bytetwist.bytetwist.nodes.ByteBlockNode]s from each method in [clazz].
      * Also takes all of the [org.bytetwist.bytetwist.nodes.FieldReferenceNode]s in the method and adds them
@@ -82,7 +81,6 @@ class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
                     async (Dispatchers.IO) {
                             buildBlocks(mn)
                         },
-
                     async {
                         buildFieldReferences(mn)
                     },
@@ -92,8 +90,6 @@ class DoublePassScanner(inputDir: File) : Scanner(inputDir) {
                     async {
                         buildClassRefs(mn)
                     })
-
-
                 }
             }
         }
@@ -128,11 +124,11 @@ private fun CoroutineScope.buildMethodCalls(mn: ByteMethod) {
  * Iterates over all of the [org.bytetwist.bytetwist.nodes.FieldReferenceNode] in the
  * [org.bytetwist.bytetwist.nodes.ByteMethod] [mn] and adds them to the [org.bytetwist.bytetwist.nodes.ByteField]
  */
-private suspend fun CoroutineScope.buildFieldReferences(mn: ByteMethod) {
+private suspend fun buildFieldReferences(mn: ByteMethod) {
     withContext(dispatcher) {
-        for (feldRef in mn.fieldReferences()) {
+        for (fieldRef in mn.fieldReferences()) {
             launch {
-                feldRef.addToField()
+                fieldRef.addToField()
             }
         }
     }
@@ -188,7 +184,8 @@ private fun bytes(f: JarFile, jarEntry: JarEntry?) =
     f.getInputStream(jarEntry).readBytes()
 
     companion object {
-        val dispatcher = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
+        val dispatcher =
+            Executors.newFixedThreadPool(Settings.scannerThreads).asCoroutineDispatcher()
     }
 }
 

@@ -165,13 +165,6 @@ open class ByteMethod(
                 index
         )
         localVariables.add(byteVar)
-        val refs = instructions.filterIsInstance(ByteVariableReference::class.java).filter {
-            it.`var` == index
-        }
-        if (!refs.isNullOrEmpty()) {
-            refs.onEach { byteVar.references.add(it) }
-        }
-        super.visitLocalVariable(name, descriptor, signature, start, end, index)
     }
 
     /**
@@ -186,7 +179,7 @@ open class ByteMethod(
      * of visible annotations [visibleAnnotations].
      */
     override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
-        val annotationNode = ByteAnnotation(this, descriptor)
+        val annotationNode = MethodAnnotationNode(this, descriptor)
         visibleAnnotations.add(annotationNode)
         return annotationNode
     }
@@ -223,6 +216,8 @@ open class ByteMethod(
      * of the method asynchronously
      */
     suspend fun buildBlocks() {
+        val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
+
         //   coroutineScope {
         // Sort try catch blocks
         //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
@@ -241,6 +236,16 @@ open class ByteMethod(
                 }
                 else -> {
                     block.add(insnNode)
+                    if (insnNode is VarInsnNode) {
+                        val index = insnNode.`var`
+                        if (!parameters.isNullOrEmpty() && parameters.size <= index) {
+                            parameters[index]
+                        }
+                        else {
+                            //localVariables[insnNode.`var`]
+                        }
+                        frames[instructions.indexOf(insnNode)].getLocal(insnNode.`var`)
+                    }
                     if (insnNode == instructions.last) {
                         blocks.add(block)
                     }
@@ -258,7 +263,6 @@ open class ByteMethod(
         }
 
         try {
-            val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
             instructions.zip(frames).forEach {
                 if (it.second == null) {
                     log.debug { ";)" }
@@ -455,7 +459,7 @@ open class ByteMethod(
         access = access.or(Modifier.STATIC)
     }
 
-    fun annotate(
+    open fun annotate(
             name: String,
             vararg fieldsToValues: Pair<String, Any>
     ) {

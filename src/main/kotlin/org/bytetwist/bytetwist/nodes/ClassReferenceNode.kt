@@ -24,7 +24,6 @@ class ClassReferenceNode(
      * Adds this Class Reference object to the [ByteClass] that it references.
      */
     fun addToClass() {
-
             val clazz = findClass(desc)
         if  (clazz != null) {
 

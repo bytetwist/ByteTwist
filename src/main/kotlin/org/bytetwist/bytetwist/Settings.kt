@@ -13,7 +13,8 @@ class Settings {
         var annotateMethodComplexity = false
 
         /**
-         * Automatically annotates each [ByteMethod] with an annotation that shows the number of [TryCatchBlock]
+         * Automatically annotates each [ByteMethod] with an annotation that shows the number of
+         * [org.bytetwist.bytetwist.nodes.ByteTryCatch]
          * each method has. Useful for debugging and analysis
         */
         var annotateTryCatchCount = false
@@ -25,6 +26,12 @@ class Settings {
          * has their old name or old package.
          */
         var annotateClassChanges = false
+
+        /**
+         * Number of threads the [org.bytetwist.bytetwist.scanners.Scanner] will use when scanning input directory
+         * and then building the references and type hierarchy
+         */
+        var scannerThreads = 6
 
     }
 }

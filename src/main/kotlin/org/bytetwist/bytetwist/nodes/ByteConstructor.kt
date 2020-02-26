@@ -1,5 +1,7 @@
 package org.bytetwist.bytetwist.nodes
 
+import org.objectweb.asm.Type
+
 
 /**
  * A subtype of [ByteMethod] that represents a constructor method. This also includes static constructors. Will almost
@@ -19,4 +21,18 @@ class ByteConstructor(
     descriptor,
     signature,
     exceptions
-), ByteNode
+), ByteNode {
+
+
+    override fun annotate(
+        name: String,
+        vararg fieldsToValues: Pair<String, Any>
+    ) {
+        with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
+            fieldsToValues.asIterable().forEach {
+                this.visit(it.first, it.second)
+            }
+            this.visitEnd()
+        }
+    }
+}
