@@ -1,17 +1,26 @@
 package org.bytetwist.bytetwist
 
+import com.google.common.base.Stopwatch
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.bytetwist.bytetwist.exceptions.NoInputDir
 import org.bytetwist.bytetwist.exceptions.UninitializedScanner
 import org.bytetwist.bytetwist.nodes.ByteMethod
 import org.bytetwist.bytetwist.nodes.ByteNode
+import org.bytetwist.bytetwist.nodes.ByteConstructor
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.ProcessingQueue
 import org.bytetwist.bytetwist.processors.common.*
+import org.bytetwist.bytetwist.processors.log
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
+import org.objectweb.asm.Type
+import org.objectweb.asm.tree.LdcInsnNode
+import org.objectweb.asm.tree.analysis.Analyzer
+import org.objectweb.asm.tree.analysis.BasicInterpreter
+import org.objectweb.asm.tree.analysis.BasicValue
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
@@ -44,8 +53,8 @@ open class Loader {
             throw NoInputDir()
         }
         scanner = DoublePassScanner(file)
-        runBlocking {
-            runScanner()
+         runBlocking {
+        runScanner()
         }
     }
 
@@ -61,7 +70,10 @@ open class Loader {
      * Starts the processing.
      */
     fun launch() {
-        processors.process()
+        runBlocking {
+            processors.process()
+            DoublePassScanner.dispatcher.close()
+        }
     }
 
     /**
@@ -69,7 +81,7 @@ open class Loader {
      */
     private suspend fun runScanner() {
         if (scanner == null) {
-             throw UninitializedScanner()
+            throw UninitializedScanner()
         }
         val scan = scanner!!.scan()
         scan.collect { processors.nodes.add(it) }
@@ -81,16 +93,21 @@ open class Loader {
 fun main() {
     val loader = Loader()
 
-runBlocking {
-    loader.scan("C:\\Users\\Jesse\\IdeaProjects\\ByteTwist\\gamepack_obf.jar")
+    runBlocking {
+
+        val timer = Stopwatch.createStarted()
+        val analyzer = Analyzer<BasicValue>(BasicInterpreter())
+        loader.scan("C:\\Users\\Jesse\\IdeaProjects\\ByteTwist\\gamepack_obf.jar")
+        Settings.annotateClassChanges = true
+        loader.addProcessor(AbstractMethodProcessor())
+        loader.addProcessor(ClassRenamer())
+        loader.addProcessor(MethodRenamer())
+        loader.addProcessor(FieldRenamer())
+        loader.addProcessor(oneOff<ByteMethod> { it.printCfgDot() })
+        loader.addProcessor(StaticFieldDeconstructor())
+        loader.addProcessor(JarOutputProcessor())
+        loader.launch()
+        println("ByteTwist finished in ${timer.elapsed().toMillis() / 1000.0} seconds")
+    }
 }
-    loader.addProcessor(AbstractMethodProcessor())
-    loader.addProcessor(ClassRenamer())
-    loader.addProcessor(MethodRenamer())
-    loader.addProcessor(UnusedMethodProcessor())
-    loader.addProcessor(oneOff<ByteMethod> { it.printCfgDot() })
 
-    loader.launch()
-
-
-}

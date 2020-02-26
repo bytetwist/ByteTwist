@@ -13,13 +13,13 @@ import kotlin.reflect.KClass
  *
  */
 object References {
-    val classNames = ConcurrentHashMap<String, ByteClass>()
+    val concurrentHashMap = ConcurrentHashMap<String, ByteClass>()
+    val classNames = concurrentHashMap
 
     val fieldNames = ConcurrentHashMap<String, ByteField>()
 
     val methodNames = ConcurrentHashMap<String, ByteMethod>()
 
-    val fieldReferences = CopyOnWriteArrayList<FieldReferenceNode>()
 
     val typeReferences = CopyOnWriteArrayList<ClassReferenceNode>()
 

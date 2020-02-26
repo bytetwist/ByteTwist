@@ -1,9 +1,11 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.Loader
+import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.nodes.ByteAnnotation
 import org.bytetwist.bytetwist.nodes.ByteClass
 import org.bytetwist.bytetwist.nodes.ByteMethod
+import org.bytetwist.bytetwist.nodes.ClassAnnotationNode
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +33,7 @@ class AnnotationGenerationTestification {
 
 
     @Test
-    fun testAnnotations() {
+    fun methodAnnotations() {
         val methods = ArrayList<ByteMethod>()
         loader.addProcessor(oneOff<ByteClass> { clazz ->
             if (clazz.methods.isNotEmpty()) {
@@ -45,13 +47,29 @@ class AnnotationGenerationTestification {
         val m = methods.first()
         assert(m.visibleAnnotations != null)
         assert(m.visibleAnnotations.size > 0)
-        val a = m.visibleAnnotations.first() as ByteAnnotation
+        val a = m.visibleAnnotations as MutableList<ByteAnnotation>
         assertNotNull(a)
-        assertNotNull(a.descriptor)
-        assert(a.annotates == m)
-        assert(a.values.isNotEmpty())
-        assert(Type.getType(a.descriptor).internalName == "ThisIsAnAnnotation")
-        assert(a.values.first() == "omg")
+        val annotation = a.find { it.desc.contains("ThisIsAnAnnotation") }
+        assertNotNull(annotation)
+        assertNotNull(annotation.desc)
+        assert(annotation.annotates == m)
+        assert(annotation.values.isNotEmpty())
+        assert(Type.getType(annotation.desc).internalName == "ThisIsAnAnnotation")
+        assert(annotation.values.first() == "omg")
+    }
+
+    @Test
+    fun testClassAnnotation() {
+        loader.addProcessor(oneOff<ByteClass>{ it.annotate("classAnnotation", "className" to it.name) })
+        loader.launch()
+        val clazz = References.classNames.values.random()
+        assertNotNull(clazz)
+        val annotations = clazz.visibleAnnotations as List<ClassAnnotationNode>
+        assert(!annotations.isNullOrEmpty())
+        val newAnnotation = annotations.find { it.desc.contains("classAnnotation") }
+        assertNotNull(newAnnotation)
+        assertNotNull(newAnnotation.values)
+        assertNotNull(newAnnotation.values.contains("className"))
     }
 
 }

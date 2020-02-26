@@ -25,7 +25,7 @@ class ByteTryCatch(
     /**
      *
      */
-    fun getType() = Type.getObjectType(type)
+    fun getType(): Type = Type.getObjectType(type)
 
     fun buildMethodBlocks() {
         tryBlock()
@@ -37,7 +37,6 @@ class ByteTryCatch(
             return method.findBlock(start)!!
         }
         val block = Block(method)
-        var included = false
         for ((i, instruction) in method.instructions.withIndex()) {
             val startIndex = method.instructions.indexOf(start)
             val endIndex = method.instructions.indexOf(end)

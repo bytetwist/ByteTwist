@@ -6,13 +6,10 @@ import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.findClass
 import org.bytetwist.bytetwist.nodes.*
-import org.bytetwist.bytetwist.processors.ProcessingQueue
 import org.bytetwist.bytetwist.processors.oneOff
-import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.io.File
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -38,7 +35,7 @@ class ScannerTest {
         assertEquals(1, scanner.nodes.size)
         assertEquals(2, scanner.nodes.first().fields.size)
         assertEquals(5, scanner.nodes.first().methods.size)
-        assertEquals(2, scanner.nodes.first().methods.filterIsInstance(ConstructorNode::class.java).size)
+        assertEquals(2, scanner.nodes.first().methods.filterIsInstance(ByteConstructor::class.java).size)
     }
 
     @InternalCoroutinesApi
@@ -48,7 +45,7 @@ class ScannerTest {
 
         val field1 = scanner.nodes.first().fields.first() as ByteField
         val field2 = scanner.nodes.first().fields.last() as ByteField
-        val method1 = scanner.nodes.first().constructors.first() as ConstructorNode
+        val method1 = scanner.nodes.first().constructors.first() as ByteConstructor
         val method2 = References.findMethod("testMethod2")!!
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
@@ -70,9 +67,6 @@ class ScannerTest {
     @InternalCoroutinesApi
     @Test
     fun loaderTest() {
-        val loader = Loader()
-        assertNotNull(loader)
-        loader.scan("src/test/resources")
         assertNotNull(findClass("JavaTestClass"))
         val processingQueue = loader.processors
         assertNotNull(processingQueue)
@@ -86,7 +80,7 @@ class ScannerTest {
         loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
         loader.launch()
         assertNotNull(annotations)
-        assertNotEquals(0, refs.size)
+        log.info { refs.size }
         refs.clear()
 
 

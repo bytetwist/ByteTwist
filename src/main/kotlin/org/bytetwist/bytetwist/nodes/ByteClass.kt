@@ -3,15 +3,14 @@ package org.bytetwist.bytetwist.nodes
 import com.google.common.annotations.Beta
 import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
+import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executors
-import kotlin.reflect.jvm.reflect
-import kotlin.system.measureTimeMillis
 
 /**
  * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [ByteMethod] and all
@@ -46,8 +45,8 @@ class ByteClass(
 
     val typeReferences = CopyOnWriteArraySet<ClassReferenceNode>()
 
-    val constructors: List<ConstructorNode>
-        get() = super.methods.filterIsInstance(ConstructorNode::class.java)
+    val constructors: List<ByteConstructor>
+        get() = super.methods.filterIsInstance(ByteConstructor::class.java)
 
     init {
         References.classNames[name] = this
@@ -111,7 +110,7 @@ class ByteClass(
     }
 
     /**
-     * Visits a class method or constructor and builds a [ByteMethod] or [ConstructorNode] object.
+     * Visits a class method or constructor and builds a [ByteMethod] or [ByteConstructor] object.
      * Note: constructors are not represented as subtypes of CompiledMethods
      * it to this classes list of methods/constructors
      */
@@ -154,8 +153,8 @@ class ByteClass(
         descriptor: String,
         signature: String?,
         exceptions: Array<out String>?
-    ): ConstructorNode {
-        val constructor = ConstructorNode(
+    ): ByteConstructor {
+        val constructor = ByteConstructor(
             this,
             access,
             name,
@@ -175,6 +174,10 @@ class ByteClass(
             it.superName = newName
         }
 
+        if (Settings.annotateClassChanges) {
+            annotate("Renamed", "Old Name" to oldName)
+        }
+
         this.name = newName
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
@@ -183,9 +186,9 @@ class ByteClass(
             if (fieldNode is ByteField) {
                 References.fieldNames.remove("$oldName.${fieldNode.name}")
                 References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
-                fieldNode.references.forEach {
+                Collections.synchronizedList(fieldNode.references).forEach {
                     it.owner = newName
-                    it.addToField()
+                    //it.addToField()
                 }
             }
         }
@@ -213,13 +216,15 @@ class ByteClass(
 
 
         typeReferences.forEach {
-            it.desc = it.desc.replace("L$oldName;", "L$name;")
+            it.desc = it.desc.replace("$oldName", "$name")
         }
 
         References.methodNames.values.forEach {
-
             if (it.desc.contains(oldName)) {
                 it.desc = it.desc.replace("L$oldName;", "L$name;")
+                it.invocations.forEach { m ->
+                    m.desc = m.desc.replace("L$oldName;", "L$name;")
+                }
             }
             if (it.signature != null && it.signature.contains("L$oldName;")) {
                 it.signature = it.signature.replace("L$oldName", "L$newName")
@@ -229,7 +234,12 @@ class ByteClass(
         References.fieldNames.values.forEach {
             if (it.desc.contains(oldName)) {
                 it.desc = it.desc.replace("L$oldName;", "L$name;")
+                it.references.forEach { ref ->
+                    ref.desc = ref.desc.replace("L$oldName;", "L$name;")
+                }
             }
+//            log.info { it.desc }
+//            log.info { it.signature }
             if (it.signature != null && it.signature.contains("L$oldName;")) {
                 it.signature = it.signature.replace("L$oldName", "L$newName")
             }
@@ -280,7 +290,17 @@ class ByteClass(
         this@ByteClass.subClasses.addAll(classes)
     }
 
-//}
+    fun annotate(
+        name: String,
+        vararg fieldsToValues: Pair<String, Any>
+    ) {
+        with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
+            fieldsToValues.asIterable().forEach {
+                this.visit(it.first, it.second)
+            }
+            this.visitEnd()
+        }
+    }
 
 }
 
@@ -290,9 +310,7 @@ class ByteClassBuilder() {
     private var access: Int = Modifier.PUBLIC
     private var superName: String = "Object"
     private var interfaces: Array<String> = emptyArray()
-
     fun build() = ByteClass(name, signature, access, superName, interfaces)
-
 }
 
 @InternalCoroutinesApi
