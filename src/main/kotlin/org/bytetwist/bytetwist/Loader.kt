@@ -1,5 +1,6 @@
 package org.bytetwist.bytetwist
 
+import com.google.common.annotations.VisibleForTesting
 import com.google.common.base.Stopwatch
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -79,7 +80,8 @@ open class Loader {
     /**
      * Internal method that starts the scanner or throws an exception if the scanner isn't initialized
      */
-    private suspend fun runScanner() {
+    @VisibleForTesting
+    suspend fun runScanner() {
         if (scanner == null) {
             throw UninitializedScanner()
         }

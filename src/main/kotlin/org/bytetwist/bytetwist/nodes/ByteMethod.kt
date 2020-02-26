@@ -1,7 +1,11 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.*
+import com.google.common.graph.MutableNetwork
+import com.google.common.graph.NetworkBuilder
+import com.mxgraph.layout.mxIGraphLayout
+import com.mxgraph.layout.mxOrganicLayout
+import com.mxgraph.util.mxCellRenderer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -9,16 +13,9 @@ import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
 import org.jgrapht.Graph
+import org.jgrapht.ext.JGraphXAdapter
 import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.DefaultGraphType
-import org.jgrapht.graph.DefaultGraphType.Builder
-import org.jgrapht.graph.builder.GraphTypeBuilder.directed
-import org.jgrapht.graph.guava.BaseNetworkAdapter
-import org.jgrapht.graph.guava.MutableGraphAdapter
 import org.jgrapht.graph.guava.MutableNetworkAdapter
-import org.jgrapht.io.ComponentNameProvider
-import org.jgrapht.nio.GraphExporter
-import org.jgrapht.nio.IntegerIdProvider
 import org.jgrapht.nio.dot.DOTExporter
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -30,10 +27,14 @@ import org.objectweb.asm.tree.analysis.Analyzer
 import org.objectweb.asm.tree.analysis.AnalyzerException
 import org.objectweb.asm.tree.analysis.BasicValue
 import org.objectweb.asm.tree.analysis.BasicVerifier
+import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Function
+import javax.imageio.ImageIO
 
 
 /**
@@ -477,6 +478,19 @@ open class ByteMethod(
         val exporter = DOTExporter<ByteBlockNode, String>(Function { t: ByteBlockNode ->
             t.toString().replace("-", "") })
         exporter.exportGraph(graph as Graph<ByteBlockNode, String>, writer)
-        //log.info { writer.toString() }
+    }
+
+    fun drawFlowGraph(name: String = this.name) {
+        val graph: Graph<ByteBlockNode, Any> = MutableNetworkAdapter(cfg)
+        val adapter = JGraphXAdapter(graph)
+        mxOrganicLayout(adapter).execute(adapter.defaultParent)
+        val image =
+            mxCellRenderer.createBufferedImage(adapter, null, 2.0, Color.WHITE, true, null)
+        with (File("graphs")) {
+            if (!exists())
+                mkdir()
+            ImageIO.write(image, "png", File(this, name))
+        }
+
     }
 }
