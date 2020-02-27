@@ -50,8 +50,7 @@ class ScannerTest {
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
         assertEquals("<init>", method1.name)
-
-        assertEquals(1, method2.invocations.size)
+        assertEquals(2, method2.invocations.size)
     }
 
     @InternalCoroutinesApi
