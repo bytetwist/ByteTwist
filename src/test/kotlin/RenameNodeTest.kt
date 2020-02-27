@@ -68,7 +68,7 @@ class RenameNodeTest {
         assert(byteMethod?.desc?.contains("NewClassName")!!)
         assertEquals(findClass("NewClassName")!!.subClasses.first().superName, "NewClassName")
             assertEquals(
-                Type.getReturnType(byteMethod?.desc).className,
+                Type.getReturnType(byteMethod.desc).className,
                 "NewClassName"
             )
     }

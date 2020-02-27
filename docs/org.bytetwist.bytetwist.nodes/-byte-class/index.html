@@ -41,7 +41,7 @@ the objects in the fields field can be cast to <a href="../-byte-field/index.htm
 <h4><a href="constructors.html">constructors</a></h4>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">constructors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-constructor-node/index.html"><span class="identifier">ConstructorNode</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">constructors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-byte-constructor/index.html"><span class="identifier">ByteConstructor</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -70,6 +70,13 @@ the objects in the fields field can be cast to <a href="../-byte-field/index.htm
 <h3>Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<h4><a href="annotate.html">annotate</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">annotate</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/fieldsToValues">fieldsToValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
 <tr>
 <td>
 <h4><a href="build-hierarchy.html">buildHierarchy</a></h4>
@@ -153,7 +160,7 @@ If you are trying to return just the name of the super class, use the ASM implem
 <h4><a href="visit-method.html">visitMethod</a></h4>
 </td>
 <td>
-<p>Visits a class method or constructor and builds a <a href="../-byte-method/index.html">ByteMethod</a> or <a href="../-constructor-node/index.html">ConstructorNode</a> object.
+<p>Visits a class method or constructor and builds a <a href="../-byte-method/index.html">ByteMethod</a> or <a href="../-byte-constructor/index.html">ByteConstructor</a> object.
 Note: constructors are not represented as subtypes of CompiledMethods
 it to this classes list of methods/constructors</p>
 <code><span class="keyword">fun </span><span class="identifier">visitMethod</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/access">access</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/descriptor">descriptor</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/signature">signature</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteClass$visitMethod(kotlin.Int, kotlin.String, kotlin.String, kotlin.String, kotlin.Array((kotlin.String)))/exceptions">exceptions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MethodVisitor</span></code></td>

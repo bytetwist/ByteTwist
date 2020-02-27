@@ -35,7 +35,14 @@
 </td>
 <td>
 <p>A HashSet of all of the <a href="../-byte-block-node/index.html">ByteBlockNode</a> that make up this method (excluding try/catch blocks)</p>
-<code><span class="keyword">val </span><span class="identifier">blocks</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-hash-set/index.html"><span class="identifier">HashSet</span></a><span class="symbol">&lt;</span><a href="../-block.html"><span class="identifier">Block</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">blocks</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/util/concurrent/CopyOnWriteArraySet.html"><span class="identifier">CopyOnWriteArraySet</span></a><span class="symbol">&lt;</span><a href="../-block.html"><span class="identifier">Block</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="cfg.html">cfg</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">cfg</span><span class="symbol">: </span><span class="identifier">MutableNetwork</span><span class="symbol">&lt;</span><a href="../-byte-block-node/index.html"><span class="identifier">ByteBlockNode</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -63,7 +70,7 @@
 <h4><a href="annotate.html">annotate</a></h4>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">annotate</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/fieldsToValues">fieldsToValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">annotate</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$annotate(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, kotlin.Any)))))/fieldsToValues">fieldsToValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -108,6 +115,13 @@ of the method asynchronously</p>
 </tr>
 <tr>
 <td>
+<h4><a href="flow-graph-as-image.html">flowGraphAsImage</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">flowGraphAsImage</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$flowGraphAsImage(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;this.name<span class="symbol">)</span><span class="symbol">: </span><a href="https://docs.oracle.com/javase/6/docs/api/java/awt/image/BufferedImage.html"><span class="identifier">BufferedImage</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="is-abstract.html">isAbstract</a></h4>
 </td>
 <td>
@@ -149,6 +163,13 @@ of the method asynchronously</p>
 <td>
 <p>Moves this method to the specified ByteClass and updates all references to this method</p>
 <code><span class="keyword">fun </span><span class="identifier">move</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes.ByteMethod$move(org.bytetwist.bytetwist.nodes.ByteClass)/destination">destination</span><span class="symbol">:</span>&nbsp;<a href="../-byte-class/index.html"><span class="identifier">ByteClass</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="print-cfg-dot.html">printCfgDot</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">printCfgDot</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -302,12 +323,12 @@ the maintained lists of references in <a href="../../org.bytetwist.bytetwist/-re
 <tbody>
 <tr>
 <td>
-<h4><a href="../-constructor-node/index.html">ConstructorNode</a></h4>
+<h4><a href="../-byte-constructor/index.html">ByteConstructor</a></h4>
 </td>
 <td>
 <p>A subtype of <a href="./index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
 always be named "" or ""</p>
-<code><span class="keyword">class </span><span class="identifier">ConstructorNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="../-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
+<code><span class="keyword">class </span><span class="identifier">ByteConstructor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="../-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
 </tr>
 </tbody>
 </table>

@@ -5,12 +5,15 @@ import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
+import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.collections.ArrayList
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * An Abstraction of the ClassNode. All of the objects in the methods field can be cast to [ByteMethod] and all

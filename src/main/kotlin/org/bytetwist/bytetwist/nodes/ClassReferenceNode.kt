@@ -27,7 +27,7 @@ class ClassReferenceNode(
             val clazz = findClass(desc)
         if  (clazz != null) {
 
-            clazz.typeReferences.add(this) ?: log.info { desc }
+            clazz.typeReferences.add(this)
         }
     }
 }

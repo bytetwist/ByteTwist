@@ -26,6 +26,15 @@
 <tbody>
 <tr>
 <td>
+<h4><a href="annotate-class-changes.html">annotateClassChanges</a></h4>
+</td>
+<td>
+<p>Automatically annotates <a href="../../org.bytetwist.bytetwist.nodes/-byte-class/index.html">ByteClass</a>es after they have been renamed or moved with an annotation that
+has their old name or old package.</p>
+<code><span class="keyword">var </span><span class="identifier">annotateClassChanges</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="annotate-local-variables.html">annotateLocalVariables</a></h4>
 </td>
 <td>
@@ -45,9 +54,19 @@ control flow edges each method has. Useful for debugging and analysis</p>
 <h4><a href="annotate-try-catch-count.html">annotateTryCatchCount</a></h4>
 </td>
 <td>
-<p>Automatically annotates each <a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> with an annotation that shows the number of <a href="../../org.bytetwist.bytetwist.nodes/-try-catch-block/index.html">TryCatchBlock</a>
+<p>Automatically annotates each <a href="../../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> with an annotation that shows the number of
+<a href="../../org.bytetwist.bytetwist.nodes/-byte-try-catch/index.html">org.bytetwist.bytetwist.nodes.ByteTryCatch</a>
 each method has. Useful for debugging and analysis</p>
 <code><span class="keyword">var </span><span class="identifier">annotateTryCatchCount</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="scanner-threads.html">scannerThreads</a></h4>
+</td>
+<td>
+<p>Number of threads the <a href="../../org.bytetwist.bytetwist.scanners/-scanner/index.html">org.bytetwist.bytetwist.scanners.Scanner</a> will use when scanning input directory
+and then building the references and type hierarchy</p>
+<code><span class="keyword">var </span><span class="identifier">scannerThreads</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
 </tr>
 </tbody>
 </table>

@@ -149,10 +149,6 @@ class ByteField(
         parent.fields.remove(this)
     }
 
-    inline fun <reified T : FieldReferenceNode> createReference(clazz: KClass<T> = T::class) {
-        
-    }
-
     /**
      * Moves this Field to the specified ByteClass and updates all the references to the field
      * @param destination - The ByteClass object to move the field to
