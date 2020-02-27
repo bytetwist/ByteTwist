@@ -45,12 +45,11 @@ class ScannerTest {
 
         val field1 = scanner.nodes.first().fields.first() as ByteField
         val field2 = scanner.nodes.first().fields.last() as ByteField
-        val method1 = scanner.nodes.first().constructors.first() as ByteConstructor
+        val method1 = scanner.nodes.first().constructors.first()
         val method2 = References.findMethod("testMethod2")!!
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
         assertEquals("<init>", method1.name)
-
         assertEquals(2, method2.invocations.size)
     }
 

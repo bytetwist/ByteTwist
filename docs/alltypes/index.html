@@ -39,9 +39,17 @@ the objects in the fields field can be cast to <a href="../org.bytetwist.bytetwi
 <h5><a href="../org.bytetwist.bytetwist.nodes/-byte-class-builder/index.html">org.bytetwist.bytetwist.nodes.ByteClassBuilder</a></h5>
 </tr>
 <tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-constructor/index.html">org.bytetwist.bytetwist.nodes.ByteConstructor</a></h5>
+<p>A subtype of <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
+always be named "" or ""</p>
+</tr>
+<tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-byte-field/index.html">org.bytetwist.bytetwist.nodes.ByteField</a></h5>
 <p>An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
 field, as well as a property of the owning ByteClass: parent</p>
+</tr>
+<tr>
+<h5><a href="../org.bytetwist.bytetwist.nodes/-byte-field-builder/index.html">org.bytetwist.bytetwist.nodes.ByteFieldBuilder</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">org.bytetwist.bytetwist.nodes.ByteMethod</a></h5>
@@ -66,6 +74,9 @@ based abstractions of ASMs tree node classes</p>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-class-annotation-node/index.html">org.bytetwist.bytetwist.nodes.ClassAnnotationNode</a></h5>
 </tr>
 <tr>
+<h5><a href="../org.bytetwist.bytetwist.processors.common/-class-output-processor/index.html">org.bytetwist.bytetwist.processors.common.ClassOutputProcessor</a></h5>
+</tr>
+<tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-class-reference-node/index.html">org.bytetwist.bytetwist.nodes.ClassReferenceNode</a></h5>
 <p>An abstraction that represents an instruction referencing a <a href="../org.bytetwist.bytetwist.nodes/-byte-class/index.html">ByteClass</a> that was scanned.
 Also keeps a reference to the <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> that this instruction is in with the <a href="../org.bytetwist.bytetwist.nodes/-class-reference-node/method.html">ClassReferenceNode.method</a>
@@ -73,11 +84,6 @@ property.</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-class-renamer/index.html">org.bytetwist.bytetwist.processors.common.ClassRenamer</a></h5>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-constructor-node/index.html">org.bytetwist.bytetwist.nodes.ConstructorNode</a></h5>
-<p>A subtype of <a href="../org.bytetwist.bytetwist.nodes/-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
-always be named "" or ""</p>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-dead-code-processor/index.html">org.bytetwist.bytetwist.processors.common.DeadCodeProcessor</a></h5>
@@ -115,9 +121,6 @@ nothing other than build the pool of scanned classes/methods/etc. Uses coroutine
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.nodes/-field-write/index.html">org.bytetwist.bytetwist.nodes.FieldWrite</a></h5>
 <p>A type of <a href="../org.bytetwist.bytetwist.nodes/-field-reference-node/index.html">FieldReferenceNode</a> that represents changing/setting/updating a field value</p>
-</tr>
-<tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-if-int-expression/index.html">org.bytetwist.bytetwist.nodes.IfIntExpression</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.processors.common/-jar-output-processor/index.html">org.bytetwist.bytetwist.processors.common.JarOutputProcessor</a></h5>
@@ -159,7 +162,7 @@ nothing other than build the pool of scanned classes/methods/etc. Uses coroutine
 <h5><a href="../org.bytetwist.bytetwist/-settings/index.html">org.bytetwist.bytetwist.Settings</a></h5>
 </tr>
 <tr>
-<h5><a href="../org.bytetwist.bytetwist.nodes/-try-catch-block/index.html">org.bytetwist.bytetwist.nodes.TryCatchBlock</a></h5>
+<h5><a href="../org.bytetwist.bytetwist.processors.common/-static-field-deconstructor/index.html">org.bytetwist.bytetwist.processors.common.StaticFieldDeconstructor</a></h5>
 </tr>
 <tr>
 <h5><a href="../org.bytetwist.bytetwist.exceptions/-uninitialized-scanner/index.html">org.bytetwist.bytetwist.exceptions.UninitializedScanner</a></h5>

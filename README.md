@@ -2,6 +2,8 @@
 
 ## Roadmap
 
+ByteTwist is a reference-based library for working with compiled Java code. It uses ASM 
+and 
 - ~~Add methods to easily move/rename/delete Classes and their members without having to worry about references~~
 - Create abstraction nodes for common expressions like if statements, loops
 - Create abstraction nodes for local variables and method parameters 

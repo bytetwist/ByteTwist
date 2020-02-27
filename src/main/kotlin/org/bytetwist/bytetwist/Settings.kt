@@ -31,7 +31,7 @@ class Settings {
          * Number of threads the [org.bytetwist.bytetwist.scanners.Scanner] will use when scanning input directory
          * and then building the references and type hierarchy
          */
-        var scannerThreads = 6
+        var scannerThreads = 12
 
     }
 }

@@ -1,10 +1,9 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.MutableNetwork
-import com.google.common.graph.NetworkBuilder
-import com.mxgraph.layout.mxIGraphLayout
-import com.mxgraph.layout.mxOrganicLayout
+import com.google.common.graph.*
+import com.mxgraph.layout.*
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout
 import com.mxgraph.util.mxCellRenderer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -14,8 +13,11 @@ import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
 import org.jgrapht.Graph
 import org.jgrapht.ext.JGraphXAdapter
+import org.jgrapht.graph.DefaultDirectedGraph
+import org.jgrapht.graph.DefaultDirectedGraph.createBuilder
 import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.guava.MutableNetworkAdapter
+import org.jgrapht.graph.builder.GraphBuilder
+import org.jgrapht.graph.guava.*
 import org.jgrapht.nio.dot.DOTExporter
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -217,8 +219,6 @@ open class ByteMethod(
      * of the method asynchronously
      */
     suspend fun buildBlocks() {
-        val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
-
         //   coroutineScope {
         // Sort try catch blocks
         //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
@@ -232,21 +232,10 @@ open class ByteMethod(
                 is JumpInsnNode -> {
                     block.add(insnNode)
                     blocks.add(block)
-                    val oldBlock = block.clone()
                     block = ByteBlockNode(this@ByteMethod)
                 }
                 else -> {
                     block.add(insnNode)
-                    if (insnNode is VarInsnNode) {
-                        val index = insnNode.`var`
-                        if (!parameters.isNullOrEmpty() && parameters.size <= index) {
-                            parameters[index]
-                        }
-                        else {
-                            //localVariables[insnNode.`var`]
-                        }
-                        frames[instructions.indexOf(insnNode)].getLocal(insnNode.`var`)
-                    }
                     if (insnNode == instructions.last) {
                         blocks.add(block)
                     }
@@ -264,6 +253,7 @@ open class ByteMethod(
         }
 
         try {
+            val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
             instructions.zip(frames).forEach {
                 if (it.second == null) {
                     log.debug { ";)" }
@@ -324,11 +314,12 @@ open class ByteMethod(
      */
     private val analyzer = object : Analyzer<BasicValue>(BasicVerifier()) {
 
+
         /**
          * Adds a control flow edge from one block to another
          */
         override fun newControlFlowEdge(insnIndex: Int, successorIndex: Int) {
-            val firstB = findBlock(instructions[insnIndex])
+            val firstB = findBlockByLast(instructions[insnIndex])
             val second = findBlock(instructions[successorIndex])
             if (firstB != null) {
                 if (second != null) {
@@ -348,7 +339,7 @@ open class ByteMethod(
         }
 
         override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
-            val first = findBlock(instructions[insnIndex])
+            val first = findBlockByLast(instructions[insnIndex])
             val second = findBlock(instructions[successorIndex])
             if (first != null) {
                 if (second != null) {
@@ -474,23 +465,27 @@ open class ByteMethod(
 
     fun printCfgDot() {
        val writer = StringWriter()
-        val graph: MutableNetworkAdapter<ByteBlockNode, Any> = MutableNetworkAdapter(cfg)
+        val graph: ImmutableGraphAdapter<ByteBlockNode> = ImmutableGraphAdapter(cfg.asGraph() as ImmutableGraph<ByteBlockNode>)
         val exporter = DOTExporter<ByteBlockNode, String>(Function { t: ByteBlockNode ->
             t.toString().replace("-", "") })
         exporter.exportGraph(graph as Graph<ByteBlockNode, String>, writer)
+        println(writer.toString())
     }
 
-    fun drawFlowGraph(name: String = this.name) {
-        val graph: Graph<ByteBlockNode, Any> = MutableNetworkAdapter(cfg)
+    fun flowGraphAsImage(name: String = this.name): BufferedImage? {
+        val graph: MutableNetworkAdapter<ByteBlockNode, Any> = MutableNetworkAdapter(cfg)
         val adapter = JGraphXAdapter(graph)
-        mxOrganicLayout(adapter).execute(adapter.defaultParent)
+        val layout = mxOrganicLayout(adapter)
+        layout.execute(adapter.defaultParent)
         val image =
-            mxCellRenderer.createBufferedImage(adapter, null, 2.0, Color.WHITE, true, null)
+            mxCellRenderer.createBufferedImage(layout.graph, null, 2.0, null, true, null)
         with (File("graphs")) {
             if (!exists())
                 mkdir()
-            ImageIO.write(image, "png", File(this, name))
+            if (image != null)
+                return image
         }
-
+        log.error { "Error generating image for the CFG of $name" }
+        return null
     }
 }

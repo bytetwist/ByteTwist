@@ -3,6 +3,7 @@ package org.bytetwist.bytetwist.processors
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.nodes.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -113,6 +114,7 @@ open class ProcessingQueue() {
                     MethodAnnotationNode::class -> processor.subscribe(methodAnnotations())
                     Block::class -> processor.subscribe(blocks)
                 }
+
                 processor.complete()
             }
         }

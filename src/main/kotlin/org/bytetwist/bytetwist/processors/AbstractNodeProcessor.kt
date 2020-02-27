@@ -1,8 +1,7 @@
 package org.bytetwist.bytetwist.processors
 
 import com.google.common.base.Stopwatch
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.nodes.ByteMethod
@@ -82,9 +81,9 @@ abstract class AbstractNodeProcessor<T : ByteNode> {
     abstract val type: KClass<T>
 
     /**
-    * Determines if this processor should process a node. If not overridden, the processor will process all
-    * scanned objects of type [T]
-    */
+     * Determines if this processor should process a node. If not overridden, the processor will process all
+     * scanned objects of type [T]
+     */
     open fun shouldProcess(node: T): Boolean {
         return true
     }

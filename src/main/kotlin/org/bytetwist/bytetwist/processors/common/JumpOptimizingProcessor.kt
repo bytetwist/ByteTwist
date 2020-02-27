@@ -26,7 +26,7 @@ class JumpOptimizingProcessor : AbstractNodeProcessor<ByteMethod>() {
     override fun process(node: ByteMethod) {
         for (it in node.instructions) {
             if (it is JumpInsnNode) {
-                var label = it.label
+                it.label
                 var target: AbstractInsnNode = it.label
                 while (target.opcode < 0) {
                     target = target.next

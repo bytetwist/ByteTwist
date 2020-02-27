@@ -40,6 +40,15 @@ the objects in the fields field can be cast to <a href="-byte-field/index.html">
 </tr>
 <tr>
 <td>
+<h4><a href="-byte-constructor/index.html">ByteConstructor</a></h4>
+</td>
+<td>
+<p>A subtype of <a href="-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
+always be named "" or ""</p>
+<code><span class="keyword">class </span><span class="identifier">ByteConstructor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="./-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-byte-field/index.html">ByteField</a></h4>
 </td>
 <td>
@@ -95,15 +104,6 @@ property.</p>
 </tr>
 <tr>
 <td>
-<h4><a href="-constructor-node/index.html">ConstructorNode</a></h4>
-</td>
-<td>
-<p>A subtype of <a href="-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
-always be named "" or ""</p>
-<code><span class="keyword">class </span><span class="identifier">ConstructorNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="./-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="-field-annotation-node/index.html">FieldAnnotationNode</a></h4>
 </td>
 <td>
@@ -147,13 +147,6 @@ always be named "" or ""</p>
 <td>
 <p>An Abstraction of a MethodInsnNode that includes a reference to the method it calls</p>
 <code><span class="keyword">class </span><span class="identifier">MethodReferenceNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MethodInsnNode</span><span class="symbol">, </span><a href="./-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="-try-catch-block/index.html">TryCatchBlock</a></h4>
-</td>
-<td>
-<code><span class="keyword">class </span><span class="identifier">TryCatchBlock</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-block-node/index.html"><span class="identifier">ByteBlockNode</span></a><span class="symbol">, </span><a href="./-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
 </tr>
 </tbody>
 </table>

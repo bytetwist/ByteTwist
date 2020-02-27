@@ -50,12 +50,28 @@ the objects in the fields field can be cast to <a href="-byte-field/index.html">
 </tr>
 <tr>
 <td>
+<h4><a href="-byte-constructor/index.html">ByteConstructor</a></h4>
+</td>
+<td>
+<p>A subtype of <a href="-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
+always be named "" or ""</p>
+<code><span class="keyword">class </span><span class="identifier">ByteConstructor</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="-byte-field/index.html">ByteField</a></h4>
 </td>
 <td>
 <p>An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
 field, as well as a property of the owning ByteClass: parent</p>
 <code><span class="keyword">class </span><span class="identifier">ByteField</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">FieldNode</span><span class="symbol">, </span><a href="-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-byte-field-builder/index.html">ByteFieldBuilder</a></h4>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ByteFieldBuilder</span></code></td>
 </tr>
 <tr>
 <td>
@@ -115,15 +131,6 @@ property.</p>
 </tr>
 <tr>
 <td>
-<h4><a href="-constructor-node/index.html">ConstructorNode</a></h4>
-</td>
-<td>
-<p>A subtype of <a href="-byte-method/index.html">ByteMethod</a> that represents a constructor method. This also includes static constructors. Will almost
-always be named "" or ""</p>
-<code><span class="keyword">class </span><span class="identifier">ConstructorNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-method/index.html"><span class="identifier">ByteMethod</span></a><span class="symbol">, </span><a href="-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="-edge-direction/index.html">EdgeDirection</a></h4>
 </td>
 <td>
@@ -171,13 +178,6 @@ always be named "" or ""</p>
 </tr>
 <tr>
 <td>
-<h4><a href="-if-int-expression/index.html">IfIntExpression</a></h4>
-</td>
-<td>
-<code><span class="keyword">class </span><span class="identifier">IfIntExpression</span></code></td>
-</tr>
-<tr>
-<td>
 <h4><a href="-method-annotation-node/index.html">MethodAnnotationNode</a></h4>
 </td>
 <td>
@@ -190,13 +190,6 @@ always be named "" or ""</p>
 <td>
 <p>An Abstraction of a MethodInsnNode that includes a reference to the method it calls</p>
 <code><span class="keyword">class </span><span class="identifier">MethodReferenceNode</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MethodInsnNode</span><span class="symbol">, </span><a href="-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
-</tr>
-<tr>
-<td>
-<h4><a href="-try-catch-block/index.html">TryCatchBlock</a></h4>
-</td>
-<td>
-<code><span class="keyword">class </span><span class="identifier">TryCatchBlock</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-byte-block-node/index.html"><span class="identifier">ByteBlockNode</span></a><span class="symbol">, </span><a href="-byte-node.html"><span class="identifier">ByteNode</span></a></code></td>
 </tr>
 </tbody>
 </table>
@@ -225,6 +218,13 @@ always be named "" or ""</p>
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">newClass</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes$newClass(kotlin.Function1((org.bytetwist.bytetwist.nodes.ByteClassBuilder, kotlin.Unit)))/init">init</span><span class="symbol">:</span>&nbsp;<a href="-byte-class-builder/index.html"><span class="identifier">ByteClassBuilder</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-byte-class/index.html"><span class="identifier">ByteClass</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="new-field.html">newField</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">newField</span><span class="symbol">(</span><span class="identifier" id="org.bytetwist.bytetwist.nodes$newField(kotlin.Function1((org.bytetwist.bytetwist.nodes.ByteFieldBuilder, kotlin.Unit)))/init">init</span><span class="symbol">:</span>&nbsp;<a href="-byte-field-builder/index.html"><span class="identifier">ByteFieldBuilder</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-byte-field/index.html"><span class="identifier">ByteField</span></a></code></td>
 </tr>
 </tbody>
 </table>
