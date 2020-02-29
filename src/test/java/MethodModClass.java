@@ -9,6 +9,7 @@ public class MethodModClass
         {
             field1 = 1;
         }
+        tryCatch();
     }
 
     public void tryCatch()

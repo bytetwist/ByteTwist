@@ -165,14 +165,14 @@ class ByteField(
 }
 
 class ByteFieldBuilder() {
-    private lateinit var parent: ByteClass
+    lateinit var parent: ByteClass
     lateinit var name: String
     private var access: Int = Modifier.PUBLIC
-    private var descriptor:  Type? = null
+    lateinit var descriptor: Type
     private var signature: String? = null
     var value: Any? = null
 
-    fun build() = ByteField(parent, access, name, descriptor!!.descriptor, signature, value)
+    fun build() = ByteField(parent, access, name, descriptor.descriptor, signature, value)
 }
 
 inline fun newField(init: ByteFieldBuilder.() -> Unit): ByteField {
