@@ -3,7 +3,6 @@ package org.bytetwist.bytetwist.nodes
 
 import com.google.common.graph.*
 import com.mxgraph.layout.*
-import com.mxgraph.layout.hierarchical.mxHierarchicalLayout
 import com.mxgraph.util.mxCellRenderer
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -13,10 +12,7 @@ import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
 import org.jgrapht.Graph
 import org.jgrapht.ext.JGraphXAdapter
-import org.jgrapht.graph.DefaultDirectedGraph
-import org.jgrapht.graph.DefaultDirectedGraph.createBuilder
 import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.builder.GraphBuilder
 import org.jgrapht.graph.guava.*
 import org.jgrapht.nio.dot.DOTExporter
 import org.objectweb.asm.AnnotationVisitor
@@ -29,14 +25,12 @@ import org.objectweb.asm.tree.analysis.Analyzer
 import org.objectweb.asm.tree.analysis.AnalyzerException
 import org.objectweb.asm.tree.analysis.BasicValue
 import org.objectweb.asm.tree.analysis.BasicVerifier
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Function
-import javax.imageio.ImageIO
 
 
 /**
@@ -58,12 +52,6 @@ open class ByteMethod(
         signature,
         exceptions
 ), ByteNode {
-
-
-    override fun visitVarInsn(opcode: Int, `var`: Int) {
-        val reference = ByteVariableReference(opcode, `var`)
-        instructions.add(reference)
-    }
 
     /**
      * A list of MethodReferences in which this method is invoked
@@ -95,12 +83,23 @@ open class ByteMethod(
      */
     fun methodCalls() = instructions.filterIsInstance(MethodReferenceNode::class.java)
 
+    /**
+     * A list of [ClassReferenceNode] that this method's instructions contains
+     */
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
 
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
         invisibleAnnotations = mutableListOf<AnnotationNode>()
+    }
+
+    /**
+     * Visits a [ByteVariableReference] and adds it to this methods instructions
+     */
+    override fun visitVarInsn(opcode: Int, `var`: Int) {
+        val reference = ByteVariableReference(opcode, `var`)
+        instructions.add(reference)
     }
 
     /**
@@ -301,7 +300,7 @@ open class ByteMethod(
 
     }
 
-    val cfg: MutableNetwork<ByteBlockNode, Any> =
+    val cfg: MutableNetwork<ByteBlockNode, String> =
             NetworkBuilder
                     .directed()
                     .allowsSelfLoops(true)
@@ -323,12 +322,12 @@ open class ByteMethod(
             val second = findBlock(instructions[successorIndex])
             if (firstB != null) {
                 if (second != null) {
-                    cfg.addEdge(firstB, second, DefaultEdge())
+                    cfg.addEdge(firstB, second, DefaultEdge().toString())
                 }
             } else {
                 val first = findBlockByLast(instructions[insnIndex])
                 if (second != null) {
-                    cfg.addEdge(first, second, DefaultEdge())
+                    cfg.addEdge(first, second, DefaultEdge().toString())
                 }
             }
 //            findBlockByLast(instructions[insnIndex])?.let {
@@ -343,7 +342,7 @@ open class ByteMethod(
             val second = findBlock(instructions[successorIndex])
             if (first != null) {
                 if (second != null) {
-                    cfg.addEdge(first, second, DefaultEdge())
+                    cfg.addEdge(first, second, DefaultEdge().toString())
                 }
             }
             return true
@@ -366,7 +365,7 @@ open class ByteMethod(
     }
 
     /**
-     * Visists a type instruction to create a [ClassReferenceNode] and adds it to the [instructions]
+     * Visits a type instruction to create a [ClassReferenceNode] and adds it to the [instructions]
      */
     override fun visitTypeInsn(opcode: Int, type: String?) {
         val classReference = ClassReferenceNode(this, opcode, type)
@@ -391,7 +390,6 @@ open class ByteMethod(
         References.methodNames.remove("${parent.name}.${oldName}.${desc}")
         References.methodNames["${parent.name}.${newName}.${desc}"] = this
         coroutineScope {
-
             this@ByteMethod.invocations.map {
                 async {
                     it.name = newName
@@ -408,6 +406,7 @@ open class ByteMethod(
         invocations.forEach {
             it.getMethod()?.instructions?.remove(it)
         }
+        invocations.clear()
         References.methodNames.remove("${parent.name}.${this.name}.${this.desc}")
         parent.methods.remove(this)
     }
@@ -426,31 +425,66 @@ open class ByteMethod(
         References.findMethod(this.name)?.instructions?.add(this.instructions)
         parent.methods.remove(this)
     }
-
+    /**
+     * Returns true if this method is abstract
+     */
     fun isAbstract() = Modifier.isAbstract(access)
 
+    /**
+     * Sets this method as abstract
+     */
     fun setAbstract() {
         access = access.or(Modifier.ABSTRACT)
     }
 
+    /**
+     * Returns true if this method is public
+     */
     fun isPublic() = Modifier.isPublic(access)
 
+    /**
+     * Sets this method as public
+     */
     fun setPublic() {
         access = access.or(Modifier.PUBLIC)
+        if (this.isPrivate()) {
+            access = access.xor(Modifier.PRIVATE)
+        }
     }
 
+    /**
+     * Returns true if this method is private
+     */
     fun isPrivate() = Modifier.isPrivate(access)
 
+    /**
+     * Sets this method as a private method
+     */
     fun setPrivate() {
         access = access.or(Modifier.PRIVATE)
+        if (this.isPublic()) {
+            access = access.xor(Modifier.PUBLIC)
+        }
     }
 
+    /**
+     * Returns true if this method is static
+     */
     fun isStatic() = Modifier.isStatic(access)
 
+    /**
+     * Makes this method static
+     */
     fun setStatic() {
         access = access.or(Modifier.STATIC)
     }
 
+    /**
+     * Annotates this method's declaration.
+     * @param name - the name of the Class of the annotation
+     * @param fieldsToValues - Pairs of annotation Field names to their values
+     * @sample - method.annotate("Generated", "methodName" to method.name)
+     */
     open fun annotate(
             name: String,
             vararg fieldsToValues: Pair<String, Any>
@@ -463,17 +497,21 @@ open class ByteMethod(
         }
     }
 
-    fun printCfgDot() {
+    /**
+     * Returns this methods control flow as a String in DOT format
+     * @return - the CFG in DOT format
+     */
+    fun getCfgDot() : String {
        val writer = StringWriter()
-        val graph: ImmutableGraphAdapter<ByteBlockNode> = ImmutableGraphAdapter(cfg.asGraph() as ImmutableGraph<ByteBlockNode>)
+        val graph: MutableNetworkAdapter<ByteBlockNode, String> = MutableNetworkAdapter(cfg)
         val exporter = DOTExporter<ByteBlockNode, String>(Function { t: ByteBlockNode ->
             t.toString().replace("-", "") })
-        exporter.exportGraph(graph as Graph<ByteBlockNode, String>, writer)
-        println(writer.toString())
+        exporter.exportGraph(graph, writer)
+        return writer.toString()
     }
 
     fun flowGraphAsImage(name: String = this.name): BufferedImage? {
-        val graph: MutableNetworkAdapter<ByteBlockNode, Any> = MutableNetworkAdapter(cfg)
+        val graph: MutableNetworkAdapter<ByteBlockNode, String> = MutableNetworkAdapter(cfg)
         val adapter = JGraphXAdapter(graph)
         val layout = mxOrganicLayout(adapter)
         layout.execute(adapter.defaultParent)

@@ -71,5 +71,5 @@ fun findField(name: String) : ByteField? {
  * Get's a [ByteMethod] with the specified name [methodName], so long as the method exists in the [ByteClass]
  */
 fun ByteClass.getMethodByName(methodName: String) : ByteMethod? {
-    return this.methods.associateBy { methodNode -> methodNode.name }[methodName] as ByteMethod
+    return this.methods.associateBy { methodNode -> methodNode.name }[methodName] as ByteMethod?
 }

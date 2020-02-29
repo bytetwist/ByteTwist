@@ -79,6 +79,12 @@ jacocoTestReport {
     reports {
         xml.enabled true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'org/bytetwist/bytetwist/processors/common**')
+        }))
+    }
+
 }
 
 tasks.create("moveTestClasses") {
