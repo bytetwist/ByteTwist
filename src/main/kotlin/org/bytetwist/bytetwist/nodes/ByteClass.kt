@@ -100,7 +100,7 @@ class ByteClass(
     }
 
     /**
-     * TODO
+     * Visits an annotation and adds it to  [visibleAnnotations] or [invisibleAnnotations] as a [ClassAnnotationNode]
      */
     override fun visitAnnotation(descriptor: String, visible: Boolean): AnnotationVisitor {
         val classAnnotation = ClassAnnotationNode(this, descriptor)
@@ -196,8 +196,6 @@ class ByteClass(
             }
         }
 
-
-
         methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
             References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
             References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
@@ -215,8 +213,6 @@ class ByteClass(
                 )
             }
         }
-
-
 
         typeReferences.forEach {
             it.desc = it.desc.replace("$oldName", "$name")
@@ -276,7 +272,7 @@ class ByteClass(
      */
     fun isInterface() = Modifier.isInterface(access)
 
-    fun isEnum() = access.and(Opcodes.ACC_ENUM) == Opcodes.ACC_ENUM
+    fun isEnum() = access.and(Opcodes.ACC_ENUM) != 0
 
     /**
      * Returns if this class is abstract or not
@@ -286,7 +282,6 @@ class ByteClass(
     }
 
     fun buildHierarchy() {
-        //GlobalScope.launch {
         val classes = References.classNames.values.filter { compiledClass ->
             compiledClass.superName == this@ByteClass.name
         }

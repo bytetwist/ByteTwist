@@ -86,7 +86,7 @@ class ScannerTest {
     }
 
     @InternalCoroutinesApi
-    private fun testRefs(
+    fun testRefs(
     ) {
         val refs = ArrayList<FieldReferenceNode>()
         val loader = Loader()
