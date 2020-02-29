@@ -9,12 +9,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: codecov/codecov-action@v1
-      with: 
-        token: ${{ secrets.CODECOV_TOKEN }} 
     - name: Test gradle build      
       run: |
         gradle processTestResources
         gradle build
         gradle test
         gradle build
+        gradle jacocoTestReport
+        gradle jacocoTestCoverageVerification
+    - name: Update Coverage    
+    - uses: codecov/codecov-action@v1
+      with: 
+        token: ${{ secrets.CODECOV_TOKEN }} 
