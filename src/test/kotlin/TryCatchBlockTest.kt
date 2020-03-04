@@ -35,6 +35,5 @@ class TryCatchBlockTest {
         assertNotNull(tryBlock)
         assert(method.blocks.contains(tryBlock))
         tryCatchBlock.catchBlock()
-        print(method.blocks.map { ByteBlockNode::edges })
     }
 }

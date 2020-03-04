@@ -27,48 +27,49 @@ class ByteTryCatch(
      */
     fun getType(): Type = Type.getObjectType(type)
 
-    fun buildMethodBlocks() {
-        tryBlock()
-        catchBlock()
-    }
+    fun buildMethodBlocks() = tryBlock() to catchBlock()
 
-    fun tryBlock(): ByteBlockNode {
-        if (method.blocks.isNotEmpty() && method.findBlock(start) != null) {
-            return method.findBlock(start)!!
-        }
-        val block = Block(method)
-        for ((i, instruction) in method.instructions.withIndex()) {
-            val startIndex = method.instructions.indexOf(start)
-            val endIndex = method.instructions.indexOf(end)
-            if (i !in startIndex..endIndex) {
-                continue
-            }
-            block.add(instruction)
-        }
-        if (!method.blocks.contains(block)) {
-            method.blocks.add(block)
-        }
-            return block
-    }
 
-    fun catchBlock(): ByteBlockNode {
-        if (method.blocks.isNotEmpty() && method.findBlock(handler) != null) {
-//            if (!this.tryBlock().edges.contains(method.findBlock(handler) to EdgeDirection.OUT)) {
-//                this.tryBlock().edges.add(((method.findBlock(handler) as ByteBlockNode to EdgeDirection.OUT)!!))
+
+    fun tryBlock(): ByteBlockNode? {
+        return null
+//        if (method.blocks.isNotEmpty() && method.findBlock(start) != null) {
+//            return method.findBlock(start)!!
+//        }
+//        val block = Block(method)
+//        for ((i, instruction) in method.instructions.withIndex()) {
+//            val startIndex = method.instructions.indexOf(start)
+//            val endIndex = method.instructions.indexOf(end)
+//            if (i !in startIndex..endIndex) {
+//                continue
 //            }
-            return method.findBlock(handler)!!
-        }
-        val block = Block(method)
-        method.instructions.filter { abstractInsnNode ->
-            method.instructions.indexOf(abstractInsnNode) >= method.instructions.indexOf(handler)
-        }
-            .forEach { insnNode ->
-                if (insnNode !is JumpInsnNode) {
-                    block.add(insnNode)
-                }
-            }
-        method.blocks.add(block)
-        return block
+//            block.add(instruction)
+//        }
+//        if (!method.blocks.contains(block)) {
+//            method.blocks.add(block)
+//        }
+//            return block
+    }
+
+    fun catchBlock(): ByteBlockNode? {
+        return null
+//        if (method.blocks.isNotEmpty() && method.findBlock(handler) != null) {
+////            if (!this.tryBlock().edges.contains(method.findBlock(handler) to EdgeDirection.OUT)) {
+////                this.tryBlock().edges.add(((method.findBlock(handler) as ByteBlockNode to EdgeDirection.OUT)!!))
+////            }
+//            return method.findBlock(handler)!!
+//        }
+//        val block = Block(method)
+//        method.instructions.filter { abstractInsnNode ->
+//            method.instructions.indexOf(abstractInsnNode) >= method.instructions.indexOf(handler)
+//        }
+//            .forEach { insnNode ->
+//                if (insnNode !is JumpInsnNode) {
+//                    block.add(insnNode)
+//                }
+//            }
+//        method.blocks.add(block)
+//        return block
     }
 
 }

@@ -27,7 +27,10 @@ class BlockTest {
 
     @Test
     fun testBlocks() {
-        References.methodNames.values.find { m -> m.name == "methodWith5Blocks"}?.run {
+        val m = findMethod("methodWith5Blocks")
+        m?.drawFlowGraph()
+
+        m?.run {
             assertEquals(5, this.blocks.size)
         }
     }
@@ -36,7 +39,7 @@ class BlockTest {
     fun flowGraphTest() {
         val mm = References.methodNames.values.random()
         assertNotNull(mm.cfg)
-        log.info { findMethod("testModMethod")?.flowGraphAsImage()?.javaClass?.name }
-        assert(findMethod("testModMethod")?.flowGraphAsImage() is BufferedImage)
+        log.info { findMethod("testModMethod")?.drawFlowGraph()?.javaClass?.name }
+        assert(findMethod("testModMethod")?.drawFlowGraph() is BufferedImage)
     }
 }

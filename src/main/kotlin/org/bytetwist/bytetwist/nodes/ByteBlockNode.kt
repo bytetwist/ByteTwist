@@ -1,14 +1,24 @@
 package org.bytetwist.bytetwist.nodes
 
+import kotlinx.coroutines.flow.flow
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
-import java.util.concurrent.CopyOnWriteArrayList
+import org.objectweb.asm.tree.JumpInsnNode
 
 typealias Block = ByteBlockNode
 
-open class ByteBlockNode(
+/**
+ * A Basic block: A set of instructions that all exist in the same method and that
+ * are executed sequentially without branching. Usually will be enclosed in brackets
+ * @param method: The [ByteMethod] that this block/set of instructions belongs to.
+ */
+class ByteBlockNode(
     val method: ByteMethod
-) : CopyOnWriteArrayList<AbstractInsnNode>(), ByteNode {
+    ) : ByteNode, HashSet<AbstractInsnNode>() {
+
+    init {
+        method.blocks.add(this)
+    }
 
     /**
      * Returns a string representation of this list.  The string
@@ -24,14 +34,6 @@ open class ByteBlockNode(
         return "Node${method.blocks.indexOf(this)}"
     }
 
-    fun print() = toString() + super.toArray().toString() + "Edges[${this.edges}]"
-
-    public val edges = ArrayList<Pair<ByteBlockNode, EdgeDirection>>()
-
-    public val successors = HashSet<Block>()
-
-    public val predecessors = HashSet<Block>()
-
     companion object {
         val UNCONDITIONAL_JUMP = listOf(Opcodes.GOTO, Opcodes.JSR, Opcodes.RET)
         val CONDITIONAL_JUMP = listOf(
@@ -44,13 +46,6 @@ open class ByteBlockNode(
 
 }
 
-/**
- * A bit redundant but can be useful for analysis
- */
-enum class EdgeDirection {
-    IN,
-    OUT
-}
 
 /**
  * Finds a block by it's first [AbstractInsnNode] in a method that has already computed all of its blocks.

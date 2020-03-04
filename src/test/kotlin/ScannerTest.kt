@@ -6,6 +6,7 @@ import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.findClass
 import org.bytetwist.bytetwist.nodes.*
+import org.bytetwist.bytetwist.processors.common.ClassRenamer
 import org.bytetwist.bytetwist.processors.oneOff
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -79,10 +80,7 @@ class ScannerTest {
         loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
         loader.launch()
         assertNotNull(annotations)
-        log.info { refs.size }
         refs.clear()
-
-
     }
 
     @InternalCoroutinesApi
@@ -94,6 +92,19 @@ class ScannerTest {
         loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
         loader.launch()
         assertNotEquals(0, refs.size)
+    }
+
+    @InternalCoroutinesApi
+    @Test
+    fun annotationTest() {
+        Settings.annotateClassChanges = true
+        Settings.annotateMethodComplexity = true
+        Settings.annotateTryCatchCount = true
+        val classAnnotations = arrayListOf<ClassAnnotationNode>()
+        loader.addProcessor(ClassRenamer())
+        loader.addProcessor(oneOff<ClassAnnotationNode> { classAnnotations.add(it) })
+        loader.launch()
+        log.info { classAnnotations.size }
     }
 
 }
