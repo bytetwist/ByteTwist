@@ -37,7 +37,7 @@ class BlockTest {
 
     @Test
     fun flowGraphTest() {
-        val mm = References.methodNames.values.random()
+        val mm = findMethod("testModMethod")!!
         assertNotNull(mm.cfg)
         log.info { findMethod("testModMethod")?.flowGraphAsImage()?.javaClass?.name }
         assert(findMethod("testModMethod")?.flowGraphAsImage() is BufferedImage)
