@@ -26,8 +26,6 @@ class ByteTryCatch(
      */
     fun getType(): Type = Type.getObjectType(type)
 
-    fun buildMethodBlocks() = tryBlock() to catchBlock()
-
     /**
      *
      */

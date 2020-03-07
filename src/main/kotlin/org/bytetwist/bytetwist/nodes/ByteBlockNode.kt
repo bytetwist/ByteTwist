@@ -1,9 +1,7 @@
 package org.bytetwist.bytetwist.nodes
 
-import kotlinx.coroutines.flow.flow
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
-import org.objectweb.asm.tree.JumpInsnNode
 
 typealias Block = ByteBlockNode
 
@@ -14,10 +12,7 @@ typealias Block = ByteBlockNode
  */
 class ByteBlockNode(
     val method: ByteMethod
-    ) : ByteNode, HashSet<AbstractInsnNode>() {
-
-    init {
-    }
+) : ByteNode, HashSet<AbstractInsnNode>() {
 
     /**
      * Returns a string representation of this list.  The string
@@ -45,7 +40,11 @@ class ByteBlockNode(
 
 }
 
-
+/**
+ * Finds a [ByteBlockNode] in a [ByteMethod] from an [AbstractInsnNode].
+ * @param instruction: the [AbstractInsnNode] to find the block it belongs to
+ * @return Returns a [ByteBlockNode] that contains the given instruction
+ */
 fun ByteMethod.find(instruction: AbstractInsnNode): Block? {
     return blocks.find { block -> block.contains(instruction) }
 }

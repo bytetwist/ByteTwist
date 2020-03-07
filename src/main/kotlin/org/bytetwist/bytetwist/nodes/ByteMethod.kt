@@ -242,7 +242,9 @@ open class ByteMethod(
                         }
 
                     }
-                    else -> continue@loop
+                    else -> {
+                        continue@loop
+                    }
                 }
             }
             //log.info { "$name: ${blocks.size}" }
@@ -260,22 +262,18 @@ open class ByteMethod(
 //            }
 //        }
 
-            try {
-                analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
+            analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
 
-                if (Settings.annotateMethodComplexity) {
-                    //   launch {
-                    annotate("Complexity", "Blocks" to blocks.size, "Edges" to controlFlow.edgeSet().size)
-                    // }
-                }
+            if (Settings.annotateMethodComplexity) {
+                //   launch {
+                annotate("Complexity", "Blocks" to blocks.size, "Edges" to controlFlow.edgeSet().size)
+                // }
+            }
 
-                if (Settings.annotateTryCatchCount) {
-                    //   launch {
-                    annotate("TryCatchs", "number" to tryCatchBlocks.size)
-                    // }
-                }
-
-            } catch (e: AnalyzerException) {
+            if (Settings.annotateTryCatchCount) {
+                //   launch {
+                annotate("TryCatchs", "number" to tryCatchBlocks.size)
+                // }
             }
 
             if (Settings.annotateLocalVariables) {
@@ -346,8 +344,12 @@ open class ByteMethod(
             val first = find(instructions[insnIndex])
             val second = find(instructions[successorIndex]) ?: buildBlock(instructions[successorIndex])
             controlFlow.addVertex(second)
-            if (first != null && first != second) {
-                controlFlow.addEdge(first, second)
+            if (first != null && first != second && !controlFlow.containsEdge(second, first)) {
+                try {
+                    controlFlow.addEdge(first, second)
+                } catch (e: Exception) {
+                    log.error { "$first -> $second" }
+                }
             }
 
 
@@ -537,6 +539,12 @@ open class ByteMethod(
         return writer.toString()
     }
 
+    /**
+     * Generates a [BufferedImage] representation of the control flow graph of
+     * this method. Can be useful for analysis.
+     * @param name: the name of the file to save the graph as (without the extension)
+     * default value is the method's name
+     */
     fun drawFlowGraph(name: String = this.name): BufferedImage? {
         val adapter = JGraphXAdapter(controlFlow)
         val layout = mxCompactTreeLayout(adapter)
@@ -547,8 +555,12 @@ open class ByteMethod(
             if (!exists())
                 mkdir()
             if (image != null) {
-                ImageIO.write(image, "PNG", File("graphs",
-                    "${name.replace("<", "").replace(">", "")}.png"))
+                ImageIO.write(
+                    image, "PNG", File(
+                        "graphs",
+                        "${name.replace("<", "").replace(">", "")}.png"
+                    )
+                )
                 return image
             }
 
