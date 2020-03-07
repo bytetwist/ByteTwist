@@ -28,18 +28,18 @@ class BlockTest {
 
     @Test
     fun testBlocks() {
-        val method = findMethod("methodWith5Blocks")
-        ImageIO.write(method?.flowGraphAsImage(), "PNG", File("graphs", "${method?.name}.png"))
-        method?.run {
-            assertEquals(5, this.blocks.size)
+        val m = findMethod("methodWith5Blocks")
+        m?.drawFlowGraph()
+
+        m?.run {
+            assertEquals(8, this.blocks.distinct().size)
         }
     }
 
     @Test
     fun flowGraphTest() {
         val mm = findMethod("testModMethod")!!
-        assertNotNull(mm.cfg)
-        log.info { findMethod("testModMethod")?.flowGraphAsImage()?.javaClass?.name }
-        assert(findMethod("testModMethod")?.flowGraphAsImage() is BufferedImage)
+        assertNotNull(mm.controlFlow)
+        assert(findMethod("testModMethod")?.drawFlowGraph() is BufferedImage)
     }
 }

@@ -1,19 +1,17 @@
 package org.bytetwist.bytetwist.nodes
 
 
-import com.google.common.graph.*
 import com.mxgraph.layout.*
+import com.mxgraph.model.mxICell
 import com.mxgraph.util.mxCellRenderer
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
-import org.jgrapht.Graph
+import org.jgrapht.alg.color.BrownBacktrackColoring
 import org.jgrapht.ext.JGraphXAdapter
 import org.jgrapht.graph.DefaultEdge
-import org.jgrapht.graph.guava.*
+import org.jgrapht.graph.DirectedAcyclicGraph
 import org.jgrapht.nio.dot.DOTExporter
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -21,16 +19,16 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.SOURCE_MASK
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
-import org.objectweb.asm.tree.analysis.Analyzer
-import org.objectweb.asm.tree.analysis.AnalyzerException
-import org.objectweb.asm.tree.analysis.BasicValue
-import org.objectweb.asm.tree.analysis.BasicVerifier
+import org.objectweb.asm.tree.analysis.*
+import java.awt.Color
 import java.awt.image.BufferedImage
+import java.awt.image.ColorModel
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.Modifier
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Function
+import javax.imageio.ImageIO
 
 
 /**
@@ -38,19 +36,19 @@ import java.util.function.Function
  * @param parent: The [ByteClass] that this method is a member of
  */
 open class ByteMethod(
-        val parent: ByteClass,
-        access: Int,
-        name: String,
-        descriptor: String?,
-        signature: String?,
-        exceptions: Array<out String>?
+    val parent: ByteClass,
+    access: Int,
+    name: String,
+    descriptor: String?,
+    signature: String?,
+    exceptions: Array<out String>?
 ) : MethodNode(
-        Opcodes.ASM7,
-        access,
-        name,
-        descriptor,
-        signature,
-        exceptions
+    Opcodes.ASM7,
+    access,
+    name,
+    descriptor,
+    signature,
+    exceptions
 ), ByteNode {
 
     /**
@@ -88,6 +86,8 @@ open class ByteMethod(
      */
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
 
+    val controlFlow: DirectedAcyclicGraph<ByteBlockNode, DefaultEdge> = DirectedAcyclicGraph(DefaultEdge::class.java)
+
 
     init {
         visibleAnnotations = mutableListOf<AnnotationNode>()
@@ -107,15 +107,15 @@ open class ByteMethod(
      *
      */
     override fun visitMethodInsn(
-            opcodeAndSource: Int,
-            owner: String?,
-            name: String?,
-            descriptor: String?,
-            isInterface: Boolean
+        opcodeAndSource: Int,
+        owner: String?,
+        name: String?,
+        descriptor: String?,
+        isInterface: Boolean
     ) {
         val methodCall = MethodReferenceNode(
-                this, opcodeAndSource and SOURCE_MASK.inv(),
-                owner, name, descriptor, isInterface
+            this, opcodeAndSource and SOURCE_MASK.inv(),
+            owner, name, descriptor, isInterface
         )
         instructions.add(methodCall)
     }
@@ -124,25 +124,25 @@ open class ByteMethod(
      * Visits a try catch block and creates a [ByteTryCatch] then adds it to this methods list of try catch blocks [tryCatchBlocks]
      */
     override fun visitTryCatchBlock(
-            start: Label?,
-            end: Label?,
-            handler: Label?,
-            type: String?
+        start: Label?,
+        end: Label?,
+        handler: Label?,
+        type: String?
     ) {
         instructions.indexOf(getLabelNode(start))
         if (type != null) {
             val tryCatch = ByteTryCatch(
-                    this, getLabelNode(start),
-                    getLabelNode(end), getLabelNode(handler), type
+                this, getLabelNode(start),
+                getLabelNode(end), getLabelNode(handler), type
             )
             this.tryCatchBlocks.add(tryCatch)
             return
         }
         this.tryCatchBlocks.add(
-                ByteTryCatch(
-                        this, getLabelNode(start),
-                        getLabelNode(end), getLabelNode(handler), "Exception"
-                )
+            ByteTryCatch(
+                this, getLabelNode(start),
+                getLabelNode(end), getLabelNode(handler), "Exception"
+            )
         )
     }
 
@@ -150,21 +150,21 @@ open class ByteMethod(
      * TODO: this
      */
     override fun visitLocalVariable(
-            name: String,
-            descriptor: String,
-            signature: String?,
-            start: Label?,
-            end: Label?,
-            index: Int
+        name: String,
+        descriptor: String,
+        signature: String?,
+        start: Label?,
+        end: Label?,
+        index: Int
     ) {
         val byteVar = ByteVariable(
-                this,
-                name,
-                descriptor,
-                signature,
-                getLabelNode(start),
-                getLabelNode(end),
-                index
+            this,
+            name,
+            descriptor,
+            signature,
+            getLabelNode(start),
+            getLabelNode(end),
+            index
         )
         localVariables.add(byteVar)
     }
@@ -191,22 +191,22 @@ open class ByteMethod(
      * the maintained lists of references in [References]
      */
     override fun visitFieldInsn(
-            opcode: Int,
-            owner: String,
-            name: String,
-            descriptor: String?
+        opcode: Int,
+        owner: String,
+        name: String,
+        descriptor: String?
     ) {
         when (opcode) {
             in FieldOpcodes.READ_CODES -> {
                 val fieldRead = FieldRead(this, opcode, owner, name, descriptor)
                 instructions.add(
-                        fieldRead
+                    fieldRead
                 )
             }
             in FieldOpcodes.WRITE_CODES -> {
                 val fieldWrite = FieldWrite(this, opcode, owner, name, descriptor)
                 instructions.add(
-                        fieldWrite
+                    fieldWrite
                 )
             }
         }
@@ -217,50 +217,56 @@ open class ByteMethod(
      * Builds all of the [ByteBlockNode] and [ByteTryCatch] blocks for this method. Uses coroutines to execute some parts
      * of the method asynchronously
      */
-    suspend fun buildBlocks() {
-        //   coroutineScope {
-        // Sort try catch blocks
-        //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
-        var block = ByteBlockNode(this@ByteMethod)
-        for (insnNode in instructions) {
-            when (insnNode) {
-                instructions.first -> {
-                    block = ByteBlockNode(this@ByteMethod)
-                    block.add(insnNode)
-                }
-                is JumpInsnNode -> {
-                    block.add(insnNode)
-                    blocks.add(block)
-                    block = ByteBlockNode(this@ByteMethod)
-                }
-                else -> {
-                    block.add(insnNode)
-                    if (insnNode == instructions.last) {
-                        blocks.add(block)
+    fun buildBlocks() {
+        runBlocking {
+            //   coroutineScope {
+            // Sort try catch blocks
+            //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
+            var block: ByteBlockNode? = null
+            loop@ for (insnNode in instructions) {
+                when (insnNode) {
+                    instructions.first -> block = buildBlock(insnNode)
+                    is JumpInsnNode -> {
+                        if (block == null) {
+                            block = find(insnNode) ?: buildBlock(insnNode)
+                        }
+                        val block2 = buildBlock(insnNode.label)
+                        controlFlow.addVertex(block)
+                        controlFlow.addVertex(block2)
+                        if (insnNode.next != null && insnNode.opcode != Opcodes.GOTO) {
+                            if (insnNode.next != insnNode.label.next) {
+                                val nextBlock = find(insnNode.next) ?: buildBlock(insnNode.next)
+                                controlFlow.addVertex(nextBlock)
+                                block = nextBlock
+                            }
+                        }
+
+                    }
+                    else -> {
+                        continue@loop
                     }
                 }
             }
-        }
-        if (!this@ByteMethod.tryCatchBlocks.isNullOrEmpty()) {
-            this@ByteMethod.tryCatchBlocks.onEach { tryCatchBlock ->
-                //     async {
-                if (tryCatchBlock != null) {
-                    (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
-                }
-                //   }
-            }
-        }
+            //log.info { "$name: ${blocks.size}" }
 
-        try {
-            val frames = analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
-            instructions.zip(frames).forEach {
-                if (it.second == null) {
-                    log.debug { ";)" }
-                }
-            }
+
+//        if (!this@ByteMethod.tryCatchBlocks.isNullOrEmpty()) {
+//            this@ByteMethod.tryCatchBlocks.onEach { tryCatchBlock ->
+//                //     async {
+//                if (tryCatchBlock != null) {
+//                    val tryCatchBlocks = (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
+//                    controlFlow.addVertex(tryCatchBlocks.first)
+//                    controlFlow.addVertex(tryCatchBlocks.second)
+//                }
+//                //   }
+//            }
+//        }
+
+            analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
+
             if (Settings.annotateMethodComplexity) {
                 //   launch {
-                annotate("Complexity", "Blocks" to blocks.size, "Edges" to blocks.flatMap { it.edges }.count())
+                annotate("Complexity", "Blocks" to blocks.size, "Edges" to controlFlow.edgeSet().size)
                 // }
             }
 
@@ -270,26 +276,40 @@ open class ByteMethod(
                 // }
             }
 
-        } catch (e: AnalyzerException) {
-            //log.error { e.message + " ${e.node} + ${e.node.opcode}" }
-        }
-
-        if (Settings.annotateLocalVariables) {
-            //      launch {
-            if (localVariables != null && localVariables.isNotEmpty()) {
-                localVariables.onEach {
-                    //     async {
-                    annotate(
+            if (Settings.annotateLocalVariables) {
+                //      launch {
+                if (localVariables != null && localVariables.isNotEmpty()) {
+                    localVariables.onEach {
+                        //     async {
+                        annotate(
                             "Local Variable ${it.name}",
                             "References" to (it as ByteVariable).references.size
-                    )
+                        )
+                    }
+                    //    }.awaitAll()
+                    //  }
                 }
-                //    }.awaitAll()
-                //  }
             }
+            //References.blocks.addAll(this@ByteMethod.blocks)
         }
-        //References.blocks.addAll(this@ByteMethod.blocks)
     }
+
+    private fun buildBlock(startingInsn: AbstractInsnNode): ByteBlockNode {
+        val newSet = ByteBlockNode(this@ByteMethod)
+        newSet.add(startingInsn)
+        var nxt = startingInsn.next
+        while (nxt != null) {
+            if (nxt is JumpInsnNode) {
+                newSet.add(nxt)
+                break
+            }
+            newSet.add(nxt)
+            nxt = nxt.next
+        }
+        blocks.add(newSet)
+        return newSet
+    }
+
 
     // }
 
@@ -297,56 +317,65 @@ open class ByteMethod(
      * Do nothing, we don't want to keep line numbers
      */
     override fun visitLineNumber(line: Int, start: Label?) {
-
+        super.visitLineNumber(line, start)
     }
-
-    val cfg: MutableNetwork<ByteBlockNode, String> =
-            NetworkBuilder
-                    .directed()
-                    .allowsSelfLoops(true)
-                    .allowsParallelEdges(true)
-                    .build()
 
     /**
      * An Analyzer that builds a cfg for this [ByteMethod] and adds the edges to all of this methods blocks.
      *
      */
-    private val analyzer = object : Analyzer<BasicValue>(BasicVerifier()) {
+    private val analyzer = object : Analyzer<BasicValue>(BasicInterpreter()) {
+
+        override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
+            val first = find(instructions[insnIndex])
+            val second = find(instructions[successorIndex]) ?: buildBlock(instructions[successorIndex])
+            controlFlow.addVertex(second)
+            if (first != null && first != second) {
+                controlFlow.addEdge(first, second)
+            }
+            return true
+        }
 
 
         /**
          * Adds a control flow edge from one block to another
          */
         override fun newControlFlowEdge(insnIndex: Int, successorIndex: Int) {
-            val firstB = findBlockByLast(instructions[insnIndex])
-            val second = findBlock(instructions[successorIndex])
-            if (firstB != null) {
-                if (second != null) {
-                    cfg.addEdge(firstB, second, DefaultEdge().toString())
-                }
-            } else {
-                val first = findBlockByLast(instructions[insnIndex])
-                if (second != null) {
-                    cfg.addEdge(first, second, DefaultEdge().toString())
+            val first = find(instructions[insnIndex])
+            val second = find(instructions[successorIndex]) ?: buildBlock(instructions[successorIndex])
+            controlFlow.addVertex(second)
+            if (first != null && first != second && !controlFlow.containsEdge(second, first)) {
+                try {
+                    controlFlow.addEdge(first, second)
+                } catch (e: Exception) {
+                    log.error { "$first -> $second" }
                 }
             }
-//            findBlockByLast(instructions[insnIndex])?.let {
-//                val b = findBlock(instructions[successorIndex])
-//                if (it.edges.add((b to EdgeDirection.OUT) as Pair<ByteBlockNode, EdgeDirection>)) {//                   // it.edges.add(b to EdgeDirection.IN)
-//                }
-//            }
+
+
+            //   controlFlow.addEdge(single, next)
+            // log.info { single.toString() + " -> " + ByteBlockNode(this@ByteMethod, succ) }
+            // val successor = instructions[successorIndex]
+            // val first = blocks.find { a -> a.last() == last }
+//            val second = blocks.single { b -> b.first() == successor }
+//            log.info { last }
+//            controlFlow.addVertex(first)
+//            controlFlow.addVertex(second)
+//            controlFlow.addEdge(first, second)
         }
 
-        override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
-            val first = findBlockByLast(instructions[insnIndex])
-            val second = findBlock(instructions[successorIndex])
-            if (first != null) {
-                if (second != null) {
-                    cfg.addEdge(first, second, DefaultEdge().toString())
-                }
-            }
-            return true
-        }
+//        override fun newControlFlowExceptionEdge(insnIndex: Int, successorIndex: Int): Boolean {
+//            val first = findBlockByLast(instructions[insnIndex])
+//            val second = findBlock(instructions[successorIndex])
+//            if (first != null) {
+//                if (second != null) {
+//                    controlFlow.addEdge(first, second)
+//
+//                    cfg.addEdge(first, second, DefaultEdge())
+//                }
+//            }
+//            return true
+//        }
 //
 //        /**
 //         * Adds an edge from a try block to it's catch handler
@@ -370,7 +399,6 @@ open class ByteMethod(
     override fun visitTypeInsn(opcode: Int, type: String?) {
         val classReference = ClassReferenceNode(this, opcode, type)
         instructions.add(classReference)
-        References.typeReferences.add(classReference)
     }
 
     /**
@@ -425,6 +453,7 @@ open class ByteMethod(
         References.findMethod(this.name)?.instructions?.add(this.instructions)
         parent.methods.remove(this)
     }
+
     /**
      * Returns true if this method is abstract
      */
@@ -486,8 +515,8 @@ open class ByteMethod(
      * @sample - method.annotate("Generated", "methodName" to method.name)
      */
     open fun annotate(
-            name: String,
-            vararg fieldsToValues: Pair<String, Any>
+        name: String,
+        vararg fieldsToValues: Pair<String, Any>
     ) {
         with(this.visitAnnotation(Type.getObjectType(name).descriptor, true)) {
             fieldsToValues.asIterable().forEach {
@@ -501,27 +530,40 @@ open class ByteMethod(
      * Returns this methods control flow as a String in DOT format
      * @return - the CFG in DOT format
      */
-    fun getCfgDot() : String {
-       val writer = StringWriter()
-        val graph: MutableNetworkAdapter<ByteBlockNode, String> = MutableNetworkAdapter(cfg)
-        val exporter = DOTExporter<ByteBlockNode, String>(Function { t: ByteBlockNode ->
-            t.toString().replace("-", "") })
-        exporter.exportGraph(graph, writer)
+    fun getCfgDot(): String {
+        val writer = StringWriter()
+        val exporter = DOTExporter<ByteBlockNode, DefaultEdge>(Function { t: ByteBlockNode ->
+            t.toString().replace("-", "")
+        })
+        exporter.exportGraph(controlFlow, writer)
         return writer.toString()
     }
 
-    fun flowGraphAsImage(name: String = this.name): BufferedImage? {
-        val graph: MutableNetworkAdapter<ByteBlockNode, String> = MutableNetworkAdapter(cfg)
-        val adapter = JGraphXAdapter(graph)
-        val layout = mxOrganicLayout(adapter)
+    /**
+     * Generates a [BufferedImage] representation of the control flow graph of
+     * this method. Can be useful for analysis.
+     * @param name: the name of the file to save the graph as (without the extension)
+     * default value is the method's name
+     */
+    fun drawFlowGraph(name: String = this.name): BufferedImage? {
+        val adapter = JGraphXAdapter(controlFlow)
+        val layout = mxCompactTreeLayout(adapter)
         layout.execute(adapter.defaultParent)
         val image =
             mxCellRenderer.createBufferedImage(layout.graph, null, 2.0, null, true, null)
-        with (File("graphs")) {
+        with(File("graphs")) {
             if (!exists())
                 mkdir()
-            if (image != null)
+            if (image != null) {
+                ImageIO.write(
+                    image, "PNG", File(
+                        "graphs",
+                        "${name.replace("<", "").replace(">", "")}.png"
+                    )
+                )
                 return image
+            }
+
         }
         log.error { "Error generating image for the CFG of $name" }
         return null

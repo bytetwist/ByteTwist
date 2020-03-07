@@ -169,6 +169,11 @@ class ByteClass(
         return constructor
     }
 
+    /**
+     * Renames this class and updates all references to it.
+     * Currently miss some Cast/new instance references, still needs to be fixed.
+     * @param newName: the name to change the class to
+     */
     @Beta
     fun rename(newName: String) {
         val oldName = this.name
@@ -185,7 +190,7 @@ class ByteClass(
         References.classNames.remove(oldName)
         References.classNames[this.name] = this
 
-        fields.forEach { fieldNode ->
+        fields.parallelStream().forEach { fieldNode ->
             if (fieldNode is ByteField) {
                 References.fieldNames.remove("$oldName.${fieldNode.name}")
                 References.fieldNames["${name}.${fieldNode.name}"] = fieldNode
@@ -196,7 +201,7 @@ class ByteClass(
             }
         }
 
-        methods.filterIsInstance(ByteMethod::class.java).forEach { methodNode ->
+        methods.filterIsInstance(ByteMethod::class.java).parallelStream().forEach { methodNode ->
             References.methodNames.remove("$oldName.${methodNode.name}.${methodNode.desc}")
             References.methodNames["$name.${methodNode.name}.${methodNode.desc}"] = methodNode
             methodNode.invocations.forEach {
@@ -218,7 +223,7 @@ class ByteClass(
             it.desc = it.desc.replace("$oldName", "$name")
         }
 
-        References.methodNames.values.forEach {
+        References.methodNames.values.parallelStream().forEach {
             if (it.desc.contains(oldName)) {
                 it.desc = it.desc.replace("L$oldName;", "L$name;")
                 it.invocations.forEach { m ->
@@ -230,7 +235,7 @@ class ByteClass(
             }
         }
 
-        References.fieldNames.values.forEach {
+        References.fieldNames.values.parallelStream().forEach {
             if (it.desc.contains(oldName)) {
                 it.desc = it.desc.replace("L$oldName;", "L$name;")
                 it.references.forEach { ref ->

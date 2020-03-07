@@ -9,8 +9,11 @@ import org.bytetwist.bytetwist.nodes.*
 import org.bytetwist.bytetwist.processors.AbstractNodeProcessor
 import org.bytetwist.bytetwist.processors.ProcessingQueue
 import org.bytetwist.bytetwist.processors.common.*
+import org.bytetwist.bytetwist.processors.log
+import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
 import java.io.File
+import javax.imageio.ImageIO
 
 @ExperimentalCoroutinesApi
 @InternalCoroutinesApi
@@ -77,7 +80,6 @@ open class Loader {
         val scan = scanner!!.scan()
         scan.collect { processors.nodes.add(it) }
     }
-
 }
 
  @ExperimentalCoroutinesApi
@@ -86,10 +88,16 @@ open class Loader {
     val loader = Loader()
     loader.scan("gamepack_obf.jar")
     loader.addProcessor(ClassRenamer())
-    loader.addProcessor(UnusedMethodProcessor())
-    loader.addProcessor(UnusedFieldProcessor())
+//    loader.addProcessor(UnusedMethodProcessor())
+//    loader.addProcessor(UnusedFieldProcessor())
     loader.addProcessor(MethodRenamer())
     loader.addProcessor(FieldRenamer())
+     loader.addProcessor(oneOff<ByteMethod> {
+         //it.drawFlowGraph()
+//         if (it.drawFlowGraph() != null) {
+//             ImageIO.write(it.drawFlowGraph(), "png", File("graphs", "${it.name}.png"))
+//         }
+         })
     loader.addProcessor(JarOutputProcessor())
     loader.launch()
 

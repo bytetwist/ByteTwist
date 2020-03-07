@@ -3,6 +3,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
 import org.bytetwist.bytetwist.*
 import org.bytetwist.bytetwist.nodes.*
+import org.bytetwist.bytetwist.processors.common.ClassRenamer
 import org.bytetwist.bytetwist.processors.oneOff
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -16,11 +17,12 @@ private val log = KotlinLogging.logger {}
 class ScannerTest {
 
     @InternalCoroutinesApi
-    private val loader = Loader()
+    private lateinit var loader: Loader
 
     @InternalCoroutinesApi
     @BeforeEach
     fun runScan() {
+        loader = Loader()
         loader.scan(File(ScannerTest::class::java.javaClass.getResource("JavaTestClass.class").file))
     }
 
@@ -43,7 +45,8 @@ class ScannerTest {
         val field1 = scanner.nodes.first().fields.first() as ByteField
         val field2 = scanner.nodes.first().fields.last() as ByteField
         val method1 = scanner.nodes.first().constructors.first()
-        val method2 = findMethod("testMethod2")!!
+        val method2 = findMethod("testMethod2")
+        assertNotNull(method2)
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
         assertEquals("<init>", method1.name)
@@ -76,10 +79,7 @@ class ScannerTest {
         loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
         loader.launch()
         assertNotNull(annotations)
-        log.info { refs.size }
         refs.clear()
-
-
     }
 
     @InternalCoroutinesApi
@@ -91,6 +91,19 @@ class ScannerTest {
         loader.addProcessor(oneOff<FieldWrite> { refs.add(it) })
         loader.launch()
         assertNotEquals(0, refs.size)
+    }
+
+    @InternalCoroutinesApi
+    @Test
+    fun annotationTest() {
+        Settings.annotateClassChanges = true
+        Settings.annotateMethodComplexity = true
+        Settings.annotateTryCatchCount = true
+        val classAnnotations = arrayListOf<ClassAnnotationNode>()
+        loader.addProcessor(ClassRenamer())
+        loader.addProcessor(oneOff<ClassAnnotationNode> { classAnnotations.add(it) })
+        loader.launch()
+        log.info { classAnnotations.size }
     }
 
 }

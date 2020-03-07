@@ -35,14 +35,18 @@ open class ProcessingQueue() {
     }
 
     @ExperimentalCoroutinesApi
-    val blocks = flow {
-        emitAll(References.blocks.asFlow())
-    }
-
-    @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
     fun methods(): Flow<ByteMethod> = flow {
         this.emitAll(References.methodNames.values.asFlow())
+    }
+
+    @ExperimentalCoroutinesApi
+    fun blocks(): Flow<ByteBlockNode> = flow {
+        methods().onEach { byteMethod ->
+            byteMethod.blocks.onEach { byteBlockNode ->
+                emit(byteBlockNode)
+            }
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -78,13 +82,10 @@ open class ProcessingQueue() {
 
     @ExperimentalCoroutinesApi
     fun fieldRefs(): Flow<FieldReferenceNode> = flow {
-        blocks.onEach { byteBlockNode ->
-            byteBlockNode.filterIsInstance<FieldReferenceNode>()
-                .onEach {
-                    emit(it)
-                }
+        methods().onEach { byteBlockNode ->
+            emitAll(byteBlockNode.instructions.filterIsInstance<FieldReferenceNode>().asFlow())
         }
-    }
+    } as Flow<FieldReferenceNode>
 
     @ExperimentalCoroutinesApi
     @InternalCoroutinesApi
@@ -112,7 +113,7 @@ open class ProcessingQueue() {
                     ClassAnnotationNode::class -> processor.subscribe(classAnnotations())
                     FieldAnnotationNode::class -> processor.subscribe(fieldAnnotations())
                     MethodAnnotationNode::class -> processor.subscribe(methodAnnotations())
-                    Block::class -> processor.subscribe(blocks)
+                    ByteBlockNode::class -> processor.subscribe(blocks())
                 }
 
                 processor.complete()

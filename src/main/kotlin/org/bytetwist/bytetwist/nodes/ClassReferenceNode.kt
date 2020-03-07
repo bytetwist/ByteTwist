@@ -1,9 +1,6 @@
 package org.bytetwist.bytetwist.nodes
 
-import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.findClass
-import org.bytetwist.bytetwist.processors.log
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.TypeInsnNode
 
 /**
@@ -24,10 +21,7 @@ class ClassReferenceNode(
      * Adds this Class Reference object to the [ByteClass] that it references.
      */
     fun addToClass() {
-            val clazz = findClass(desc)
-        if  (clazz != null) {
-
-            clazz.typeReferences.add(this)
-        }
+        val clazz = findClass(desc)
+        clazz?.typeReferences?.add(this)
     }
 }
