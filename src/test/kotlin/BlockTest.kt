@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 import kotlin.test.assertNotNull
 
 private val log = KotlinLogging.logger {}
@@ -27,14 +28,16 @@ class BlockTest {
 
     @Test
     fun testBlocks() {
-        References.methodNames.values.find { m -> m.name == "methodWith5Blocks"}?.run {
+        val method = findMethod("methodWith5Blocks")
+        ImageIO.write(method?.flowGraphAsImage(), "PNG", File("graphs", "${method?.name}.png"))
+        method?.run {
             assertEquals(5, this.blocks.size)
         }
     }
 
     @Test
     fun flowGraphTest() {
-        val mm = References.methodNames.values.random()
+        val mm = findMethod("testModMethod")!!
         assertNotNull(mm.cfg)
         log.info { findMethod("testModMethod")?.flowGraphAsImage()?.javaClass?.name }
         assert(findMethod("testModMethod")?.flowGraphAsImage() is BufferedImage)
