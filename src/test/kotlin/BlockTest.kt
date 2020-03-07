@@ -39,8 +39,7 @@ class BlockTest {
     @Test
     fun flowGraphTest() {
         val mm = findMethod("testModMethod")!!
-        assertNotNull(mm.cfg)
-        log.info { findMethod("testModMethod")?.flowGraphAsImage()?.javaClass?.name }
-        assert(findMethod("testModMethod")?.flowGraphAsImage() is BufferedImage)
+        assertNotNull(mm.controlFlow)
+        assert(findMethod("testModMethod")?.drawFlowGraph() is BufferedImage)
     }
 }
