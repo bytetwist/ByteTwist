@@ -17,7 +17,6 @@ class ByteBlockNode(
     ) : ByteNode, HashSet<AbstractInsnNode>() {
 
     init {
-        method.blocks.add(this)
     }
 
     /**
@@ -46,6 +45,10 @@ class ByteBlockNode(
 
 }
 
+
+fun ByteMethod.find(instruction: AbstractInsnNode): Block? {
+    return blocks.find { block -> block.contains(instruction) }
+}
 
 /**
  * Finds a block by it's first [AbstractInsnNode] in a method that has already computed all of its blocks.

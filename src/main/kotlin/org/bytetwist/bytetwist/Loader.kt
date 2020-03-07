@@ -93,7 +93,7 @@ open class Loader {
     loader.addProcessor(MethodRenamer())
     loader.addProcessor(FieldRenamer())
      loader.addProcessor(oneOff<ByteMethod> {
-         log.info { it.drawFlowGraph() }
+         //it.drawFlowGraph()
 //         if (it.drawFlowGraph() != null) {
 //             ImageIO.write(it.drawFlowGraph(), "png", File("graphs", "${it.name}.png"))
 //         }

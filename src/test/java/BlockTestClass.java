@@ -18,6 +18,7 @@ public class BlockTestClass {
         if (i == 0) {
             return;
         }
+
     }
 
     public void tryCatchBlock()

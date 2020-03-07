@@ -1,7 +1,6 @@
 package org.bytetwist.bytetwist.nodes
 
 import org.objectweb.asm.Type
-import org.objectweb.asm.tree.JumpInsnNode
 import org.objectweb.asm.tree.LabelNode
 import org.objectweb.asm.tree.TryCatchBlockNode
 
@@ -29,10 +28,11 @@ class ByteTryCatch(
 
     fun buildMethodBlocks() = tryBlock() to catchBlock()
 
-
-
+    /**
+     *
+     */
     fun tryBlock(): ByteBlockNode? {
-        return null
+        return method.find(start)
 //        if (method.blocks.isNotEmpty() && method.findBlock(start) != null) {
 //            return method.findBlock(start)!!
 //        }
@@ -51,8 +51,11 @@ class ByteTryCatch(
 //            return block
     }
 
+    /**
+     * The block that catches any exceptions
+     */
     fun catchBlock(): ByteBlockNode? {
-        return null
+        return method.find(handler)
 //        if (method.blocks.isNotEmpty() && method.findBlock(handler) != null) {
 ////            if (!this.tryBlock().edges.contains(method.findBlock(handler) to EdgeDirection.OUT)) {
 ////                this.tryBlock().edges.add(((method.findBlock(handler) as ByteBlockNode to EdgeDirection.OUT)!!))

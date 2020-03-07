@@ -1,10 +1,7 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import mu.KotlinLogging
-import org.bytetwist.bytetwist.Loader
-import org.bytetwist.bytetwist.References
-import org.bytetwist.bytetwist.Settings
-import org.bytetwist.bytetwist.findClass
+import org.bytetwist.bytetwist.*
 import org.bytetwist.bytetwist.nodes.*
 import org.bytetwist.bytetwist.processors.common.ClassRenamer
 import org.bytetwist.bytetwist.processors.oneOff
@@ -20,11 +17,12 @@ private val log = KotlinLogging.logger {}
 class ScannerTest {
 
     @InternalCoroutinesApi
-    private val loader = Loader()
+    private lateinit var loader: Loader
 
     @InternalCoroutinesApi
     @BeforeEach
     fun runScan() {
+        loader = Loader()
         loader.scan(File(ScannerTest::class::java.javaClass.getResource("JavaTestClass.class").file))
     }
 
@@ -47,7 +45,8 @@ class ScannerTest {
         val field1 = scanner.nodes.first().fields.first() as ByteField
         val field2 = scanner.nodes.first().fields.last() as ByteField
         val method1 = scanner.nodes.first().constructors.first()
-        val method2 = References.findMethod("testMethod2")!!
+        val method2 = findMethod("testMethod2")
+        assertNotNull(method2)
         assertEquals(5, field1.references.size)
         assertEquals(3, field2.references.size)
         assertEquals("<init>", method1.name)

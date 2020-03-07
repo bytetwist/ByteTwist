@@ -21,7 +21,6 @@ object References {
     val methodNames = ConcurrentHashMap<String, ByteMethod>()
 
 
-    val typeReferences = CopyOnWriteArrayList<ClassReferenceNode>()
 
     val blocks = CopyOnWriteArrayList<Block>()
 

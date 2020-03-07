@@ -1,7 +1,6 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
-import org.bytetwist.bytetwist.Loader
-import org.bytetwist.bytetwist.References
+import org.bytetwist.bytetwist.*
 import org.bytetwist.bytetwist.nodes.*
 import org.bytetwist.bytetwist.processors.oneOff
 import org.bytetwist.bytetwist.scanners.DoublePassScanner
@@ -41,7 +40,8 @@ class AnnotationGenerationTestification {
             }
         })
         loader.launch()
-        val m = methods.first()
+        val m = findMethod("testModMethod")
+        assertNotNull(m)
         assert(m.visibleAnnotations != null)
         assert(m.visibleAnnotations.size > 0)
         val a = m.visibleAnnotations as MutableList<ByteAnnotation>
@@ -59,7 +59,7 @@ class AnnotationGenerationTestification {
     fun testClassAnnotation() {
         loader.addProcessor(oneOff<ByteClass>{ it.annotate("classAnnotation", "className" to it.name) })
         loader.launch()
-        val clazz = References.classNames.values.random()
+        val clazz = findClass("JavaTestClass")
         assertNotNull(clazz)
         val annotations = clazz.visibleAnnotations as List<ClassAnnotationNode>
         assert(!annotations.isNullOrEmpty())
@@ -75,7 +75,7 @@ class AnnotationGenerationTestification {
             it.annotate("field", "references" to it.references.size)
         })
         loader.launch()
-        val field = References.fieldNames.values.random()
+        val field = findField("testField2")
         assertNotNull(field)
         val annotation = field.visibleAnnotations.find { it.desc.contains("field")  }
         assertNotNull(annotation)

@@ -2,7 +2,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.bytetwist.bytetwist.Loader
 import org.bytetwist.bytetwist.findMethod
-import org.bytetwist.bytetwist.nodes.ByteBlockNode
 import org.bytetwist.bytetwist.nodes.ByteTryCatch
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
