@@ -52,8 +52,8 @@ class ByteTryCatch(
     /**
      * The block that catches any exceptions
      */
-    fun catchBlock(): ByteBlockNode? {
-        return method.find(handler)
+    fun catchBlock(): ByteBlockNode {
+        return method.find(handler) ?: method.buildBlock(handler)
 //        if (method.blocks.isNotEmpty() && method.findBlock(handler) != null) {
 ////            if (!this.tryBlock().edges.contains(method.findBlock(handler) to EdgeDirection.OUT)) {
 ////                this.tryBlock().edges.add(((method.findBlock(handler) as ByteBlockNode to EdgeDirection.OUT)!!))

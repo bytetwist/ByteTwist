@@ -32,7 +32,7 @@ class BlockTest {
         m?.drawFlowGraph()
 
         m?.run {
-            assertEquals(8, this.blocks.distinct().size)
+            assertEquals(7, this.blocks.distinct().size)
         }
     }
 

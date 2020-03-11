@@ -2,6 +2,8 @@ package org.bytetwist.bytetwist.processors
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import org.bytetwist.bytetwist.References
@@ -114,6 +116,16 @@ open class ProcessingQueue() {
                     FieldAnnotationNode::class -> processor.subscribe(fieldAnnotations())
                     MethodAnnotationNode::class -> processor.subscribe(methodAnnotations())
                     ByteBlockNode::class -> processor.subscribe(blocks())
+                    ByteNode::class -> processor.subscribe(flow<ByteNode> {
+                        emitAll(annotations())
+                        emitAll(classes())
+                        emitAll(methods())
+                        emitAll(fields())
+                        emitAll(fieldRefs())
+                        emitAll(methodRefs())
+                        emitAll(blocks())
+
+                    })
                 }
 
                 processor.complete()

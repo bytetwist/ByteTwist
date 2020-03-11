@@ -5,13 +5,9 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.FieldNode
 import org.bytetwist.bytetwist.References
 import org.objectweb.asm.Type
-import org.objectweb.asm.signature.SignatureWriter
 import org.objectweb.asm.tree.AnnotationNode
 import java.lang.reflect.Modifier
-import java.util.Collections.synchronizedList
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.reflect.KClass
 
 /**
  * An abstraction of the FieldNode that includes a list of @see FieldReferenceNode references to each access of this
@@ -105,6 +101,9 @@ class ByteField(
         }
     }
 
+    /**
+     * Annotates the field's declaration
+     */
     fun annotate(
         name: String,
         vararg fieldsToValues: Pair<String, *>
@@ -129,13 +128,6 @@ class ByteField(
         References.fieldNames.remove(oldName)
         References.fieldNames["${parent.name}.$name"] = this
     }
-
-//    fun annotate(init: ByteAnnotation.(ByteField, String) -> Unit, descriptor: String): ByteAnnotation {
-//
-//
-//        val annotation = ByteAnnotation(this, descriptor)
-//
-//    }
 
     /**
      * Removes this ByteField/FieldNode from its parent class and removes all references to the field
@@ -164,6 +156,9 @@ class ByteField(
     }
 }
 
+/**
+ * [ByteField] builder, should be used with [newField]
+ */
 class ByteFieldBuilder() {
     lateinit var parent: ByteClass
     lateinit var name: String
@@ -175,6 +170,9 @@ class ByteFieldBuilder() {
     fun build() = ByteField(parent, access, name, descriptor.descriptor, signature, value)
 }
 
+/**
+ * Used to create a new field
+ */
 inline fun newField(init: ByteFieldBuilder.() -> Unit): ByteField {
     val byteField = ByteFieldBuilder().apply(init).build()
     References.fieldNames.putIfAbsent(byteField.name, byteField)
