@@ -78,27 +78,8 @@ open class Loader {
             throw UninitializedScanner()
         }
         val scan = scanner!!.scan()
-        scan.collect { processors.nodes.add(it) }
+        scan.toCollection(processors.nodes)
+        DoublePassScanner.dispatcher.close()
     }
 }
 
- @ExperimentalCoroutinesApi
- @InternalCoroutinesApi
- fun main() {
-    val loader = Loader()
-    loader.scan("gamepack_obf.jar")
-    loader.addProcessor(ClassRenamer())
-//    loader.addProcessor(UnusedMethodProcessor())
-//    loader.addProcessor(UnusedFieldProcessor())
-    loader.addProcessor(MethodRenamer())
-    loader.addProcessor(FieldRenamer())
-     loader.addProcessor(oneOff<ByteMethod> {
-         //it.drawFlowGraph()
-//         if (it.drawFlowGraph() != null) {
-//             ImageIO.write(it.drawFlowGraph(), "png", File("graphs", "${it.name}.png"))
-//         }
-         })
-    loader.addProcessor(JarOutputProcessor())
-    loader.launch()
-
-}

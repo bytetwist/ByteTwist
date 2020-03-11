@@ -5,6 +5,8 @@ import com.mxgraph.layout.*
 import com.mxgraph.model.mxICell
 import com.mxgraph.util.mxCellRenderer
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.flow.callbackFlow
 import org.bytetwist.bytetwist.References
 import org.bytetwist.bytetwist.Settings
 import org.bytetwist.bytetwist.processors.log
@@ -12,6 +14,7 @@ import org.jgrapht.alg.color.BrownBacktrackColoring
 import org.jgrapht.ext.JGraphXAdapter
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.DirectedAcyclicGraph
+import org.jgrapht.graph.SimpleDirectedGraph
 import org.jgrapht.nio.dot.DOTExporter
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.Label
@@ -86,7 +89,7 @@ open class ByteMethod(
      */
     fun typeReferences() = instructions.filterIsInstance(ClassReferenceNode::class.java)
 
-    val controlFlow: DirectedAcyclicGraph<ByteBlockNode, DefaultEdge> = DirectedAcyclicGraph(DefaultEdge::class.java)
+    val controlFlow: SimpleDirectedGraph<ByteBlockNode, DefaultEdge> = SimpleDirectedGraph(DefaultEdge::class.java)
 
 
     init {
@@ -217,8 +220,8 @@ open class ByteMethod(
      * Builds all of the [ByteBlockNode] and [ByteTryCatch] blocks for this method. Uses coroutines to execute some parts
      * of the method asynchronously
      */
+    @ExperimentalCoroutinesApi
     fun buildBlocks() {
-        runBlocking {
             //   coroutineScope {
             // Sort try catch blocks
             //this.accept(TryCatchBlockSorter(this, access, name, desc, signature, exceptions.toTypedArray()))
@@ -230,13 +233,19 @@ open class ByteMethod(
                         if (block == null) {
                             block = find(insnNode) ?: buildBlock(insnNode)
                         }
-                        val block2 = buildBlock(insnNode.label)
+                        val block2 = find(insnNode.label) ?: buildBlock(insnNode.label)
                         controlFlow.addVertex(block)
                         controlFlow.addVertex(block2)
+                        if (block != block2 && block.first() != block2.first()) {
+                            controlFlow.addEdge(block, block2)
+                        }
                         if (insnNode.next != null && insnNode.opcode != Opcodes.GOTO) {
                             if (insnNode.next != insnNode.label.next) {
                                 val nextBlock = find(insnNode.next) ?: buildBlock(insnNode.next)
                                 controlFlow.addVertex(nextBlock)
+                                if (block != nextBlock && block.first() != nextBlock.first()) {
+                                    controlFlow.addEdge(block, nextBlock)
+                                }
                                 block = nextBlock
                             }
                         }
@@ -247,54 +256,35 @@ open class ByteMethod(
                     }
                 }
             }
-            //log.info { "$name: ${blocks.size}" }
+    }
 
+    private fun addEdges() {
+        analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
 
-//        if (!this@ByteMethod.tryCatchBlocks.isNullOrEmpty()) {
-//            this@ByteMethod.tryCatchBlocks.onEach { tryCatchBlock ->
-//                //     async {
-//                if (tryCatchBlock != null) {
-//                    val tryCatchBlocks = (tryCatchBlock as ByteTryCatch).buildMethodBlocks()
-//                    controlFlow.addVertex(tryCatchBlocks.first)
-//                    controlFlow.addVertex(tryCatchBlocks.second)
-//                }
-//                //   }
-//            }
-//        }
+        if (Settings.annotateMethodComplexity) {
+            annotate("Complexity", "Blocks" to blocks.size, "Edges" to controlFlow.edgeSet().size)
+        }
 
-            analyzer.analyze(this@ByteMethod.parent.name, this@ByteMethod)
+        if (Settings.annotateTryCatchCount) {
+            annotate("TryCatchs", "number" to tryCatchBlocks.size)
+        }
 
-            if (Settings.annotateMethodComplexity) {
-                //   launch {
-                annotate("Complexity", "Blocks" to blocks.size, "Edges" to controlFlow.edgeSet().size)
-                // }
-            }
-
-            if (Settings.annotateTryCatchCount) {
-                //   launch {
-                annotate("TryCatchs", "number" to tryCatchBlocks.size)
-                // }
-            }
-
-            if (Settings.annotateLocalVariables) {
-                //      launch {
-                if (localVariables != null && localVariables.isNotEmpty()) {
-                    localVariables.onEach {
-                        //     async {
-                        annotate(
-                            "Local Variable ${it.name}",
-                            "References" to (it as ByteVariable).references.size
-                        )
-                    }
-                    //    }.awaitAll()
-                    //  }
+        if (Settings.annotateLocalVariables) {
+            if (localVariables != null && localVariables.isNotEmpty()) {
+                localVariables.onEach {
+                    annotate(
+                        "Local Variable ${it.name}",
+                        "References" to (it as ByteVariable).references.size
+                    )
                 }
             }
-            //References.blocks.addAll(this@ByteMethod.blocks)
         }
     }
 
-    private fun buildBlock(startingInsn: AbstractInsnNode): ByteBlockNode {
+    /**
+     * Builds a new [ByteBlockNode] starting from the [startingInsn] and adds it to [blocks]
+     */
+    internal fun buildBlock(startingInsn: AbstractInsnNode): ByteBlockNode {
         val newSet = ByteBlockNode(this@ByteMethod)
         newSet.add(startingInsn)
         var nxt = startingInsn.next
@@ -348,7 +338,7 @@ open class ByteMethod(
                 try {
                     controlFlow.addEdge(first, second)
                 } catch (e: Exception) {
-                    log.error { "$first -> $second" }
+                    //log.error { "$first -> $second" }
                 }
             }
 
