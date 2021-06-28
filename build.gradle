@@ -44,7 +44,7 @@ dependencies {
     api 'org.ow2.asm:asm:7.3.1'
     api 'org.ow2.asm:asm-commons:8.0.1'
     api 'org.ow2.asm:asm-tree:7.3.1'
-    api 'org.ow2.asm:asm-analysis:7.3.1'
+    api 'org.ow2.asm:asm-analysis:9.2'
     api 'com.google.guava:guava:28.2-jre'
     implementation 'io.github.microutils:kotlin-logging:1.7.9'
     implementation 'org.slf4j:slf4j-simple:1.7.30'
